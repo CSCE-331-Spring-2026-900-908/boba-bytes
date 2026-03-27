@@ -4,6 +4,7 @@
   "description": "## Checklist - [x] Add project structure overview - [x] Add frontend install steps (`cd Frontend` then `npm install`) - [x] Add frontend run/build/preview commands - [x] Add Tailwind CSS note based on current setup - [x] Add backend placeholder section for setup/run steps",
   "main": "index.js",
   "scripts": {
+    "build": "cd Frontend && npm install && npm run build",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -17,5 +18,6 @@
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
     "react-router-dom": "^7.13.2"
-  }
+  },
+
 }
