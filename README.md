@@ -4,7 +4,7 @@
 
 ### Frontend (run from `Frontend/`)
 ```bash
-cd /Users/deep10sun/inclass/TAMU/331/Projects/project3-05/Frontend
+cd ~/boba-bytes/Frontend
 npm install
 npm run dev
 ```
@@ -19,7 +19,7 @@ npm run dev
 ## Project Structure
 
 ```text
-project3-05/
+boba-bytes/
 ├── Backend/
 ├── Frontend/
 │   ├── app.jsx
