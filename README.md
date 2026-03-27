@@ -1,11 +1,20 @@
 # Project 3-05
 
-## Checklist
-- [x] Add project structure overview
-- [x] Add frontend install steps (`cd Frontend` then `npm install`)
-- [x] Add frontend run/build/preview commands
-- [x] Add Tailwind CSS note based on current setup
-- [x] Add backend placeholder section for setup/run steps
+## Quick Start
+
+### Frontend (run from `Frontend/`)
+```bash
+cd /Users/deep10sun/inclass/TAMU/331/Projects/project3-05/Frontend
+npm install
+npm run dev
+```
+
+### Frontend scripts currently expected
+- `dev`: `vite ..`
+- `build`: `vite build ..`
+- `preview`: `vite preview ..`
+
+> Note: This setup is intended to run Vite from `Frontend/` while using the project root as app root.
 
 ## Project Structure
 
@@ -13,60 +22,38 @@
 project3-05/
 ├── Backend/
 ├── Frontend/
-   ├── app.jsx
-   ├── package.json
-   ├── images/
-   └── pages/
+│   ├── app.jsx
+│   ├── package.json
+│   ├── images/
+│   └── pages/
+└── index.html
 ```
 
-- `Frontend/`: React + Vite app.
-- `Backend/`: Backend service code (setup steps can be added once backend stack/entrypoint is finalized).
+## Tailwind CSS
 
-## Prerequisites
-- Node.js and npm installed (LTS recommended).
+This project has `tailwindcss@^4.2.2` in `Frontend/package.json`.
 
-## Frontend Setup
+- Tailwind v4 does not use the older `npx tailwindcss init -p` workflow.
+- Configure Tailwind using the v4 approach (for example, import Tailwind in your CSS entry file).
 
-Run these from the project root:
+## Troubleshooting
 
-```bash
-cd Frontend
-npm install
-```
+### `CACError: Unknown option --root`
+If you see this when running Vite, use positional root form in scripts:
+- `vite ..`
+- `vite build ..`
+- `vite preview ..`
 
-## Frontend Development
+### `http://localhost:5173/` shows 404
+Known from current layout:
+- `index.html` is at project root.
+- Dev command is run from `Frontend/`.
 
-```bash
-cd Frontend
-npm run dev
-```
+Check:
+1. `Frontend/package.json` scripts use positional root (`vite ..`).
+2. Root `index.html` exists.
+3. Root `index.html` points to a valid module path (example: `/Frontend/main.jsx` if your entry file is in `Frontend/`).
 
-## Frontend Production Build
+## Backend
 
-```bash
-cd Frontend
-npm run build
-```
-
-## Frontend Preview Build
-
-```bash
-cd Frontend
-npm run preview
-```
-
-## Tailwind CSS Note
-- This project currently uses `tailwindcss@^4.2.2` (from `Frontend/package.json`).
-- Tailwind v4 setup does not rely on the older `npx tailwindcss init -p` workflow.
-- If you configure Tailwind styles, use the v4 approach (for example, importing Tailwind in your CSS entry file).
-
-## Backend Setup (Placeholder)
-Backend setup/run steps are not documented yet in this README because the backend runtime and commands are not confirmed from the current project files.
-
-Add commands here once confirmed, for example:
-
-```bash
-cd Backend
-# install dependencies
-# run backend server
-```
+Backend setup/run commands are not documented yet (runtime/entrypoint not verified from current project files). Add them once backend commands are confirmed.
