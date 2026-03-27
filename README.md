@@ -22,7 +22,7 @@ npm run dev
 project3-05/
 ├── Backend/
 ├── Frontend/
-│   ├── app.jsx
+│   ├── App.jsx
 │   ├── package.json
 │   ├── images/
 │   └── pages/
@@ -52,7 +52,7 @@ Known from current layout:
 Check:
 1. `Frontend/package.json` scripts use positional root (`vite ..`).
 2. Root `index.html` exists.
-3. Root `index.html` points to a valid module path (example: `/Frontend/main.jsx` if your entry file is in `Frontend/`).
+3. Root `index.html` points to a valid module path (example: `/Frontend/Main.jsx` if your entry file is in `Frontend/`).
 
 ## Backend
 
