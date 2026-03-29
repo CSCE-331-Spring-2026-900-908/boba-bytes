@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import Sidebar from "./components/Sidebar.jsx";
-import EmployeeManagement from "./components/EmployeeManagement.jsx";
+import EmployeeManagement from "./components/EmployeeManagment.jsx";
 import MenuManagement from "./components/MenuManagement.jsx";
-import InventoryManagement from "./components/InventoryManagement.jsx";
+import InventoryManagement from "./components/InventoryManagment";
 import Reports from "./components/Reports.jsx";
 import "./Manager.css";
 
