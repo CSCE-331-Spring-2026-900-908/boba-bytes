@@ -5,13 +5,14 @@ export default function Portal() {
     const navigate = useNavigate();
 
     return (
-        <div className="min-h-screen flex flex-col items-center justify-center gap-10 scale scale-300">
-            <h1 className="text-4xl font-black text-blue-600">Boba & Bytes</h1>
-            <div className="flex flex-col items-center gap-3">
+        <div className="min-h-screen flex flex-col items-center justify-center gap-20">
+            <h1 className="text-9xl font-black text-blue-600">Boba & Bytes</h1>
+            <div className="flex flex-col items-center gap-6">
                 <button
                     type="button"
                     onClick={() => navigate("/manager")}
-                    className="px-4 py-2 rounded font-mono bg-blue-500 text-white hover:bg-blue-600"
+                    className="px-10 py-5 rounded-4xl font-mono bg-red-950 text-white hover:bg-red-900 hover:scale-105 text-5xl transition-all ease-in-out duration-200"
+
                 >
                     Manager Interface
                 </button>
@@ -19,7 +20,7 @@ export default function Portal() {
                 <Link to="/cashier">
                     <button
                         type="button"
-                        className="px-4 py-2 rounded font-mono bg-emerald-500 text-white hover:bg-emerald-600"
+                        className="px-10 py-5 rounded-4xl font-mono bg-emerald-500 text-white hover:bg-emerald-400 hover:scale-105 text-5xl transition-all ease-in-out duration-200"
                     >
                         Cashier Interface
                     </button>
@@ -28,7 +29,7 @@ export default function Portal() {
                 <Link to="/customer">
                     <button
                         type="button"
-                        className="px-4 py-2 rounded font-mono bg-purple-500 text-white hover:bg-purple-600"
+                        className="px-10 py-5 rounded-4xl font-mono bg-amber-600 text-white hover:bg-amber-500 hover:scale-105 text-5xl transition-all ease-in-out duration-200"
                     >
                         Customer Kiosk
                     </button>
