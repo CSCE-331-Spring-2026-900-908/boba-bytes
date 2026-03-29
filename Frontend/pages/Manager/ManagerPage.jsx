@@ -1,0 +1,24 @@
+import React, { useState } from "react";
+import Sidebar from "./components/Sidebar.jsx";
+import EmployeeManagement from "./components/EmployeeManagement.jsx";
+import MenuManagement from "./components/MenuManagement.jsx";
+import InventoryManagement from "./components/InventoryManagement.jsx";
+import Reports from "./components/Reports.jsx";
+import "./Manager.css";
+
+export default function ManagerPage() {
+    const [tab, setTab] = useState("employees");
+
+    return (
+        <div className="manager-container">
+            <Sidebar setTab={setTab} />
+
+            <div className="manager-content">
+                {tab === "employees" && <EmployeeManagement />}
+                {tab === "menu" && <MenuManagement />}
+                {tab === "inventory" && <InventoryManagement />}
+                {tab === "reports" && <Reports />}
+            </div>
+        </div>
+    );
+}

@@ -1,0 +1,22 @@
+.portal-container {
+    text-align: center;
+    padding: 40px;
+}
+
+.portal-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 300px;
+    margin: 40px auto;
+}
+
+.portal-btn {
+    padding: 15px;
+    font-size: 18px;
+    cursor: pointer;
+    background: #222;
+    color: white;
+    border: none;
+    border-radius: 8px;
+}

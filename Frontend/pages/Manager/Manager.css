@@ -1,0 +1,40 @@
+.manager-container {
+    display: flex;
+    height: 100vh;
+    background: #f5f5f5;
+}
+
+.sidebar {
+    width: 220px;
+    background: #222;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+}
+
+.sidebar button {
+    margin-bottom: 15px;
+    padding: 12px;
+    background: #444;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+.manager-content {
+    flex: 1;
+    padding: 30px;
+    overflow-y: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+table th, table td {
+    border: 1px solid #ccc;
+    padding: 10px;
+}
