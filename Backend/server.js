@@ -5,7 +5,7 @@ import employees from "./routes/employees.js";
 import menu from "./routes/menu.js";
 import inventory from "./routes/inventory.js";
 import reports from "./routes/reports.js";
-import orders from "./routes/orders.js";
+import orders from "./routes/kiosk_orders.js";
 
 const app = express();
 app.use(cors());
