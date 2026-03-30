@@ -9,15 +9,18 @@ export default defineConfig({
         react(),
         tailwindcss(),
     ],
+    resolve: {
+        dedupe: ['react', 'react-dom'],
+    },
     server: {
         host: true,
         port: 5173,
         proxy: {
-        '/api': {
-            target: 'http://localhost:3001',   // ← Changed to your actual backend port
-            changeOrigin: true,
-            secure: false,
-        }
-    }
-  }
+            '/api': {
+                target: 'http://localhost:3001',
+                changeOrigin: true,
+                secure: false,
+            },
+        },
+    },
 })

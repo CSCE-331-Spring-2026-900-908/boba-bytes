@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './CustomerKiosk.css';
 
-const API_BASE = '/api';
+const API_BASE = 'https://boba-bytes.onrender.com/api';
 
 function CustomerKiosk() {
   const [menuItems, setMenuItems] = useState([]);
@@ -20,7 +20,9 @@ function CustomerKiosk() {
         let cats = await catsRes.json();
 
         if (!cats || cats.length === 0) {
-          cats = [...new Set(items.map(item => item.category))];
+          cats = [...new Set(items.map(item => item.item_type).filter(Boolean))];
+
+
         }
 
         setMenuItems(items);
@@ -38,15 +40,15 @@ function CustomerKiosk() {
 
   const filteredItems = selectedCategory === 'All'
     ? menuItems
-    : menuItems.filter(item => item.category === selectedCategory);
+    : menuItems.filter(item => item.item_type === selectedCategory);
 
 
   const addToCart = (item) => {
     setCart(prevCart => {
-      const existing = prevCart.find(cartItem => cartItem.id === item.id);
+      const existing = prevCart.find(cartItem => cartItem.menu_item_id === item.menu_item_id);
       if (existing) {
         return prevCart.map(cartItem =>
-          cartItem.id === item.id
+          cartItem.menu_item_id === item.menu_item_id
             ? { ...cartItem, quantity: cartItem.quantity + 1 }
             : cartItem
         );
@@ -56,11 +58,11 @@ function CustomerKiosk() {
   };
 
   const removeFromCart = (id) => {
-    setCart(prevCart => prevCart.filter(item => item.id !== id));
+    setCart(prevCart => prevCart.filter(item => item.menu_item_id !== id));
   };
 
   const totalPrice = cart.reduce((total, item) => {
-    return total + item.price * item.quantity;
+    return total + item.item_cost * item.quantity;
   }, 0);
 
   const submitOrder = async () => {
@@ -75,7 +77,7 @@ function CustomerKiosk() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           items: cart.map(item => ({
-            menu_item_id: item.id,
+            menu_item_id: item.menu_item_id,
             quantity: item.quantity
           })),
           total: totalPrice
@@ -107,45 +109,36 @@ function CustomerKiosk() {
       </header>
 
       <div className="category-bar">
-        {categories.map(cat => (
-          <button
-            key={cat}
-            onClick={() => setSelectedCategory(cat)}
-            className={`category-btn ${selectedCategory === cat ? 'active' : ''}`}
-          >
-            {cat}
-          </button>
+        {categories.map((cat, index) => (
+            <button
+                key={cat ?? index}
+                onClick={() => setSelectedCategory(cat)}
+                className={`category-btn ${selectedCategory === cat ? 'active' : ''}`}
+            >
+              {cat}
+            </button>
         ))}
       </div>
 
       <div className="main-content">
         <div className="menu-grid">
           {filteredItems.map(item => (
-            <div 
-              key={item.id} 
+            <div
+              key={item.menu_item_id}
               className="menu-card"
               onClick={() => addToCart(item)}
             >
               {item.image && (
-                <img 
-                  src={item.image} 
-                  alt={item.name} 
-                  className="item-image" 
+                <img
+                  src={item.image}
+                  alt={item.name}
+                  className="item-image"
                 />
               )}
               <div className="item-info">
-                <h3>{item.name}</h3>
-                <p className="price">${Number(item.price).toFixed(2)}</p>
+                <h3 className="font-bold text-2xl">{item.item_name}</h3>
+                <p className="price">${Number(item.item_cost).toFixed(2)}</p>
               </div>
-              <button 
-                className="add-btn"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  addToCart(item);
-                }}
-              >
-                + Add
-              </button>
             </div>
           ))}
         </div>
@@ -157,15 +150,15 @@ function CustomerKiosk() {
             <p className="empty-cart">Tap any drink to start your order!</p>
           ) : (
             cart.map(item => (
-              <div key={item.id} className="cart-item">
+              <div key={item.menu_item_id } className="cart-item">
                 <div>
-                  <span>{item.name}</span>
+                  <span>{item.item_name}</span>
                   <span className="qty"> × {item.quantity}</span>
                 </div>
                 <div className="cart-item-right">
-                  <span>${(item.price * item.quantity).toFixed(2)}</span>
-                  <button 
-                    onClick={() => removeFromCart(item.id)} 
+                  <span>${(item.item_cost * item.quantity).toFixed(2)}</span>
+                  <button
+                    onClick={() => removeFromCart(item.menu_item_id)}
                     className="remove-btn"
                   >
                     ×
@@ -180,17 +173,18 @@ function CustomerKiosk() {
             <span>${totalPrice.toFixed(2)}</span>
           </div>
 
-          <button 
+          <button
             onClick={submitOrder}
             className="submit-order-btn"
             disabled={cart.length === 0}
           >
+            Place Order 🧋
           </button>
         </div>
       </div>
 
       <footer className="kiosk-footer">
-        Touchscreen Kiosk • Boba Bytes 
+        Touchscreen Kiosk • Boba Bytes
       </footer>
     </div>
   );

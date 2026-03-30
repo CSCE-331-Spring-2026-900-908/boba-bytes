@@ -1,0 +1,240 @@
+.cashier-container {
+    display: flex;
+    height: 100vh;
+    background: #f5f5f5;
+}
+
+.cashier-sidebar {
+    width: 220px;
+    background: #222;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+}
+
+.cashier-sidebar h2 {
+    font-size: 22px;
+    margin-bottom: 20px;
+    font-weight: bold;
+}
+
+.cashier-sidebar button {
+    margin-bottom: 10px;
+    padding: 12px;
+    background: #444;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 4px;
+    font-size: 15px;
+    text-align: left;
+}
+
+.cashier-sidebar button:hover {
+    background: #555;
+}
+
+.cashier-sidebar button.active {
+    background: #16a34a;
+}
+
+.cashier-sidebar .back-btn {
+    margin-top: auto;
+    background: #333;
+    text-align: center;
+}
+
+.cashier-sidebar .back-btn:hover {
+    background: #444;
+}
+
+.cashier-content {
+    flex: 1;
+    padding: 30px;
+    overflow-y: auto;
+}
+
+.cashier-content h2 {
+    font-size: 22px;
+    margin-bottom: 15px;
+}
+
+.menu-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 12px;
+    margin-top: 10px;
+}
+
+.menu-grid button {
+    padding: 16px;
+    background: white;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    cursor: pointer;
+    text-align: left;
+}
+
+.menu-grid button:hover {
+    border-color: #16a34a;
+    box-shadow: 0 0 0 2px rgba(22, 163, 74, 0.2);
+}
+
+.menu-grid button .item-name {
+    font-weight: 600;
+    font-size: 15px;
+    color: #222;
+}
+
+.menu-grid button .item-price {
+    color: #16a34a;
+    font-family: monospace;
+    margin-top: 4px;
+    font-size: 14px;
+}
+
+.menu-grid .empty-msg {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 40px;
+    color: #999;
+}
+
+.order-panel {
+    width: 320px;
+    background: white;
+    border-left: 1px solid #ccc;
+    display: flex;
+    flex-direction: column;
+}
+
+.order-panel .order-header {
+    padding: 20px;
+    border-bottom: 1px solid #ccc;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.order-panel .order-items {
+    flex: 1;
+    overflow-y: auto;
+    padding: 15px;
+}
+
+.order-panel .order-items .empty-order {
+    text-align: center;
+    color: #999;
+    padding-top: 40px;
+}
+
+.order-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.order-row .order-item-info .order-item-name {
+    font-weight: 500;
+    color: #333;
+}
+
+.order-row .order-item-info .order-item-price {
+    font-size: 12px;
+    color: #888;
+}
+
+.order-row .order-item-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.order-row .order-item-controls button {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 16px;
+    line-height: 1;
+}
+
+.order-row .order-item-controls .btn-minus {
+    background: #fee2e2;
+    color: #dc2626;
+}
+
+.order-row .order-item-controls .btn-minus:hover {
+    background: #fecaca;
+}
+
+.order-row .order-item-controls .btn-plus {
+    background: #dcfce7;
+    color: #16a34a;
+}
+
+.order-row .order-item-controls .btn-plus:hover {
+    background: #bbf7d0;
+}
+
+.order-row .order-item-controls .qty {
+    width: 24px;
+    text-align: center;
+    font-family: monospace;
+    font-weight: 600;
+}
+
+.order-footer {
+    padding: 20px;
+    border-top: 1px solid #ccc;
+}
+
+.order-total {
+    display: flex;
+    justify-content: space-between;
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+
+.order-total .total-amount {
+    color: #16a34a;
+}
+
+.order-footer button {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.order-footer .place-btn {
+    background: #222;
+    color: white;
+    margin-bottom: 8px;
+}
+
+.order-footer .place-btn:hover {
+    background: #333;
+}
+
+.order-footer .place-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.order-footer .clear-btn {
+    background: #e5e5e5;
+    color: #555;
+}
+
+.order-footer .clear-btn:hover {
+    background: #d5d5d5;
+}
