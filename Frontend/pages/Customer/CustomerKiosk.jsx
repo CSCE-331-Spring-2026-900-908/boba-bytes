@@ -150,7 +150,6 @@ function CustomerKiosk() {
           ))}
         </div>
 
-        {/* Cart Sidebar - SCRUM-32 & SCRUM-34 */}
         <div className="cart-sidebar">
           <h2>Your Cart ({cart.length})</h2>
 
