@@ -4,6 +4,11 @@
   --peach:  #f5c4a1;
   --border: #ecddd0;
   --shadow: 0 4px 20px rgba(92,61,46,0.10);
+
+  --white: #ffffff;
+  --black: #000000;
+  --grey: #e6e6e6;
+  --yellow-pastel: #fff4b8;
 }
 
 .kiosk-container {
@@ -18,7 +23,7 @@
 
 .kiosk-header {
   text-align: center;
-  padding: 25px 20px;
+  padding: 1px 1px;
   background: rgba(0, 0, 0, 0.3);
   font-size: 2.8rem;
   font-weight: bold;
@@ -92,6 +97,7 @@
   transform: translateY(-3px);
   box-shadow: 0 8px 24px rgba(92,61,46,0.15);
 }
+
 .menu-card:active {
   transform: scale(1.10);
 }
@@ -126,7 +132,7 @@
 }
 
 .cart-sidebar {
-  flex: 0.67; /* for the memes */
+  flex: 0.67;
   background: rgba(255,255,255,0.95);
   color: #222;
   border-radius: 24px;
@@ -212,4 +218,48 @@
   font-size: 2rem;
   background: linear-gradient(135deg, #800000, #ffcc00);
   color: white;
+}
+
+.sidebar {
+    width: 220px;
+    background: #222;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+}
+
+.sidebar button {
+    margin-bottom: 15px;
+    padding: 12px;
+    background: #444;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+.customer-content {
+    flex: 1;
+    padding: 30px;
+    overflow-y: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+table th, table td {
+    border: 1px solid #ccc;
+    padding: 10px;
+}
+
+.customer-container {
+    display: flex;
+    height: 100vh;
+    background: var(--yellow-pastel); /* soft pastel yellow */
+    color: var(--black);
+    font-family: system-ui, -apple-system, sans-serif;
+    border: 2px solid var(--grey);
 }
