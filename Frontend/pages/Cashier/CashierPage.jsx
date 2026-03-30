@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import "./Cashier.css";
 
 export default function CashierPage() {
-    const navigate = useNavigate();
     const [items, setItems] = useState([]);
     const [categories, setCategories] = useState([]);
     const [activeCategory, setActiveCategory] = useState(null);
@@ -99,9 +97,6 @@ export default function CashierPage() {
                         {cat}
                     </button>
                 ))}
-                <button className="back-btn" onClick={() => navigate("/")}>
-                    ← Back to Portal
-                </button>
             </div>
 
             {/* Center — menu items */}
