@@ -13,8 +13,8 @@ export default function CashierPage() {
 
     useEffect(() => {
         Promise.all([
-            fetch("/api/menu/items").then((r) => r.json()),
-            fetch("/api/menu/categories").then((r) => r.json()),
+            fetch("/https://boba-bytes.onrender.com/menu/items").then((r) => r.json()),
+            fetch("/https://boba-bytes.onrender.com/menu/categories").then((r) => r.json()),
         ])
             .then(([itemData, catData]) => {
                 setItems(itemData);
@@ -25,14 +25,14 @@ export default function CashierPage() {
             .finally(() => setLoading(false));
     }, []);
 
-    const filteredItems = items.filter((i) => i.category === activeCategory);
+    const filteredItems = items.filter((i) => i.item_type === activeCategory);
 
     function addItem(item) {
         setOrder((prev) => {
-            const existing = prev.find((o) => o.id === item.id);
+            const existing = prev.find((o) => o.menu_item_id === item.menu_item_id);
             if (existing) {
                 return prev.map((o) =>
-                    o.id === item.id ? { ...o, qty: o.qty + 1 } : o
+                    o.menu_item_id === item.menu_item_id ? { ...o, qty: o.qty + 1 } : o
                 );
             }
             return [...prev, { ...item, qty: 1 }];
@@ -42,7 +42,7 @@ export default function CashierPage() {
     function removeItem(id) {
         setOrder((prev) =>
             prev
-                .map((o) => (o.id === id ? { ...o, qty: o.qty - 1 } : o))
+                .map((o) => (o.menu_item_id === id ? { ...o, qty: o.qty - 1 } : o))
                 .filter((o) => o.qty > 0)
         );
     }
@@ -55,11 +55,11 @@ export default function CashierPage() {
         if (order.length === 0) return;
         setPlacing(true);
         try {
-            const res = await fetch("/api/orders", {
+            const res = await fetch("https://boba-bytes.onrender.com/orders", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                    items: order.map((o) => ({ id: o.id, qty: o.qty })),
+                    items: order.map((o) => ({ id: o.menu_item_id, qty: o.qty })),
                     total: orderTotal,
                 }),
             });
@@ -75,7 +75,7 @@ export default function CashierPage() {
         }
     }
 
-    const orderTotal = order.reduce((sum, o) => sum + o.price * o.qty, 0);
+    const orderTotal = order.reduce((sum, o) => sum + o.item_cost * o.qty, 0);
 
     if (loading) {
         return (
@@ -109,9 +109,9 @@ export default function CashierPage() {
                 <h2>{activeCategory || "Menu"}</h2>
                 <div className="menu-grid">
                     {filteredItems.map((item) => (
-                        <button key={item.id} onClick={() => addItem(item)}>
-                            <div className="item-name">{item.name}</div>
-                            <div className="item-price">${Number(item.price).toFixed(2)}</div>
+                        <button key={item.menu_item_id} onClick={() => addItem(item)}>
+                            <div className="item-name">{item.item_name}</div>
+                            <div className="item-price">${Number(item.item_cost).toFixed(2)}</div>
                         </button>
                     ))}
                     {filteredItems.length === 0 && (
@@ -129,15 +129,15 @@ export default function CashierPage() {
                         <p className="empty-order">No items yet.</p>
                     )}
                     {order.map((o) => (
-                        <div key={o.id} className="order-row">
+                        <div key={o.menu_item_id} className="order-row">
                             <div className="order-item-info">
-                                <div className="order-item-name">{o.name}</div>
+                                <div className="order-item-name">{o.item_name}</div>
                                 <div className="order-item-price">
-                                    ${Number(o.price).toFixed(2)} each
+                                    ${Number(o.item_cost).toFixed(2)} each
                                 </div>
                             </div>
                             <div className="order-item-controls">
-                                <button className="btn-minus" onClick={() => removeItem(o.id)}>−</button>
+                                <button className="btn-minus" onClick={() => removeItem(o.menu_item_id)}>−</button>
                                 <span className="qty">{o.qty}</span>
                                 <button className="btn-plus" onClick={() => addItem(o)}>+</button>
                             </div>

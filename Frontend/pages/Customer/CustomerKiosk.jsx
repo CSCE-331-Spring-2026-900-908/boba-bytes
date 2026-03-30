@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './CustomerKiosk.css';
 
-const API_BASE = '/api';
+const API_BASE = 'https://boba-bytes.onrender.com';
 
 function CustomerKiosk() {
   const [menuItems, setMenuItems] = useState([]);
