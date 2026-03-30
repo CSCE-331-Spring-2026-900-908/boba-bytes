@@ -1,3 +1,10 @@
+:root {
+  --brown:  #5c3d2e;
+  --blush:  #e8856a;
+  --peach:  #f5c4a1;
+  --border: #ecddd0;
+  --shadow: 0 4px 20px rgba(92,61,46,0.10);
+}
 
 .kiosk-container {
   height: 100vh;
@@ -30,6 +37,7 @@
   background: rgba(0, 0, 0, 0.4);
   overflow-x: auto;
   white-space: nowrap;
+  justify-content: center;
 }
 
 .category-btn {
@@ -67,17 +75,25 @@
 }
 
 .menu-card {
-  background: white;
-  color: #222;
-  border-radius: 24px;
-  overflow: hidden;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+  margin-top: 15px;
+  background: #fff;
+  border-radius: 18px;
+  border: 1.5px solid var(--border);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  box-shadow: var(--shadow);
   cursor: pointer;
-  transition: transform 0.2s;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
+.menu-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(92,61,46,0.15);
+}
 .menu-card:active {
-  transform: scale(1.05);
+  transform: scale(1.10);
 }
 
 .item-image {
@@ -88,28 +104,29 @@
 
 .item-info {
   padding: 18px;
+  display: flex;
+  flex-direction: column;
+  flex: 1.2;
+}
+
+.item-info h3 {
+  font-size: 2rem;
+  font-weight: 600;
+  color: var(--brown);
+  word-wrap: break-word;
+  text-align: center;
 }
 
 .price {
-  font-size: 1.8rem;
-  font-weight: bold;
-  color: #800000;
-  margin: 8px 0;
-}
-
-.add-btn {
-  width: 100%;
-  padding: 20px;
-  background: #800000;
-  color: white;
-  border: none;
-  font-size: 1.6rem;
-  font-weight: bold;
-  cursor: pointer;
+  font-size: 2rem;
+  text-align: center;
+  color: var(--blush);
+  font-weight: 500;
+  margin-top: auto;
 }
 
 .cart-sidebar {
-  flex: 1;
+  flex: 0.67; /* for the memes */
   background: rgba(255,255,255,0.95);
   color: #222;
   border-radius: 24px;

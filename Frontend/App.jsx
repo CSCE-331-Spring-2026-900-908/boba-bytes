@@ -13,8 +13,6 @@ function App() {
                 <Route path="/" element={<Portal />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/manager" element={<ManagerPage />} />
-                
-                {/* Customer Kiosk Routes */}
                 <Route path="/customer" element={<CustomerKiosk />} />
                 <Route path="/kiosk" element={<CustomerKiosk />} />
             </Routes>

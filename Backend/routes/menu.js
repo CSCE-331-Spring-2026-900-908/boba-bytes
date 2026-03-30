@@ -5,7 +5,7 @@ const router = express.Router();
 
 router.get("/items", async (req, res) => {
   try {
-    const result = await pool.query("SELECT * FROM menu_items");
+    const result = await pool.query("SELECT * FROM menu");
     res.json(result.rows);
   } catch (err) {
     console.error(err);
@@ -14,8 +14,8 @@ router.get("/items", async (req, res) => {
 });
 router.get("/categories", async (req, res) => {
   try {
-    const result = await pool.query("SELECT DISTINCT category FROM menu_items");
-    const categories = result.rows.map(r => r.category);
+    const result = await pool.query("SELECT DISTINCT item_type FROM menu");
+    const categories = result.rows.map(r => r.item_type).filter(Boolean);
     res.json(categories);
   } catch (err) {
     console.error(err);
