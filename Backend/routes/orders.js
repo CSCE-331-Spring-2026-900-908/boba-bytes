@@ -13,10 +13,12 @@ router.post("/", async (req, res) => {
     const client = await pool.connect();
     try {
         await client.query("BEGIN");
+        let payment_choices = ["cash", "credit"]
+        let choice = payment_choices[Math.floor(Math.random()*payment_choices.length)];
 
         const orderResult = await client.query(
             "INSERT INTO orders (order_total, payment_type, timestamp) VALUES ($1, $2, NOW()) RETURNING order_id",
-            [total, "cash"]
+            [total, choice]
         );
         const orderId = orderResult.rows[0].order_id;
 
