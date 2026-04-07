@@ -11,8 +11,8 @@ export default function CashierPage() {
 
     useEffect(() => {
         Promise.all([
-            fetch("https://boba-bytes.onrender.com/api/menu/items").then((r) => r.json()),
-            fetch("https://boba-bytes.onrender.com/api/menu/categories").then((r) => r.json()),
+            fetch("https://boba-bytes-production.up.railway.app/api/menu/items").then((r) => r.json()),
+            fetch("https://boba-bytes-production.up.railway.app/api/menu/categories").then((r) => r.json()),
         ])
             .then(([itemData, catData]) => {
                 setItems(itemData);
