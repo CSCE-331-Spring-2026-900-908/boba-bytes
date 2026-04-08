@@ -1,4 +1,6 @@
-const API = "/api/employees";
+import { API_BASE } from "../config/api.js";
+
+const API = `${API_BASE}/employees`;
 
 export const getEmployees = async () => {
   const res = await fetch(API);

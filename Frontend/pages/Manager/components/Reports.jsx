@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from "react";
+import { API_BASE } from "../../../config/api.js";
 
 export default function Reports() {
     const [report, setReport] = useState([]);
 
     useEffect(() => {
-        fetch("https://boba-bytes-production.up.railway.app/api/reports")
+        fetch(`${API_BASE}/reports`)
             .then(res => res.json())
-            .then(data => setReport(data));
+            .then(data => setReport(data))
+            .catch(err => console.error("Failed to load reports:", err));
     }, []);
 
     return (
