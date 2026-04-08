@@ -11,7 +11,7 @@ import login from "./routes/login.js";
 
 const app = express();
 app.use(cors({
-    origin: ["http://localhost:5173", "https://boba-bytes-production.up.railway.app"],
+    origin: ["http://localhost:5173", "https://boba-bytes-production.up.railway.app", "https://boba-bytes.vercel.app"],
     credentials: true
 }));
 
