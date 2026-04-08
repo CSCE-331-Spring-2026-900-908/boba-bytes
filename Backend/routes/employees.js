@@ -26,12 +26,12 @@ router.post("/", async (req, res) => {
   try {
     const countResult = await pool.query("SELECT MAX(employee_no) AS max_no FROM employees");
     const nextEmployeeNo = (countResult.rows[0].max_no || 0) + 1;
-
+    let hpassword = await bcrypt.hash(password, 10)
     const result = await pool.query(
       `INSERT INTO employees (employee_no, first_name, last_name, is_manager, email, password)
        VALUES ($1, $2, $3, $4, $5, $6)
        RETURNING *`,
-      [nextEmployeeNo, first_name, last_name, is_manager || false, email, password]
+      [nextEmployeeNo, first_name, last_name, is_manager || false, email, hpassword]
     );
 
     console.log("Employee inserted successfully:", result.rows[0]);

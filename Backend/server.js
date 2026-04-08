@@ -7,9 +7,14 @@ import inventory from "./routes/inventory.js";
 import reports from "./routes/reports.js";
 import kiosk_orders from "./routes/kiosk_orders.js";
 import orders from "./routes/orders.js";
+import login from "./routes/login.js";
 
 const app = express();
-app.use(cors({ origin: '*'}));
+app.use(cors({
+    origin: ["http://localhost:5173", "https://boba-bytes-production.up.railway.app"],
+    credentials: true
+}));
+
 app.use(express.json());
 
 app.use("/api/employees", employees);
@@ -18,5 +23,6 @@ app.use("/api/inventory", inventory);
 app.use("/api/reports", reports);
 app.use("/api/kiosk_orders", kiosk_orders);
 app.use("/api/orders", orders);
+app.use("/api/login", login);
 
 app.listen(3001, () => console.log("Backend running on port 3001"));

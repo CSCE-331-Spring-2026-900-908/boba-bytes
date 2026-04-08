@@ -1,7 +1,9 @@
 import React, {useState} from "react";
-import { useLocation, Link } from "react-router-dom";
+import {useLocation, Link, useNavigate} from "react-router-dom";
+import {API_BASE} from "../../config/api";
 
 export default function Login() {
+    const navigate = useNavigate();
     const loc = useLocation();
     const roleLabel = loc.state?.role;
     const [email, setEmail] = useState("");
@@ -10,7 +12,7 @@ export default function Login() {
     const handleLogin = async (e) => {
         e.preventDefault();
 
-        const response = await fetch("https://boba-bytes-production.up.railway.app/api/login}", {
+        const response = await fetch(`${API_BASE}/login/${roleLabel}`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({email, password})
@@ -19,10 +21,11 @@ export default function Login() {
         const data = await response.json();
 
         if(data.success){
-            console.log("success");
+            localStorage.setItem("user", JSON.stringify(data.user));
+            navigate(roleLabel === "manager" ? "/manager" : "/cashier");
         }
         else{
-            console.log("invalid cred");
+            alert(data.error || "Invalid email or password.");
         }
     }
 
@@ -35,7 +38,7 @@ export default function Login() {
                     <p className="mt-2 text-sm text-slate-400">Sign in to continue to your dashboard.</p>
                 </div>
 
-                <form className="space-y-4">
+                <form className="space-y-4" onSubmit={handleLogin}>
                     <div>
                         <label htmlFor="email" className="mb-1 block text-sm text-slate-300">
                             Email
@@ -43,6 +46,8 @@ export default function Login() {
                         <input
                             id="email"
                             type="email"
+                            value={email}
+                            onChange={e => setEmail(e.target.value)}
                             placeholder="name@company.com"
                             className="w-full rounded-lg border border-slate-700 bg-slate-950 px-4 py-3 text-slate-100 outline-none focus:border-emerald-500"
                         />
@@ -55,6 +60,8 @@ export default function Login() {
                         <input
                             id="password"
                             type="password"
+                            value={password}
+                            onChange={e => setPassword(e.target.value)}
                             placeholder="••••••••"
                             className="w-full rounded-lg border border-slate-700 bg-slate-950 px-4 py-3 text-slate-100 outline-none focus:border-emerald-500"
                         />
