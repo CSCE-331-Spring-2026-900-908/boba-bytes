@@ -4,7 +4,7 @@ export default function Reports() {
     const [report, setReport] = useState([]);
 
     useEffect(() => {
-        fetch("/api/reports")
+        fetch("https://boba-bytes-production.up.railway.app/api/reports")
             .then(res => res.json())
             .then(data => setReport(data));
     }, []);

@@ -13,7 +13,7 @@ export default function EmployeeManagement() {
     });
 
     const loadEmployees = async () => {
-        const res = await fetch("/api/employees");
+        const res = await fetch("https://boba-bytes-production.up.railway.app/api/employees");
         const data = await res.json();
         setEmployees(data);
     };
@@ -32,13 +32,13 @@ export default function EmployeeManagement() {
 
     const handleSubmit = async () => {
         if (selected) {
-            await fetch(`/api/employees/${selected.employee_no}`, {
+            await fetch(`https://boba-bytes-production.up.railway.app/api/employees/${selected.employee_no}`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(form)
             });
         } else {
-            await fetch("/api/employees", {
+            await fetch("https://boba-bytes-production.up.railway.app/api/employees", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(form)
@@ -68,7 +68,7 @@ export default function EmployeeManagement() {
     };
 
     const handleDelete = async (employee_no) => {
-        await fetch(`/api/employees/${employee_no}`, {
+        await fetch(`https://boba-bytes-production.up.railway.app/api/employees/${employee_no}`, {
             method: "DELETE"
         });
         loadEmployees();

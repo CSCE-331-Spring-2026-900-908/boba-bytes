@@ -4,7 +4,7 @@ export default function MenuManagement() {
     const [items, setItems] = useState([]);
 
     useEffect(() => {
-        fetch("/api/menu")
+        fetch("https://boba-bytes-production.up.railway.app/api/menu")
             .then(res => res.json())
             .then(data => setItems(data));
     }, []);

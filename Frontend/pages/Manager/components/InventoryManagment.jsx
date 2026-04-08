@@ -4,7 +4,7 @@ export default function InventoryManagement() {
     const [inventory, setInventory] = useState([]);
 
     useEffect(() => {
-        fetch("/api/inventory")
+        fetch("https://boba-bytes-production.up.railway.app/api/inventory")
             .then(res => res.json())
             .then(data => setInventory(data));
     }, []);
