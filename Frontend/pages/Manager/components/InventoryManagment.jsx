@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from "react";
+import { API_BASE } from "../../../config/api.js";
 
 export default function InventoryManagement() {
     const [inventory, setInventory] = useState([]);
 
     useEffect(() => {
-        fetch("/api/inventory")
+        fetch(`${API_BASE}/inventory`)
             .then(res => res.json())
-            .then(data => setInventory(data));
+            .then(data => setInventory(data))
+            .catch(err => console.error("Failed to load inventory:", err));
     }, []);
 
     return (

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "./Cashier.css";
+import { API_BASE } from "../../config/api.js";
 
 export default function CashierPage() {
     const [items, setItems] = useState([]);
@@ -11,8 +12,8 @@ export default function CashierPage() {
 
     useEffect(() => {
         Promise.all([
-            fetch("https://boba-bytes-production.up.railway.app/api/menu/items").then((r) => r.json()),
-            fetch("https://boba-bytes-production.up.railway.app/api/menu/categories").then((r) => r.json()),
+            fetch(`${API_BASE}/menu/items`).then((r) => r.json()),
+            fetch(`${API_BASE}/menu/categories`).then((r) => r.json()),
         ])
             .then(([itemData, catData]) => {
                 setItems(itemData);
@@ -53,7 +54,7 @@ export default function CashierPage() {
         if (order.length === 0) return;
         setPlacing(true);
         try {
-            const res = await fetch("https://boba-bytes.onrender.com/orders", {
+            const res = await fetch(`${API_BASE}/orders`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({

@@ -20,6 +20,12 @@
     color: white;
     border: none;
     cursor: pointer;
+    border-radius: 6px;
+    transition: background 0.2s;
+}
+
+.sidebar button:hover {
+    background: #666;
 }
 
 .manager-content {
@@ -37,4 +43,319 @@ table {
 table th, table td {
     border: 1px solid #ccc;
     padding: 10px;
+}
+
+/* Menu Management */
+.menu-management h2 {
+    margin: 0;
+    font-size: 1.5rem;
+}
+
+.menu-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.btn-add {
+    padding: 10px 20px;
+    background: #2563eb;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    font-weight: 600;
+    transition: background 0.2s;
+}
+
+.btn-add:hover {
+    background: #1d4ed8;
+}
+
+.menu-filter {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 16px;
+}
+
+.menu-filter label {
+    font-weight: 500;
+    color: #555;
+}
+
+.menu-filter select {
+    padding: 6px 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 0.9rem;
+}
+
+.item-count {
+    color: #888;
+    font-size: 0.85rem;
+    margin-left: auto;
+}
+
+.menu-form {
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+}
+
+.menu-form h3 {
+    margin: 0 0 16px 0;
+    font-size: 1.15rem;
+    color: #333;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.form-group label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #555;
+}
+
+.form-group input {
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    transition: border-color 0.2s;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
+}
+
+.form-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 16px;
+}
+
+.btn-save {
+    padding: 10px 24px;
+    background: #16a34a;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background 0.2s;
+}
+
+.btn-save:hover {
+    background: #15803d;
+}
+
+.btn-cancel {
+    padding: 10px 24px;
+    background: #e5e7eb;
+    color: #333;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background 0.2s;
+}
+
+.btn-cancel:hover {
+    background: #d1d5db;
+}
+
+.menu-table {
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+}
+
+.menu-table th {
+    background: #f8f9fa;
+    font-weight: 600;
+    color: #555;
+    text-align: left;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.menu-table td {
+    vertical-align: middle;
+}
+
+.category-badge {
+    background: #e0e7ff;
+    color: #3730a3;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 0.82rem;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.menu-thumb {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    border-radius: 6px;
+    border: 1px solid #eee;
+}
+
+.no-image {
+    color: #bbb;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 6px;
+}
+
+.btn-edit {
+    padding: 5px 14px;
+    background: #f59e0b;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 500;
+    transition: background 0.2s;
+}
+
+.btn-edit:hover {
+    background: #d97706;
+}
+
+.btn-delete {
+    padding: 5px 14px;
+    background: #ef4444;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 500;
+    transition: background 0.2s;
+}
+
+.btn-delete:hover {
+    background: #dc2626;
+}
+
+.empty-row {
+    text-align: center;
+    color: #999;
+    padding: 24px !important;
+    font-style: italic;
+}
+
+/* Employee Management */
+.emp-management h2 {
+    margin: 0;
+    font-size: 1.5rem;
+}
+
+.emp-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.emp-form {
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 20px;
+    margin-top: 12px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+}
+
+.emp-form h3 {
+    margin: 0 0 16px 0;
+    font-size: 1.15rem;
+    color: #333;
+}
+
+.form-group-checkbox {
+    display: flex;
+    align-items: flex-end;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: #333;
+    cursor: pointer;
+    user-select: none;
+}
+
+.checkbox-label input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: #2563eb;
+    cursor: pointer;
+}
+
+.emp-table {
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+}
+
+.emp-table th {
+    background: #f8f9fa;
+    font-weight: 600;
+    color: #555;
+    text-align: left;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.emp-table td {
+    vertical-align: middle;
+}
+
+.role-badge {
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 0.82rem;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.role-manager {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.role-employee {
+    background: #e0e7ff;
+    color: #3730a3;
 }
