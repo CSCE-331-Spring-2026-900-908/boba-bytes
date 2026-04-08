@@ -58,23 +58,33 @@ export default function EmployeeManagement() {
                     email: form.email,
                     is_manager: form.is_manager
                 };
-                await fetch(`${API_BASE}/employees/${selected.employee_no}`, {
+                const res = await fetch(`${API_BASE}/employees/${selected.employee_no}`, {
                     method: "PUT",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(payload)
                 });
+                if (!res.ok) {
+                    const error = await res.json();
+                    throw new Error(error.error || "Failed to update employee");
+                }
             } else {
-                await fetch(`${API_BASE}/employees`, {
+                console.log("Sending employee data:", form);
+                const res = await fetch(`${API_BASE}/employees`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(form)
                 });
+                if (!res.ok) {
+                    const error = await res.json();
+                    console.error("Error response from server:", error);
+                    throw new Error(error.error || "Failed to add employee");
+                }
             }
             resetForm();
             loadEmployees();
         } catch (err) {
             console.error("Failed to save employee:", err);
-            alert("Error saving employee.");
+            alert("Error saving employee: " + err.message);
         }
     };
 
@@ -94,11 +104,15 @@ export default function EmployeeManagement() {
         if (!window.confirm("Are you sure you want to delete this employee?")) return;
 
         try {
-            await fetch(`${API_BASE}/employees/${employee_no}`, { method: "DELETE" });
+            const res = await fetch(`${API_BASE}/employees/${employee_no}`, { method: "DELETE" });
+            if (!res.ok) {
+                const error = await res.json();
+                throw new Error(error.error || "Failed to delete employee");
+            }
             loadEmployees();
         } catch (err) {
             console.error("Failed to delete employee:", err);
-            alert("Error deleting employee.");
+            alert("Error deleting employee: " + err.message);
         }
     };
 
