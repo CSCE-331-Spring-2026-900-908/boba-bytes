@@ -104,9 +104,10 @@ export default function MenuManagement() {
         }
     };
 
+    const sortedItems = [...items].sort((a, b) => Number(a.menu_item_id) - Number(b.menu_item_id));
     const filteredItems = filterCategory === "All"
-        ? items
-        : items.filter(item => item.item_type === filterCategory);
+        ? sortedItems
+        : sortedItems.filter(item => item.item_type === filterCategory);
 
     return (
         <div className="menu-management">
@@ -205,7 +206,6 @@ export default function MenuManagement() {
                         <th>Name</th>
                         <th>Price</th>
                         <th>Category</th>
-                        <th>Image</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -218,13 +218,6 @@ export default function MenuManagement() {
                             <td>
                                 <span className="category-badge">{item.item_type}</span>
                             </td>
-                            <td>
-                                {item.image ? (
-                                    <img src={item.image} alt={item.item_name} className="menu-thumb" />
-                                ) : (
-                                    <span className="no-image">—</span>
-                                )}
-                            </td>
                             <td className="action-buttons">
                                 <button className="btn-edit" onClick={() => handleEdit(item)}>Edit</button>
                                 <button className="btn-delete" onClick={() => handleDelete(item.menu_item_id)}>Delete</button>
@@ -233,7 +226,7 @@ export default function MenuManagement() {
                     ))}
                     {filteredItems.length === 0 && (
                         <tr>
-                            <td colSpan="6" className="empty-row">No menu items found.</td>
+                            <td colSpan="5" className="empty-row">No menu items found.</td>
                         </tr>
                     )}
                 </tbody>

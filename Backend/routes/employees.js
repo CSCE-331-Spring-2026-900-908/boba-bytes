@@ -1,5 +1,6 @@
 import express from "express";
 import pool from "../db/pool.js";
+import bcrypt from "bcrypt";
 
 const router = express.Router();
 
@@ -34,13 +35,8 @@ router.post("/", async (req, res) => {
       [nextEmployeeNo, first_name, last_name, is_manager || false, email, hpassword]
     );
 
-    console.log("Employee inserted successfully:", result.rows[0]);
     res.json(result.rows[0]);
   } catch (err) {
-    console.error("Error adding employee - Full error:", err);
-    console.error("Error code:", err.code);
-    console.error("Error detail:", err.detail);
-    console.error("Error message:", err.message);
 
     // Handle specific database errors
     let errorMessage = "Server error: " + err.message;
