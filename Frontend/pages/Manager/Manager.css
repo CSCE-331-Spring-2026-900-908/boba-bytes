@@ -451,3 +451,70 @@ table th, table td {
     background: #e0e7ff;
     color: #3730a3;
 }
+
+/* Inventory Management */
+.inv-management h2 {
+    margin: 0;
+    font-size: 1.5rem;
+}
+
+.inv-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.inv-form {
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 20px;
+    margin-top: 12px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+}
+
+.inv-form h3 {
+    margin: 0 0 16px 0;
+    font-size: 1.15rem;
+    color: #333;
+}
+
+.inv-table {
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+}
+
+.inv-table th {
+    background: #f8f9fa;
+    font-weight: 600;
+    color: #555;
+    text-align: left;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.inv-table td {
+    vertical-align: middle;
+}
+
+.btn-restock {
+    padding: 5px 14px;
+    background: #0ea5e9;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 500;
+    transition: background 0.2s;
+}
+
+.btn-restock:hover {
+    background: #0284c7;
+}
+
