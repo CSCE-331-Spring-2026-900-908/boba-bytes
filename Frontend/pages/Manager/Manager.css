@@ -140,10 +140,102 @@ table th, table td {
     transition: border-color 0.2s;
 }
 
+.form-group select {
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    transition: border-color 0.2s;
+    background: white;
+}
+
 .form-group input:focus {
     outline: none;
     border-color: #2563eb;
     box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
+}
+
+.form-group select:focus {
+    outline: none;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
+}
+
+.recipe-section {
+    margin-top: 18px;
+    border-top: 1px solid #ececec;
+    padding-top: 14px;
+}
+
+.recipe-header-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+}
+
+.recipe-header-row h4 {
+    margin: 0;
+    color: #333;
+}
+
+.recipe-help {
+    margin: 0 0 10px;
+    color: #6b7280;
+    font-size: 0.86rem;
+}
+
+.recipe-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.recipe-row {
+    display: grid;
+    grid-template-columns: 2fr 1fr auto;
+    gap: 8px;
+}
+
+.recipe-row select,
+.recipe-row input {
+    padding: 8px 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 0.9rem;
+}
+
+.btn-add-ingredient {
+    border: none;
+    background: #2563eb;
+    color: white;
+    border-radius: 6px;
+    padding: 7px 10px;
+    font-size: 0.85rem;
+    cursor: pointer;
+}
+
+.btn-add-ingredient:hover {
+    background: #1d4ed8;
+}
+
+.btn-remove-ingredient {
+    border: none;
+    background: #e5e7eb;
+    color: #374151;
+    border-radius: 6px;
+    padding: 7px 10px;
+    font-size: 0.85rem;
+    cursor: pointer;
+}
+
+.btn-remove-ingredient:hover:not(:disabled) {
+    background: #d1d5db;
+}
+
+.btn-remove-ingredient:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
 }
 
 .form-actions {
