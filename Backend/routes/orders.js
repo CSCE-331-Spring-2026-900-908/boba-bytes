@@ -14,8 +14,8 @@ router.post("/", async (req, res) => {
     await client.query("BEGIN");
 
     const orderRes = await client.query(
-      `INSERT INTO orders (order_total, payment_type, order_source, timestamp)
-       VALUES ($1, 'cashier', 'cashier', NOW() AT TIME ZONE 'America/Chicago')
+      `INSERT INTO orders (order_total, payment_type, timestamp)
+       VALUES ($1, 'cashier', NOW() AT TIME ZONE 'America/Chicago')
        RETURNING order_id`,
       [total]
     );
@@ -26,7 +26,7 @@ router.post("/", async (req, res) => {
       const itemRes = await client.query(
         `INSERT INTO ordereditems (order_id, menu_item_id, quantity)
          VALUES ($1, $2, $3)
-         RETURNING id`,
+         RETURNING *`,
         [orderId, item.menu_item_id, item.quantity]
       );
 
