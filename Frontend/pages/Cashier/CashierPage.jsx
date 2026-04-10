@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useRef } from "react";
 import "./Cashier.css";
 import { API_BASE } from "../../config/api.js";
 
@@ -6,13 +6,14 @@ export default function CashierPage() {
   const [items, setItems] = useState([]);
   const [categories, setCategories] = useState([]);
 
-  const [activeCategory, setActiveCategory] = useState("Favorites");
+  const [activeCategory, setActiveCategory] = useState("All");
   const [order, setOrder] = useState([]);
 
   const [searchTerm, setSearchTerm] = useState("");
   const [favoriteIds, setFavoriteIds] = useState([]);
 
   const [placing, setPlacing] = useState(false);
+  const searchInputRef = useRef(null);
 
   // Load menu + categories
   useEffect(() => {
@@ -22,7 +23,7 @@ export default function CashierPage() {
     ])
       .then(([itemData, catData]) => {
         setItems(itemData);
-        setCategories(["Favorites", ...catData]); // Favorites is now a category
+        setCategories(["All", "Favorites", ...catData]);
       })
       .catch(err => console.error(err));
   }, []);
@@ -52,7 +53,7 @@ export default function CashierPage() {
 
     if (activeCategory === "Favorites") {
       list = list.filter(i => favoriteIds.includes(i.menu_item_id));
-    } else {
+    } else if (activeCategory !== "All") {
       list = list.filter(i => i.item_type === activeCategory);
     }
 
@@ -63,6 +64,38 @@ export default function CashierPage() {
 
     return list;
   }, [items, activeCategory, favoriteIds, searchTerm]);
+
+  useEffect(() => {
+    const onKeyDown = (e) => {
+      const targetTag = e.target?.tagName?.toLowerCase();
+      const typingTarget = targetTag === "input" || targetTag === "textarea" || targetTag === "select";
+
+      if ((e.key === "/" || (e.ctrlKey && e.key.toLowerCase() === "k")) && !typingTarget) {
+        e.preventDefault();
+        searchInputRef.current?.focus();
+        searchInputRef.current?.select?.();
+      }
+
+      if (e.key === "Escape" && searchTerm) {
+        setSearchTerm("");
+      }
+
+      if (e.ctrlKey && e.key === "Enter") {
+        e.preventDefault();
+        placeOrder();
+      }
+
+      if (e.key === "Enter" && document.activeElement === searchInputRef.current) {
+        e.preventDefault();
+        if (filteredItems.length > 0) {
+          handleAdd(filteredItems[0]);
+        }
+      }
+    };
+
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [filteredItems, searchTerm, order.length, placeOrder]);
 
   // Add drink
   function addDrink(item) {
@@ -171,6 +204,7 @@ export default function CashierPage() {
     <div className="cashier-container">
       {/* Sidebar */}
       <div className="cashier-sidebar">
+        <div className="cashier-sidebar-title">Quick Categories</div>
         {categories.map(cat => (
           <button
             key={cat}
@@ -184,12 +218,24 @@ export default function CashierPage() {
 
       {/* Menu */}
       <div className="cashier-content">
-        <input
-          className="cashier-search"
-          placeholder="Search..."
-          value={searchTerm}
-          onChange={e => setSearchTerm(e.target.value)}
-        />
+        <div className="cashier-toolbar">
+          <input
+            ref={searchInputRef}
+            className="cashier-search"
+            placeholder="Search menu items...  / or Ctrl+K"
+            value={searchTerm}
+            onChange={e => setSearchTerm(e.target.value)}
+          />
+          <div className="cashier-hints">
+            <span>Enter: add first match</span>
+            <span>Ctrl+Enter: place order</span>
+            <span>Esc: clear search</span>
+          </div>
+        </div>
+
+        <div className="cashier-results-meta">
+          <span>{filteredItems.length} item{filteredItems.length !== 1 ? "s" : ""} visible</span>
+        </div>
 
         <div className="menu-grid">
           {filteredItems.map(item => (
@@ -209,8 +255,10 @@ export default function CashierPage() {
       {/* Order Panel */}
       <div className="order-panel">
         <div className="order-header">Current Order</div>
+        <div className="order-subheader">Ctrl+Enter to send fast</div>
 
         <div className="order-items">
+          {order.length === 0 && <div className="order-empty">No items added yet.</div>}
           {order.map((o, index) => (
             <div key={index} className="order-row">
               <div className="order-item-info">
