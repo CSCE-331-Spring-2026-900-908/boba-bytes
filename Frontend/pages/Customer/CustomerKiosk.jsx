@@ -14,6 +14,7 @@ function CustomerKiosk() {
   const [keyboardMode, setKeyboardMode] = useState(false);
 
   const [focusIndex, setFocusIndex] = useState(0);
+  const [toppingModal, setToppingModal] = useState({ isOpen: false, topping: null });
   const itemRefs = useRef([]);
   const categoryRefs = useRef([]);
 
@@ -58,26 +59,44 @@ function CustomerKiosk() {
   const addToCart = (item) => {
     speak(`${item.item_name} added to cart`);
     setCart(prevCart => {
-      const existing = prevCart.find(cartItem => cartItem.menu_item_id === item.menu_item_id);
+      const existing = prevCart.find(cartItem => 
+        cartItem.menu_item_id === item.menu_item_id && 
+        (!cartItem.toppings || cartItem.toppings.length === 0)
+      );
       if (existing) {
         return prevCart.map(cartItem =>
-          cartItem.menu_item_id === item.menu_item_id
+          cartItem.cart_item_id === existing.cart_item_id
             ? { ...cartItem, quantity: cartItem.quantity + 1 }
             : cartItem
         );
       }
-      return [...prevCart, { ...item, quantity: 1 }];
+      return [...prevCart, { ...item, cart_item_id: Math.random().toString(36).substring(2, 9), quantity: 1, toppings: [] }];
     });
   };
 
-  const removeFromCart = (id) => {
-    const item = cart.find(i => i.menu_item_id === id);
-    speak(`${item.item_name} removed from cart`);
-    setCart(prevCart => prevCart.filter(item => item.menu_item_id !== id));
+  const handleItemClick = (item) => {
+    if (item.item_type === 'Toppings') {
+      const drinksInCart = cart.filter(c => c.item_type !== 'Toppings');
+      if (drinksInCart.length === 0) {
+        alert("Please add a drink first.");
+        return;
+      }
+      setToppingModal({ isOpen: true, topping: item });
+    } else {
+      addToCart(item);
+    }
+  };
+
+  const removeFromCart = (cartItemId) => {
+    const item = cart.find(i => i.cart_item_id === cartItemId);
+    if (item) speak(`${item.item_name} removed from cart`);
+    setCart(prevCart => prevCart.filter(item => item.cart_item_id !== cartItemId));
   };
 
   const totalPrice = cart.reduce((total, item) => {
-    return total + item.item_cost * item.quantity;
+    const itemCost = Number(item.item_cost);
+    const toppingsCost = item.toppings?.reduce((sum, t) => sum + Number(t.item_cost) * t.quantity, 0) || 0;
+    return total + (itemCost + toppingsCost) * item.quantity;
   }, 0);
 
   const submitOrder = async () => {
@@ -90,10 +109,15 @@ function CustomerKiosk() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          items: cart.map(item => ({
-            menu_item_id: item.menu_item_id,
-            quantity: item.quantity
-          })),
+          items: cart.flatMap(item => {
+            const arr = [{ menu_item_id: item.menu_item_id, quantity: item.quantity }];
+            if (item.toppings) {
+              item.toppings.forEach(t => {
+                arr.push({ menu_item_id: t.menu_item_id, quantity: t.quantity * item.quantity });
+              });
+            }
+            return arr;
+          }),
           total: totalPrice
         })
       });
@@ -159,7 +183,7 @@ function CustomerKiosk() {
           return;
         }
         const item = filteredItems[focusIndex];
-        addToCart(item);
+        handleItemClick(item);
       }
     };
 
@@ -247,7 +271,7 @@ function CustomerKiosk() {
               key={item.menu_item_id}
               ref={(el) => (itemRefs.current[index] = el)}
               className={`menu-card ${keyboardMode && focusIndex === index ? "focused" : ""}`}
-              onClick={() => addToCart(item)}
+              onClick={() => handleItemClick(item)}
               role="button"
               tabIndex={keyboardMode ? 0 : -1}
               aria-label={`Add ${item.item_name} to cart`}
@@ -274,15 +298,24 @@ function CustomerKiosk() {
             <p className="empty-cart">Tap any drink to start your order</p>
           ) : (
             cart.map(item => (
-              <div key={item.menu_item_id} className="cart-item">
-                <div>
-                  <span>{item.item_name}</span>
-                  <span className="qty"> × {item.quantity}</span>
+              <div key={item.cart_item_id} className="cart-item">
+                <div style={{ flex: 1 }}>
+                  <div>
+                    <span>{item.item_name}</span>
+                    <span className="qty"> × {item.quantity}</span>
+                  </div>
+                  {item.toppings && item.toppings.length > 0 && (
+                     <div className="topping-items">
+                        {item.toppings.map((t, idx) => (
+                           <div key={idx}>+ {t.item_name} {t.quantity > 1 ? `(x${t.quantity})` : ''}</div>
+                        ))}
+                     </div>
+                  )}
                 </div>
                 <div className="cart-item-right">
-                  <span>${(item.item_cost * item.quantity).toFixed(2)}</span>
+                  <span>${((Number(item.item_cost) + (item.toppings?.reduce((sum, t) => sum + Number(t.item_cost) * t.quantity, 0) || 0)) * item.quantity).toFixed(2)}</span>
                   <button
-                    onClick={() => removeFromCart(item.menu_item_id)}
+                    onClick={() => removeFromCart(item.cart_item_id)}
                     className="remove-btn"
                     aria-label={`Remove ${item.item_name} from cart`}
                   >
@@ -307,6 +340,44 @@ function CustomerKiosk() {
           </button>
         </div>
       </div>
+
+      {toppingModal.isOpen && (
+        <div className="topping-modal-overlay">
+          <div className="topping-modal-content">
+            <h2>Add {toppingModal.topping?.item_name} to which drink?</h2>
+            <div style={{ marginTop: '20px', maxHeight: '50vh', overflowY: 'auto' }}>
+              {cart.filter(c => c.item_type !== 'Toppings').map(drink => (
+                <button
+                   key={drink.cart_item_id}
+                   className="drink-list-btn"
+                   onClick={() => {
+                      setCart(prev => prev.map(c => {
+                        if (c.cart_item_id === drink.cart_item_id) {
+                           const existing = c.toppings?.find(t => t.menu_item_id === toppingModal.topping.menu_item_id);
+                           const newToppings = c.toppings ? [...c.toppings] : [];
+                           if (existing) {
+                              return {
+                                 ...c,
+                                 toppings: newToppings.map(t => t.menu_item_id === toppingModal.topping.menu_item_id ? {...t, quantity: t.quantity + 1} : t)
+                              };
+                           } else {
+                              newToppings.push({...toppingModal.topping, quantity: 1});
+                              return { ...c, toppings: newToppings };
+                           }
+                        }
+                        return c;
+                      }));
+                      setToppingModal({ isOpen: false, topping: null });
+                   }}
+                >
+                   {drink.item_name} (Qty: {drink.quantity})
+                </button>
+              ))}
+            </div>
+            <button className="cancel-modal-btn" onClick={() => setToppingModal({ isOpen: false, topping: null })}>Cancel</button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
