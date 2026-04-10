@@ -6,15 +6,15 @@
   --shadow: 0 4px 20px rgba(92,61,46,0.10);
 
   --white: #ffffff;
-  --black: #000000;
+  --black: #2b2b2b;
   --grey: #e6e6e6;
   --yellow-pastel: #fff4b8;
 }
 
 .kiosk-container {
   height: 100vh;
-  background: linear-gradient(135deg, #800000, #ffcc00);
-  color: white;
+  background: linear-gradient(135deg, var(--peach), var(--blush));
+  color: var(--brown);
   font-family: system-ui, -apple-system, sans-serif;
   overflow: hidden;
   display: flex;
@@ -23,23 +23,25 @@
 
 .kiosk-header {
   text-align: center;
-  padding: 1px 1px;
-  background: rgba(0, 0, 0, 0.3);
+  padding: 12px 1px;
+  background: rgba(255, 255, 255, 0.4);
   font-size: 2.8rem;
   font-weight: bold;
+  color: var(--brown);
 }
 
 .tagline {
   font-size: 1.5rem;
   margin: 8px 0 0;
-  opacity: 0.95;
+  opacity: 0.85;
+  color: var(--brown);
 }
 
 .category-bar {
   display: flex;
   gap: 15px;
   padding: 15px 20px;
-  background: rgba(0, 0, 0, 0.4);
+  background: rgba(255, 255, 255, 0.5);
   overflow-x: auto;
   white-space: nowrap;
   justify-content: center;
@@ -50,15 +52,17 @@
   font-size: 1.5rem;
   border: none;
   border-radius: 50px;
-  background: white;
-  color: #800000;
+  background: var(--white);
+  color: var(--brown);
   cursor: pointer;
   font-weight: bold;
   transition: all 0.2s;
+  border: 1px solid var(--border);
 }
 
 .category-btn.active {
-  background: #ffcc00;
+  background: var(--yellow-pastel);
+  color: var(--brown);
   transform: scale(1.08);
 }
 
@@ -81,7 +85,7 @@
 
 .menu-card {
   margin-top: 15px;
-  background: #fff;
+  background: var(--white);
   border-radius: 18px;
   border: 1.5px solid var(--border);
   padding: 16px;
@@ -99,7 +103,7 @@
 }
 
 .menu-card:active {
-  transform: scale(1.10);
+  transform: scale(1.05);
 }
 
 .item-image {
@@ -134,19 +138,20 @@
 .cart-sidebar {
   flex: 0.67;
   background: rgba(255,255,255,0.95);
-  color: #222;
+  color: var(--brown);
   border-radius: 24px;
   padding: 25px;
   display: flex;
   flex-direction: column;
   overflow-y: auto;
+  border: 1px solid var(--border);
 }
 
 .cart-item {
   display: flex;
   justify-content: space-between;
   padding: 15px 0;
-  border-bottom: 1px solid #ddd;
+  border-bottom: 1px solid var(--border);
   font-size: 1.3rem;
   align-items: center;
 }
@@ -156,9 +161,8 @@
   align-items: center;
   gap: 15px;
 }
-
 .remove-btn {
-  background: #ff4444;
+  background: #ff6b6b;
   color: white;
   border: none;
   width: 36px;
@@ -171,16 +175,17 @@
 .cart-total {
   margin-top: auto;
   padding: 25px 0;
-  border-top: 4px solid #800000;
+  border-top: 4px solid var(--blush);
   font-size: 2rem;
   font-weight: bold;
   display: flex;
   justify-content: space-between;
+  color: var(--brown);
 }
 
 .submit-order-btn {
-  background: #ffcc00;
-  color: #800000;
+  background: var(--yellow-pastel);
+  color: var(--brown);
   font-size: 2.2rem;
   padding: 28px;
   border: none;
@@ -188,17 +193,18 @@
   font-weight: bold;
   cursor: pointer;
   margin-top: 20px;
+  border: 1px solid var(--border);
 }
 
 .submit-order-btn:disabled {
-  background: #ccc;
-  color: #666;
+  background: #ddd;
+  color: #777;
   cursor: not-allowed;
 }
 
 .empty-cart {
   text-align: center;
-  color: #666;
+  color: #777;
   margin-top: 60px;
   font-size: 1.5rem;
 }
@@ -206,60 +212,24 @@
 .kiosk-footer {
   text-align: center;
   padding: 15px;
-  background: rgba(0,0,0,0.4);
+  background: rgba(255,255,255,0.4);
   font-size: 1.1rem;
+  color: var(--brown);
 }
-
 .kiosk-loading {
   height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 2rem;
-  background: linear-gradient(135deg, #800000, #ffcc00);
-  color: white;
+  background: linear-gradient(135deg, var(--peach), var(--blush));
+  color: var(--brown);
 }
-
-.sidebar {
-    width: 220px;
-    background: #222;
-    color: white;
-    display: flex;
-    flex-direction: column;
-    padding: 20px;
-}
-
-.sidebar button {
-    margin-bottom: 15px;
-    padding: 12px;
-    background: #444;
-    color: white;
-    border: none;
-    cursor: pointer;
-}
-
-.customer-content {
-    flex: 1;
-    padding: 30px;
-    overflow-y: auto;
-}
-
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-}
-
-table th, table td {
-    border: 1px solid #ccc;
-    padding: 10px;
-}
-
 .customer-container {
-    display: flex;
-    height: 100vh;
-    background: var(--yellow-pastel); /* soft pastel yellow */
-    color: var(--black);
-    font-family: system-ui, -apple-system, sans-serif;
-    border: 2px solid var(--grey);
+  display: flex;
+  height: 100vh;
+  background: var(--yellow-pastel);
+  color: var(--brown);
+  font-family: system-ui, -apple-system, sans-serif;
+  border: 2px solid var(--grey);
 }
