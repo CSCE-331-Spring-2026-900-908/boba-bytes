@@ -20,6 +20,12 @@
     color: white;
     border: none;
     cursor: pointer;
+    border-radius: 6px;
+    transition: background 0.2s;
+}
+
+.sidebar button:hover {
+    background: #666;
 }
 
 .manager-content {
@@ -38,3 +44,569 @@ table th, table td {
     border: 1px solid #ccc;
     padding: 10px;
 }
+
+/* Menu Management */
+.menu-management h2 {
+    margin: 0;
+    font-size: 1.5rem;
+}
+
+.menu-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.btn-add {
+    padding: 10px 20px;
+    background: #2563eb;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    font-weight: 600;
+    transition: background 0.2s;
+}
+
+.btn-add:hover {
+    background: #1d4ed8;
+}
+
+.menu-filter {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 16px;
+}
+
+.menu-filter label {
+    font-weight: 500;
+    color: #555;
+}
+
+.menu-filter select {
+    padding: 6px 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 0.9rem;
+}
+
+.item-count {
+    color: #888;
+    font-size: 0.85rem;
+    margin-left: auto;
+}
+
+.menu-form {
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+}
+
+.menu-form h3 {
+    margin: 0 0 16px 0;
+    font-size: 1.15rem;
+    color: #333;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.form-group label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #555;
+}
+
+.form-group input {
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    transition: border-color 0.2s;
+}
+
+.form-group select {
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    transition: border-color 0.2s;
+    background: white;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
+}
+
+.form-group select:focus {
+    outline: none;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
+}
+
+.recipe-section {
+    margin-top: 18px;
+    border-top: 1px solid #ececec;
+    padding-top: 14px;
+}
+
+.recipe-header-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+}
+
+.recipe-header-row h4 {
+    margin: 0;
+    color: #333;
+}
+
+.recipe-help {
+    margin: 0 0 10px;
+    color: #6b7280;
+    font-size: 0.86rem;
+}
+
+.recipe-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.recipe-row {
+    display: grid;
+    grid-template-columns: 2fr 1fr auto;
+    gap: 8px;
+}
+
+.recipe-row select,
+.recipe-row input {
+    padding: 8px 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 0.9rem;
+}
+
+.btn-add-ingredient {
+    border: none;
+    background: #2563eb;
+    color: white;
+    border-radius: 6px;
+    padding: 7px 10px;
+    font-size: 0.85rem;
+    cursor: pointer;
+}
+
+.btn-add-ingredient:hover {
+    background: #1d4ed8;
+}
+
+.btn-remove-ingredient {
+    border: none;
+    background: #e5e7eb;
+    color: #374151;
+    border-radius: 6px;
+    padding: 7px 10px;
+    font-size: 0.85rem;
+    cursor: pointer;
+}
+
+.btn-remove-ingredient:hover:not(:disabled) {
+    background: #d1d5db;
+}
+
+.btn-remove-ingredient:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+.form-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 16px;
+}
+
+.btn-save {
+    padding: 10px 24px;
+    background: #16a34a;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background 0.2s;
+}
+
+.btn-save:hover {
+    background: #15803d;
+}
+
+.btn-cancel {
+    padding: 10px 24px;
+    background: #e5e7eb;
+    color: #333;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background 0.2s;
+}
+
+.btn-cancel:hover {
+    background: #d1d5db;
+}
+
+.menu-table {
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+}
+
+.menu-table th {
+    background: #f8f9fa;
+    font-weight: 600;
+    color: #555;
+    text-align: left;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.menu-table td {
+    vertical-align: middle;
+}
+
+.category-badge {
+    background: #e0e7ff;
+    color: #3730a3;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 0.82rem;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.menu-thumb {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    border-radius: 6px;
+    border: 1px solid #eee;
+}
+
+.no-image {
+    color: #bbb;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 6px;
+}
+
+.btn-edit {
+    padding: 5px 14px;
+    background: #f59e0b;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 500;
+    transition: background 0.2s;
+}
+
+.btn-edit:hover {
+    background: #d97706;
+}
+
+.btn-delete {
+    padding: 5px 14px;
+    background: #ef4444;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 500;
+    transition: background 0.2s;
+}
+
+.btn-delete:hover {
+    background: #dc2626;
+}
+
+.empty-row {
+    text-align: center;
+    color: #999;
+    padding: 24px !important;
+    font-style: italic;
+}
+
+/* Employee Management */
+.emp-management h2 {
+    margin: 0;
+    font-size: 1.5rem;
+}
+
+.emp-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.emp-form {
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 20px;
+    margin-top: 12px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+}
+
+.emp-form h3 {
+    margin: 0 0 16px 0;
+    font-size: 1.15rem;
+    color: #333;
+}
+
+.form-group-checkbox {
+    display: flex;
+    align-items: flex-end;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: #333;
+    cursor: pointer;
+    user-select: none;
+}
+
+.checkbox-label input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: #2563eb;
+    cursor: pointer;
+}
+
+.emp-table {
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+}
+
+.emp-table th {
+    background: #f8f9fa;
+    font-weight: 600;
+    color: #555;
+    text-align: left;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.emp-table td {
+    vertical-align: middle;
+}
+
+.role-badge {
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 0.82rem;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.role-manager {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.role-employee {
+    background: #e0e7ff;
+    color: #3730a3;
+}
+
+/* Inventory Management */
+.inv-management h2 {
+    margin: 0;
+    font-size: 1.5rem;
+}
+
+.inv-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.inv-form {
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 20px;
+    margin-top: 12px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+}
+
+.inv-form h3 {
+    margin: 0 0 16px 0;
+    font-size: 1.15rem;
+    color: #333;
+}
+
+.inv-table {
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+}
+
+.inv-table th {
+    background: #f8f9fa;
+    font-weight: 600;
+    color: #555;
+    text-align: left;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.inv-table td {
+    vertical-align: middle;
+}
+
+.btn-restock {
+    padding: 5px 14px;
+    background: #0ea5e9;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 500;
+    transition: background 0.2s;
+}
+
+.btn-restock:hover {
+    background: #0284c7;
+}
+
+/* Reports */
+.report-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin: 14px 0 8px;
+}
+
+.report-error {
+    color: #dc2626;
+    font-size: 0.9rem;
+    margin: 8px 0;
+}
+
+.report-summary-grid {
+    margin-top: 16px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 10px;
+}
+
+.report-card {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 12px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.report-card span {
+    color: #6b7280;
+    font-size: 0.82rem;
+}
+
+.report-card strong {
+    color: #111827;
+    font-size: 1.05rem;
+}
+
+.report-section {
+    margin-top: 16px;
+}
+
+.report-section h3 {
+    margin: 0 0 8px;
+    color: #374151;
+}
+
+.usage-chart {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 14px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+}
+
+.usage-row {
+    display: grid;
+    grid-template-columns: minmax(150px, 220px) 1fr minmax(90px, auto);
+    gap: 8px;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.usage-label {
+    font-size: 0.88rem;
+    color: #374151;
+    font-weight: 500;
+}
+
+.usage-bar-wrap {
+    height: 12px;
+    background: #e5e7eb;
+    border-radius: 999px;
+    overflow: hidden;
+}
+
+.usage-bar {
+    height: 100%;
+    background: #2563eb;
+    border-radius: 999px;
+}
+
+.usage-value {
+    text-align: right;
+    font-size: 0.84rem;
+    color: #374151;
+}
+

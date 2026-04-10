@@ -1,162 +1,317 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo, useRef } from "react";
 import "./Cashier.css";
+import { API_BASE } from "../../config/api.js";
 
 export default function CashierPage() {
-    const [items, setItems] = useState([]);
-    const [categories, setCategories] = useState([]);
-    const [activeCategory, setActiveCategory] = useState(null);
-    const [order, setOrder] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [placing, setPlacing] = useState(false);
+  const [items, setItems] = useState([]);
+  const [categories, setCategories] = useState([]);
 
-    useEffect(() => {
-        Promise.all([
-            fetch("/https://boba-bytes.onrender.com/menu/items").then((r) => r.json()),
-            fetch("/https://boba-bytes.onrender.com/menu/categories").then((r) => r.json()),
-        ])
-            .then(([itemData, catData]) => {
-                setItems(itemData);
-                setCategories(catData);
-                if (catData.length > 0) setActiveCategory(catData[0]);
-            })
-            .catch((err) => console.error("Failed to load menu:", err))
-            .finally(() => setLoading(false));
-    }, []);
+  const [activeCategory, setActiveCategory] = useState("All");
+  const [order, setOrder] = useState([]);
 
-    const filteredItems = items.filter((i) => i.item_type === activeCategory);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [favoriteIds, setFavoriteIds] = useState([]);
 
-    function addItem(item) {
-        setOrder((prev) => {
-            const existing = prev.find((o) => o.menu_item_id === item.menu_item_id);
-            if (existing) {
-                return prev.map((o) =>
-                    o.menu_item_id === item.menu_item_id ? { ...o, qty: o.qty + 1 } : o
-                );
-            }
-            return [...prev, { ...item, qty: 1 }];
-        });
+  const [placing, setPlacing] = useState(false);
+  const searchInputRef = useRef(null);
+
+  // Load menu + categories
+  useEffect(() => {
+    Promise.all([
+      fetch(`${API_BASE}/menu/items`).then(r => r.json()),
+      fetch(`${API_BASE}/menu/categories`).then(r => r.json())
+    ])
+      .then(([itemData, catData]) => {
+        setItems(itemData);
+        setCategories(["All", "Favorites", ...catData]);
+      })
+      .catch(err => console.error(err));
+  }, []);
+
+  // Compute favorites (top 8 + seasonal)
+  useEffect(() => {
+    const counts = new Map();
+    order.forEach(o => {
+      counts.set(o.menu_item_id, (counts.get(o.menu_item_id) || 0) + o.qty);
+    });
+
+    const topUsed = [...counts.entries()]
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 8)
+      .map(([id]) => id);
+
+    const seasonal = items
+      .filter(i => i.item_type.toLowerCase().includes("season"))
+      .map(i => i.menu_item_id);
+
+    setFavoriteIds([...new Set([...topUsed, ...seasonal])]);
+  }, [order, items]);
+
+  // Filter items by category
+  const filteredItems = useMemo(() => {
+    let list = items;
+
+    if (activeCategory === "Favorites") {
+      list = list.filter(i => favoriteIds.includes(i.menu_item_id));
+    } else if (activeCategory !== "All") {
+      list = list.filter(i => i.item_type === activeCategory);
     }
 
-    function removeItem(id) {
-        setOrder((prev) =>
-            prev
-                .map((o) => (o.menu_item_id === id ? { ...o, qty: o.qty - 1 } : o))
-                .filter((o) => o.qty > 0)
-        );
+    if (searchTerm.trim()) {
+      const q = searchTerm.toLowerCase();
+      list = list.filter(i => i.item_name.toLowerCase().includes(q));
     }
 
-    function clearOrder() {
-        setOrder([]);
-    }
+    return list;
+  }, [items, activeCategory, favoriteIds, searchTerm]);
 
-    async function placeOrder() {
-        if (order.length === 0) return;
-        setPlacing(true);
-        try {
-            const res = await fetch("https://boba-bytes.onrender.com/orders", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    items: order.map((o) => ({ id: o.menu_item_id, qty: o.qty })),
-                    total: orderTotal,
-                }),
-            });
-            if (!res.ok) throw new Error("Server error");
-            const data = await res.json();
-            alert(`Order #${data.order_id} placed! Total: $${orderTotal.toFixed(2)}`);
-            setOrder([]);
-        } catch (err) {
-            console.error(err);
-            alert("Failed to place order. Please try again.");
-        } finally {
-            setPlacing(false);
+  useEffect(() => {
+    const onKeyDown = (e) => {
+      const targetTag = e.target?.tagName?.toLowerCase();
+      const typingTarget = targetTag === "input" || targetTag === "textarea" || targetTag === "select";
+
+      if ((e.key === "/" || (e.ctrlKey && e.key.toLowerCase() === "k")) && !typingTarget) {
+        e.preventDefault();
+        searchInputRef.current?.focus();
+        searchInputRef.current?.select?.();
+      }
+
+      if (e.key === "Escape" && searchTerm) {
+        setSearchTerm("");
+      }
+
+      if (e.ctrlKey && e.key === "Enter") {
+        e.preventDefault();
+        placeOrder();
+      }
+
+      if (e.key === "Enter" && document.activeElement === searchInputRef.current) {
+        e.preventDefault();
+        if (filteredItems.length > 0) {
+          handleAdd(filteredItems[0]);
         }
+      }
+    };
+
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [filteredItems, searchTerm, order.length, placeOrder]);
+
+  // Add drink
+  function addDrink(item) {
+    setOrder(prev => [
+      ...prev,
+      {
+        menu_item_id: item.menu_item_id,
+        item_name: item.item_name,
+        item_cost: item.item_cost,
+        qty: 1,
+        toppings: []
+      }
+    ]);
+  }
+
+  // Add topping to last drink
+  function addTopping(item) {
+    setOrder(prev => {
+      if (prev.length === 0) {
+        alert("Add a drink first");
+        return prev;
+      }
+
+      const lastIndex = prev.length - 1;
+      const last = prev[lastIndex];
+
+      const updated = {
+        ...last,
+        toppings: [...last.toppings, item]
+      };
+
+      const copy = [...prev];
+      copy[lastIndex] = updated;
+      return copy;
+    });
+  }
+
+  // Add item (drink or topping)
+  function handleAdd(item) {
+    if (item.item_type === "Toppings") {
+      addTopping(item);
+    } else {
+      addDrink(item);
     }
+  }
 
-    const orderTotal = order.reduce((sum, o) => sum + o.item_cost * o.qty, 0);
-
-    if (loading) {
-        return (
-            <div className="cashier-container" style={{ alignItems: "center", justifyContent: "center" }}>
-                <p style={{ fontSize: 20, color: "#888" }}>Loading menu...</p>
-            </div>
-        );
-    }
-
-    return (
-        <div className="cashier-container">
-            {/* Sidebar — categories */}
-            <div className="cashier-sidebar">
-                <h2>Categories</h2>
-                {categories.map((cat) => (
-                    <button
-                        key={cat}
-                        className={activeCategory === cat ? "active" : ""}
-                        onClick={() => setActiveCategory(cat)}
-                    >
-                        {cat}
-                    </button>
-                ))}
-            </div>
-
-            {/* Center — menu items */}
-            <div className="cashier-content">
-                <h2>{activeCategory || "Menu"}</h2>
-                <div className="menu-grid">
-                    {filteredItems.map((item) => (
-                        <button key={item.menu_item_id} onClick={() => addItem(item)}>
-                            <div className="item-name">{item.item_name}</div>
-                            <div className="item-price">${Number(item.item_cost).toFixed(2)}</div>
-                        </button>
-                    ))}
-                    {filteredItems.length === 0 && (
-                        <p className="empty-msg">No items in this category.</p>
-                    )}
-                </div>
-            </div>
-
-            {/* Right — order panel */}
-            <div className="order-panel">
-                <div className="order-header">Current Order</div>
-
-                <div className="order-items">
-                    {order.length === 0 && (
-                        <p className="empty-order">No items yet.</p>
-                    )}
-                    {order.map((o) => (
-                        <div key={o.menu_item_id} className="order-row">
-                            <div className="order-item-info">
-                                <div className="order-item-name">{o.item_name}</div>
-                                <div className="order-item-price">
-                                    ${Number(o.item_cost).toFixed(2)} each
-                                </div>
-                            </div>
-                            <div className="order-item-controls">
-                                <button className="btn-minus" onClick={() => removeItem(o.menu_item_id)}>−</button>
-                                <span className="qty">{o.qty}</span>
-                                <button className="btn-plus" onClick={() => addItem(o)}>+</button>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-
-                <div className="order-footer">
-                    <div className="order-total">
-                        <span>Total</span>
-                        <span className="total-amount">${orderTotal.toFixed(2)}</span>
-                    </div>
-                    <button
-                        className="place-btn"
-                        onClick={placeOrder}
-                        disabled={order.length === 0 || placing}
-                    >
-                        {placing ? "Placing..." : "Place Order"}
-                    </button>
-                    <button className="clear-btn" onClick={clearOrder}>
-                        Clear
-                    </button>
-                </div>
-            </div>
-        </div>
+  // Change qty
+  function changeQty(index, delta) {
+    setOrder(prev =>
+      prev
+        .map((o, i) => (i === index ? { ...o, qty: o.qty + delta } : o))
+        .filter(o => o.qty > 0)
     );
+  }
+
+  // Remove drink (and its toppings)
+  function removeItem(index) {
+    setOrder(prev => prev.filter((_, i) => i !== index));
+  }
+
+  const orderTotal = useMemo(() => {
+    return order.reduce((sum, o) => {
+      const base = o.item_cost * o.qty;
+      const toppingTotal = o.toppings.reduce(
+        (s, t) => s + t.item_cost * o.qty,
+        0
+      );
+      return sum + base + toppingTotal;
+    }, 0);
+  }, [order]);
+
+  async function placeOrder() {
+    if (order.length === 0) return;
+
+    setPlacing(true);
+
+    try {
+      const res = await fetch(`${API_BASE}/orders`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          items: order.map(o => ({
+            menu_item_id: o.menu_item_id,
+            quantity: o.qty,
+            toppings: o.toppings.map(t => ({
+              topping_id: t.menu_item_id,
+              quantity: 1
+            }))
+          })),
+          total: orderTotal
+        })
+      });
+
+      const data = await res.json();
+      alert(`Order #${data.order_id} placed!`);
+      setOrder([]);
+    } catch (err) {
+      console.error(err);
+      alert("Failed to place order");
+    } finally {
+      setPlacing(false);
+    }
+  }
+
+  return (
+    <div className="cashier-container">
+      {/* Sidebar */}
+      <div className="cashier-sidebar">
+        <div className="cashier-sidebar-title">Quick Categories</div>
+        {categories.map(cat => (
+          <button
+            key={cat}
+            className={activeCategory === cat ? "active" : ""}
+            onClick={() => setActiveCategory(cat)}
+          >
+            {cat}
+          </button>
+        ))}
+      </div>
+
+      {/* Menu */}
+      <div className="cashier-content">
+        <div className="cashier-toolbar">
+          <input
+            ref={searchInputRef}
+            className="cashier-search"
+            placeholder="Search menu items...  / or Ctrl+K"
+            value={searchTerm}
+            onChange={e => setSearchTerm(e.target.value)}
+          />
+          <div className="cashier-hints">
+            <span>Enter: add first match</span>
+            <span>Ctrl+Enter: place order</span>
+            <span>Esc: clear search</span>
+          </div>
+        </div>
+
+        <div className="cashier-results-meta">
+          <span>{filteredItems.length} item{filteredItems.length !== 1 ? "s" : ""} visible</span>
+        </div>
+
+        <div className="menu-grid">
+          {filteredItems.map(item => (
+            <button
+              key={item.menu_item_id}
+              onClick={() => handleAdd(item)}
+            >
+              <div className="item-name">{item.item_name}</div>
+              <div className="item-price">
+                ${Number(item.item_cost).toFixed(2)}
+              </div>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Order Panel */}
+      <div className="order-panel">
+        <div className="order-header">Current Order</div>
+        <div className="order-subheader">Ctrl+Enter to send fast</div>
+
+        <div className="order-items">
+          {order.length === 0 && <div className="order-empty">No items added yet.</div>}
+          {order.map((o, index) => (
+            <div key={index} className="order-row">
+              <div className="order-item-info">
+                <div className="order-item-name">{o.item_name}</div>
+
+                {o.toppings.length > 0 && (
+                  <div className="order-toppings">
+                    {o.toppings.map((t, i) => (
+                      <div key={i} className="topping-line">
+                        + {t.item_name} (${t.item_cost})
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                <div className="order-item-price">
+                  ${(o.item_cost * o.qty +
+                    o.toppings.reduce(
+                      (s, t) => s + t.item_cost * o.qty,
+                      0
+                    )).toFixed(2)}
+                </div>
+              </div>
+
+              <div className="order-item-controls">
+                <button onClick={() => changeQty(index, -1)}>-</button>
+                <span className="qty">{o.qty}</span>
+                <button onClick={() => changeQty(index, +1)}>+</button>
+                <button onClick={() => removeItem(index)}>×</button>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="order-footer">
+          <div className="order-total">
+            <span>Total</span>
+            <span className="total-amount">${orderTotal.toFixed(2)}</span>
+          </div>
+
+          <button
+            className="place-btn"
+            disabled={placing || order.length === 0}
+            onClick={placeOrder}
+          >
+            {placing ? "Placing..." : "Place Order"}
+          </button>
+
+          <button className="clear-btn" onClick={() => setOrder([])}>
+            Clear
+          </button>
+        </div>
+      </div>
+    </div>
+  );
 }

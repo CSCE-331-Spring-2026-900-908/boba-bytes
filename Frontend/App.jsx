@@ -1,7 +1,7 @@
 import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
-import Portal from "./pages/Login/Portal.jsx";
+import Portal from "./pages/Portal/Portal.jsx";
 import Login from "./pages/Login/Login.jsx";
 import ManagerPage from "./pages/Manager/ManagerPage.jsx";
 import CashierPage from "./pages/Cashier/CashierPage.jsx";
