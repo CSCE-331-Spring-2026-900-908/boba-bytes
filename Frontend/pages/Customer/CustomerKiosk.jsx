@@ -132,6 +132,7 @@ function CustomerKiosk() {
 
   useEffect(() => {
     if (keyboardMode && itemRefs.current[focusIndex]) {
+      itemRefs.current[focusIndex].focus();
       itemRefs.current[focusIndex].scrollIntoView({ behavior: "smooth", block: "center" });
     }
   }, [focusIndex, keyboardMode]);
@@ -143,7 +144,11 @@ function CustomerKiosk() {
   return (
     <div
       className="kiosk-container"
-      style={{ fontSize: `${fontScale}rem` }}
+      style={{
+        fontSize: `${fontScale}rem`,
+        transform: `scale(${fontScale})`,
+        transformOrigin: "top left"
+      }}
     >
       <header className="kiosk-header-small">
         <h1>Boba Bytes</h1>
@@ -164,17 +169,17 @@ function CustomerKiosk() {
         />
 
         <button
-          className={`speak-toggle ${speakMode ? 'active' : ''}`}
+          className={`access-btn ${speakMode ? 'active' : ''}`}
           onClick={() => {
             setSpeakMode(!speakMode);
             speak(!speakMode ? "Audio guidance enabled" : "Audio guidance disabled");
           }}
         >
-          {speakMode ? "Speaking On" : "Speaking Off"}
+          {speakMode ? "Speaker On" : "Speaker Off"}
         </button>
 
         <button
-          className={`keyboard-toggle ${keyboardMode ? 'active' : ''}`}
+          className={`access-btn ${keyboardMode ? 'active' : ''}`}
           onClick={() => {
             setKeyboardMode(!keyboardMode);
             speak(!keyboardMode ? "Keyboard navigation enabled" : "Keyboard navigation disabled");
@@ -209,13 +214,13 @@ function CustomerKiosk() {
               className={`menu-card ${keyboardMode && focusIndex === index ? "focused" : ""}`}
               onClick={() => addToCart(item)}
               role="button"
-              tabIndex="0"
+              tabIndex={keyboardMode ? 0 : -1}
               aria-label={`Add ${item.item_name} to cart`}
             >
               {item.image && (
                 <img
                   src={item.image}
-                  alt={item.name}
+                  alt={item.item_name}
                   className="item-image"
                 />
               )}
