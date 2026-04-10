@@ -216,14 +216,31 @@ function CustomerKiosk() {
 
       <div className="accessibility-bar">
         <label>Text Size:</label>
-        <input
-          type="range"
-          min="0.6"
-          max="1.6"
-          step="0.1"
-          value={fontScale}
-          onChange={(e) => setFontScale(Number(e.target.value))}
-        />
+        <div className="text-size-controls">
+          <button 
+            className="size-btn" 
+            onClick={() => setFontScale(prev => Math.max(0.6, prev - 0.1))}
+            aria-label="Decrease text size"
+          >
+            -
+          </button>
+          <input
+            type="range"
+            min="0.6"
+            max="1.6"
+            step="0.1"
+            value={fontScale}
+            onChange={(e) => setFontScale(Number(e.target.value))}
+            aria-label="Text size slider"
+          />
+          <button 
+            className="size-btn" 
+            onClick={() => setFontScale(prev => Math.min(1.6, prev + 0.1))}
+            aria-label="Increase text size"
+          >
+            +
+          </button>
+        </div>
 
         <button
           className={`access-btn ${speakMode ? 'active' : ''}`}

@@ -320,3 +320,36 @@
   flex-direction: column;
   align-items: flex-start;
 }
+
+.text-size-controls {
+  display: flex;
+  align-items: center;
+  gap: calc(8px * var(--scale));
+}
+
+.size-btn {
+  background: var(--white);
+  border: calc(2px * var(--scale)) solid var(--border);
+  color: var(--brown);
+  border-radius: 50%;
+  width: calc(32px * var(--scale));
+  height: calc(32px * var(--scale));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(1.5rem * var(--scale));
+  font-weight: bold;
+  cursor: pointer;
+  transition: transform 0.2s, background 0.2s;
+  line-height: 0;
+  padding-bottom: calc(3px * var(--scale));
+}
+
+.size-btn:hover {
+  background: var(--yellow-pastel);
+  transform: scale(1.1);
+}
+
+.size-btn:active {
+  transform: scale(0.95);
+}
