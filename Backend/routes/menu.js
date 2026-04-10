@@ -285,7 +285,6 @@ router.get("/categories", async (req, res) => {
   }
 });
 
-// (Optional) GET /menu/toppings – if you store toppings in DB
 router.get("/toppings", async (req, res) => {
   try {
     const result = await pool.query(
@@ -299,3 +298,4 @@ router.get("/toppings", async (req, res) => {
 });
 
 export default router;
+

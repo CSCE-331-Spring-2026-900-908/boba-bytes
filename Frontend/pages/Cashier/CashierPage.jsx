@@ -1,4 +1,3 @@
-// src/pages/Cashier/CashierPage.jsx
 import React, { useState, useEffect, useMemo } from "react";
 import "./Cashier.css";
 import { API_BASE } from "../../config/api.js";
@@ -8,22 +7,16 @@ export default function CashierPage() {
   const [categories, setCategories] = useState([]);
   const [toppings, setToppings] = useState([]);
 
-  const [activeTab, setActiveTab] = useState("categories"); // "categories" | "favorites"
-  const [activeCategory, setActiveCategory] = useState(null);
+  const [activeCategory, setActiveCategory] = useState("Favorites"); 
+  const [order, setOrder] = useState([]); 
 
-  const [order, setOrder] = useState([]); // [{ menu_item_id, item_name, item_cost, qty, toppings: [] }]
   const [loading, setLoading] = useState(true);
   const [placing, setPlacing] = useState(false);
 
   const [searchTerm, setSearchTerm] = useState("");
-  const [favorites, setFavorites] = useState([]);
+  const [favoriteIds, setFavoriteIds] = useState([]);
 
-  const [toppingModal, setToppingModal] = useState({
-    open: false,
-    baseItem: null,
-  });
-
-  // Load menu, categories, toppings
+  
   useEffect(() => {
     setLoading(true);
     Promise.all([
@@ -35,34 +28,45 @@ export default function CashierPage() {
         setItems(itemData);
         setCategories(catData);
         setToppings(toppingData || []);
-        if (catData.length > 0) setActiveCategory(catData[0]);
       })
       .catch((err) => console.error("Failed to load menu:", err))
       .finally(() => setLoading(false));
   }, []);
 
-  // Compute favorites from current order usage
+ 
   useEffect(() => {
     const counts = new Map();
     order.forEach((o) => {
       counts.set(o.menu_item_id, (counts.get(o.menu_item_id) || 0) + o.qty);
     });
-    const sorted = [...counts.entries()]
+
+    const usedIds = [...counts.entries()]
       .sort((a, b) => b[1] - a[1])
       .slice(0, 8)
       .map(([id]) => id);
-    setFavorites(sorted);
-  }, [order]);
+
+    const seasonalIds = items
+      .filter((i) =>
+        ["Seasonal", "Seasonal Drinks"].includes(i.item_type)
+      )
+      .map((i) => i.menu_item_id);
+
+    const combined = Array.from(new Set([...usedIds, ...seasonalIds]));
+    setFavoriteIds(combined);
+  }, [order, items]);
+
+  const allCategoriesWithFavorites = useMemo(
+    () => ["Favorites", ...categories],
+    [categories]
+  );
 
   const filteredItems = useMemo(() => {
     let list = items;
 
-    if (activeTab === "categories" && activeCategory) {
+    if (activeCategory === "Favorites") {
+      list = list.filter((i) => favoriteIds.includes(i.menu_item_id));
+    } else if (activeCategory) {
       list = list.filter((i) => i.item_type === activeCategory);
-    }
-
-    if (activeTab === "favorites") {
-      list = list.filter((i) => favorites.includes(i.menu_item_id));
     }
 
     if (searchTerm.trim()) {
@@ -71,7 +75,7 @@ export default function CashierPage() {
     }
 
     return list;
-  }, [items, activeCategory, activeTab, favorites, searchTerm]);
+  }, [items, activeCategory, favoriteIds, searchTerm]);
 
   const orderTotal = useMemo(() => {
     return order.reduce((sum, o) => {
@@ -84,21 +88,41 @@ export default function CashierPage() {
     }, 0);
   }, [order]);
 
-  function openToppingModal(item) {
-    setToppingModal({ open: true, baseItem: item });
-  }
-
-  function addItemWithToppings(baseItem, selectedToppings) {
+  function addDrink(item) {
     setOrder((prev) => [
       ...prev,
       {
-        menu_item_id: baseItem.menu_item_id,
-        item_name: baseItem.item_name,
-        item_cost: baseItem.item_cost,
+        menu_item_id: item.menu_item_id,
+        item_name: item.item_name,
+        item_cost: item.item_cost,
         qty: 1,
-        toppings: selectedToppings,
+        toppings: [],
       },
     ]);
+  }
+
+  function addToppingToLastDrink(topping) {
+    setOrder((prev) => {
+      if (prev.length === 0) {
+        alert("Add a drink before adding toppings.");
+        return prev;
+      }
+      const lastIndex = prev.length - 1;
+      const last = prev[lastIndex];
+
+      
+      const already = last.toppings.some(
+        (t) => t.topping_id === topping.topping_id
+      );
+      const newToppings = already
+        ? last.toppings
+        : [...last.toppings, topping];
+
+      const updatedLast = { ...last, toppings: newToppings };
+      const copy = [...prev];
+      copy[lastIndex] = updatedLast;
+      return copy;
+    });
   }
 
   function changeQty(index, delta) {
@@ -165,66 +189,71 @@ export default function CashierPage() {
 
   return (
     <div className="cashier-container">
-      {/* Sidebar */}
+      
       <div className="cashier-sidebar">
         <h2>Menu</h2>
-
-        <button
-          className={activeTab === "categories" ? "active" : ""}
-          onClick={() => setActiveTab("categories")}
-        >
-          Categories
-        </button>
-
-        <button
-          className={activeTab === "favorites" ? "active" : ""}
-          onClick={() => setActiveTab("favorites")}
-        >
-          Favorites ⭐
-        </button>
-
-        {activeTab === "categories" &&
-          categories.map((cat) => (
-            <button
-              key={cat}
-              className={activeCategory === cat ? "active" : ""}
-              onClick={() => setActiveCategory(cat)}
-            >
-              {cat}
-            </button>
-          ))}
+        {allCategoriesWithFavorites.map((cat) => (
+          <button
+            key={cat}
+            className={activeCategory === cat ? "active" : ""}
+            onClick={() => setActiveCategory(cat)}
+          >
+            {cat}
+          </button>
+        ))}
       </div>
 
-      {/* Center */}
+      
       <div className="cashier-content">
         <div className="cashier-content-header">
           <input
             className="cashier-search"
-            placeholder="Search items..."
+            placeholder="Search drinks..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
 
-        <div className="menu-grid">
-          {filteredItems.map((item) => (
-            <button
-              key={item.menu_item_id}
-              onClick={() => openToppingModal(item)}
-            >
-              <div className="item-name">{item.item_name}</div>
-              <div className="item-price">
-                ${Number(item.item_cost).toFixed(2)}
-              </div>
-            </button>
-          ))}
-          {filteredItems.length === 0 && (
-            <p className="empty-msg">No items found.</p>
-          )}
+        <div className="cashier-main-grid">
+          <div className="menu-grid">
+            {filteredItems.map((item) => (
+              <button
+                key={item.menu_item_id}
+                onClick={() => addDrink(item)}
+              >
+                <div className="item-name">{item.item_name}</div>
+                <div className="item-price">
+                  ${Number(item.item_cost).toFixed(2)}
+                </div>
+              </button>
+            ))}
+            {filteredItems.length === 0 && (
+              <p className="empty-msg">No items found.</p>
+            )}
+          </div>
+
+          <div className="topping-section">
+            <h3>Toppings</h3>
+            <div className="topping-list">
+              {toppings.map((t) => (
+                <button
+                  key={t.topping_id}
+                  className="topping-btn"
+                  onClick={() => addToppingToLastDrink(t)}
+                >
+                  {t.topping_name} (+$
+                  {Number(t.topping_cost).toFixed(2)})
+                </button>
+              ))}
+              {toppings.length === 0 && (
+                <p className="no-toppings">No toppings configured.</p>
+              )}
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Order Panel */}
+      
       <div className="order-panel">
         <div className="order-header">Current Order</div>
 
@@ -245,7 +274,7 @@ export default function CashierPage() {
                         key={t.topping_id}
                         className="topping-line"
                       >
-                        + {t.topping_name} (${t.topping_cost})
+                        + {t.topping_name} (${Number(t.topping_cost).toFixed(2)})
                       </div>
                     ))}
                   </div>
@@ -289,71 +318,6 @@ export default function CashierPage() {
 
           <button className="clear-btn" onClick={clearOrder}>
             Clear
-          </button>
-        </div>
-      </div>
-
-      {toppingModal.open && (
-        <ToppingModal
-          baseItem={toppingModal.baseItem}
-          toppings={toppings}
-          onClose={() =>
-            setToppingModal({ open: false, baseItem: null })
-          }
-          onSubmit={addItemWithToppings}
-        />
-      )}
-    </div>
-  );
-}
-
-function ToppingModal({ baseItem, toppings, onClose, onSubmit }) {
-  const [selected, setSelected] = useState([]);
-
-  function toggleTopping(t) {
-    setSelected((prev) =>
-      prev.some((p) => p.topping_id === t.topping_id)
-        ? prev.filter((p) => p.topping_id !== t.topping_id)
-        : [...prev, t]
-    );
-  }
-
-  return (
-    <div className="topping-modal-backdrop" onClick={onClose}>
-      <div className="topping-modal" onClick={(e) => e.stopPropagation()}>
-        <h3>Add toppings for {baseItem.item_name}</h3>
-
-        <div className="topping-list">
-          {toppings.map((t) => (
-            <button
-              key={t.topping_id}
-              className={
-                selected.some((p) => p.topping_id === t.topping_id)
-                  ? "topping-btn active"
-                  : "topping-btn"
-              }
-              onClick={() => toggleTopping(t)}
-            >
-              {t.topping_name} (+${Number(t.topping_cost).toFixed(2)})
-            </button>
-          ))}
-          {toppings.length === 0 && (
-            <p className="no-toppings">No toppings configured.</p>
-          )}
-        </div>
-
-        <div className="topping-actions">
-          <button className="cancel-btn" onClick={onClose}>
-            Cancel
-          </button>
-          <button
-            className="add-btn"
-            onClick={() => {
-              onSubmit(baseItem, selected);
-              onClose();
-            }}
-          >
-            Add Drink
           </button>
         </div>
       </div>

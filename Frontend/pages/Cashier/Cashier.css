@@ -10,7 +10,6 @@
   justify-content: center;
 }
 
-/* Sidebar */
 .cashier-sidebar {
   width: 220px;
   background: #111827;
@@ -47,7 +46,6 @@
   color: white;
 }
 
-/* Center content */
 .cashier-content {
   flex: 1;
   padding: 20px;
@@ -69,7 +67,12 @@
   font-size: 14px;
 }
 
-/* Menu grid */
+.cashier-main-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 16px;
+}
+
 .menu-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
@@ -111,7 +114,47 @@
   color: #9ca3af;
 }
 
-/* Order panel */
+.topping-section {
+  background: #f9fafb;
+  border-radius: 8px;
+  padding: 12px;
+  border: 1px solid #e5e7eb;
+  display: flex;
+  flex-direction: column;
+}
+
+.topping-section h3 {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #111827;
+}
+
+.topping-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.topping-btn {
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid #d1d5db;
+  background: #f3f4f6;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.topping-btn:hover {
+  background: #e5e7eb;
+}
+
+.no-toppings {
+  font-size: 13px;
+  color: #6b7280;
+}
+
+
 .order-panel {
   width: 320px;
   background: white;
@@ -158,6 +201,7 @@
 
 .order-toppings {
   margin-top: 2px;
+  padding-left: 12px; 
 }
 
 .topping-line {
@@ -251,94 +295,4 @@
 .clear-btn:hover {
   background: #d1d5db;
 }
-
-/* Topping modal */
-.topping-modal-backdrop {
-  position: fixed;
-  inset: 0;
-  background: rgba(15, 23, 42, 0.45);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 40;
-}
-
-.topping-modal {
-  background: white;
-  border-radius: 8px;
-  padding: 16px;
-  width: 280px;
-  box-shadow: 0 10px 25px rgba(15, 23, 42, 0.3);
-}
-
-.topping-modal h3 {
-  font-size: 15px;
-  margin-bottom: 10px;
-}
-
-.topping-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-bottom: 12px;
-}
-
-.topping-btn {
-  padding: 6px 10px;
-  border-radius: 999px;
-  border: 1px solid #d1d5db;
-  background: #f9fafb;
-  font-size: 13px;
-  cursor: pointer;
-}
-
-.topping-btn.active {
-  background: #16a34a;
-  border-color: #16a34a;
-  color: white;
-}
-
-.topping-btn:hover {
-  background: #e5e7eb;
-}
-
-.no-toppings {
-  font-size: 13px;
-  color: #6b7280;
-}
-
-.topping-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 8px;
-}
-
-.cancel-btn,
-.add-btn {
-  padding: 8px 12px;
-  border-radius: 6px;
-  border: none;
-  cursor: pointer;
-  font-size: 13px;
-  font-weight: 500;
-}
-
-.cancel-btn {
-  background: #e5e7eb;
-  color: #4b5563;
-}
-
-.cancel-btn:hover {
-  background: #d1d5db;
-}
-
-.add-btn {
-  background: #16a34a;
-  color: white;
-}
-
-.add-btn:hover {
-  background: #15803d;
-}
-
 
