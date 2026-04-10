@@ -15,6 +15,7 @@ function CustomerKiosk() {
 
   const [focusIndex, setFocusIndex] = useState(0);
   const itemRefs = useRef([]);
+  const categoryRefs = useRef([]);
 
   const synth = window.speechSynthesis;
 
@@ -112,15 +113,51 @@ function CustomerKiosk() {
     if (!keyboardMode) return;
 
     const handleKey = (e) => {
-      if (filteredItems.length === 0) return;
+      const totalCategories = categories.length;
+      const totalItems = filteredItems.length;
+
+      const activeCategory = categoryRefs.current.findIndex(
+        el => el === document.activeElement
+      );
 
       if (e.key === "ArrowDown") {
-        setFocusIndex((prev) => Math.min(prev + 1, filteredItems.length - 1));
+        if (activeCategory !== -1) {
+          setFocusIndex(0);
+          itemRefs.current[0]?.focus();
+          return;
+        }
+        if (focusIndex < totalItems - 1) {
+          setFocusIndex(focusIndex + 1);
+        }
       }
+
       if (e.key === "ArrowUp") {
-        setFocusIndex((prev) => Math.max(prev - 1, 0));
+        if (focusIndex > 0) {
+          setFocusIndex(focusIndex - 1);
+        } else {
+          categoryRefs.current[0]?.focus();
+        }
       }
+
+      if (e.key === "ArrowLeft") {
+        if (activeCategory > 0) {
+          categoryRefs.current[activeCategory - 1]?.focus();
+        }
+      }
+
+      if (e.key === "ArrowRight") {
+        if (activeCategory !== -1 && activeCategory < totalCategories - 1) {
+          categoryRefs.current[activeCategory + 1]?.focus();
+        }
+      }
+
       if (e.key === "Enter") {
+        if (activeCategory !== -1) {
+          const cat = categories[activeCategory];
+          setSelectedCategory(cat);
+          speak(`Category: ${cat}`);
+          return;
+        }
         const item = filteredItems[focusIndex];
         addToCart(item);
       }
@@ -128,7 +165,7 @@ function CustomerKiosk() {
 
     window.addEventListener("keydown", handleKey);
     return () => window.removeEventListener("keydown", handleKey);
-  }, [keyboardMode, filteredItems, focusIndex]);
+  }, [keyboardMode, filteredItems, focusIndex, categories]);
 
   useEffect(() => {
     if (keyboardMode && itemRefs.current[focusIndex]) {
@@ -144,11 +181,7 @@ function CustomerKiosk() {
   return (
     <div
       className="kiosk-container"
-      style={{
-        fontSize: `${fontScale}rem`,
-        transform: `scale(${fontScale})`,
-        transformOrigin: "top left"
-      }}
+      style={{ '--scale': fontScale }}
     >
       <header className="kiosk-header-small">
         <h1>Boba Bytes</h1>
@@ -161,7 +194,7 @@ function CustomerKiosk() {
         <label>Text Size:</label>
         <input
           type="range"
-          min="0.8"
+          min="0.6"
           max="1.6"
           step="0.1"
           value={fontScale}
@@ -193,6 +226,8 @@ function CustomerKiosk() {
         {categories.map((cat, index) => (
           <button
             key={cat ?? index}
+            ref={(el) => (categoryRefs.current[index] = el)}
+            tabIndex={keyboardMode ? 0 : -1}
             onClick={() => {
               setSelectedCategory(cat);
               speak(`Category: ${cat}`);
