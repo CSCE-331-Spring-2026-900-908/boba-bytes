@@ -1,10 +1,8 @@
-// routes/menuRoutes.js
 import express from "express";
 import pool from "../db/pool.js";
 
 const router = express.Router();
 
-// GET /menu/items – full menu
 router.get("/items", async (req, res) => {
   try {
     const result = await pool.query(
@@ -17,7 +15,6 @@ router.get("/items", async (req, res) => {
   }
 });
 
-// GET /menu/categories – distinct item_type values
 router.get("/categories", async (req, res) => {
   try {
     const result = await pool.query(
@@ -31,7 +28,6 @@ router.get("/categories", async (req, res) => {
   }
 });
 
-// (Optional) GET /menu/toppings – if you store toppings in DB
 router.get("/toppings", async (req, res) => {
   try {
     const result = await pool.query(

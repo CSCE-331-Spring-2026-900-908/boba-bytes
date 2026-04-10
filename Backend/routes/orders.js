@@ -1,26 +1,8 @@
-// routes/ordersRoutes.js
 import express from "express";
 import pool from "../db/pool.js";
 
 const router = express.Router();
 
-/**
- * Expected body:
- * {
- *   items: [
- *     {
- *       menu_item_id: number,
- *       quantity: number,
- *       toppings?: [
- *         { topping_id: number, quantity: number }
- *       ]
- *     }
- *   ],
- *   total: number,
- *   payment_type?: string,   // 'cash', 'card', 'kiosk', etc.
- *   order_source?: string    // 'cashier' | 'kiosk' | 'online' | 'phone'
- * }
- */
 router.post("/", async (req, res) => {
   console.log("Order received:", req.body);
 
