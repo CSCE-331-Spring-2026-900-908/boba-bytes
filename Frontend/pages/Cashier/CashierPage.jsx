@@ -5,6 +5,7 @@ import { API_BASE } from "../../config/api.js";
 export default function CashierPage() {
   const [items, setItems] = useState([]);
   const [categories, setCategories] = useState([]);
+  const [toppings, setToppings] = useState([]);
 
   const [activeCategory, setActiveCategory] = useState("Favorites");
   const [order, setOrder] = useState([]);
@@ -14,20 +15,23 @@ export default function CashierPage() {
 
   const [placing, setPlacing] = useState(false);
 
-  // Load menu + categories
+
+
   useEffect(() => {
     Promise.all([
       fetch(`${API_BASE}/menu/items`).then(r => r.json()),
-      fetch(`${API_BASE}/menu/categories`).then(r => r.json())
+      fetch(`${API_BASE}/menu/categories`).then(r => r.json()),
+      fetch(`${API_BASE}/menu/toppings`).then(r => r.json())
     ])
-      .then(([itemData, catData]) => {
+      .then(([itemData, catData, toppingData]) => {
         setItems(itemData);
-        setCategories(["Favorites", ...catData]); // Favorites is now a category
+        setCategories(["Favorites", ...catData, "Toppings"]);
+        setToppings(toppingData);
       })
       .catch(err => console.error(err));
   }, []);
 
-  // Compute favorites (top 8 + seasonal)
+
   useEffect(() => {
     const counts = new Map();
     order.forEach(o => {
@@ -46,25 +50,20 @@ export default function CashierPage() {
     setFavoriteIds([...new Set([...topUsed, ...seasonal])]);
   }, [order, items]);
 
-  // Filter items by category
+
   const filteredItems = useMemo(() => {
-    let list = items;
-
     if (activeCategory === "Favorites") {
-      list = list.filter(i => favoriteIds.includes(i.menu_item_id));
-    } else {
-      list = list.filter(i => i.item_type === activeCategory);
+      return items.filter(i => favoriteIds.includes(i.menu_item_id));
     }
 
-    if (searchTerm.trim()) {
-      const q = searchTerm.toLowerCase();
-      list = list.filter(i => i.item_name.toLowerCase().includes(q));
+    if (activeCategory === "Toppings") {
+      return toppings;
     }
 
-    return list;
-  }, [items, activeCategory, favoriteIds, searchTerm]);
+    return items.filter(i => i.item_type === activeCategory);
+  }, [items, toppings, activeCategory, favoriteIds]);
 
-  // Add drink
+
   function addDrink(item) {
     setOrder(prev => [
       ...prev,
@@ -78,8 +77,7 @@ export default function CashierPage() {
     ]);
   }
 
-  // Add topping to last drink
-  function addTopping(item) {
+  function addTopping(t) {
     setOrder(prev => {
       if (prev.length === 0) {
         alert("Add a drink first");
@@ -91,7 +89,7 @@ export default function CashierPage() {
 
       const updated = {
         ...last,
-        toppings: [...last.toppings, item]
+        toppings: [...last.toppings, t]
       };
 
       const copy = [...prev];
@@ -100,16 +98,14 @@ export default function CashierPage() {
     });
   }
 
-  // Add item (drink or topping)
   function handleAdd(item) {
-    if (item.item_type === "Toppings") {
+    if (activeCategory === "Toppings") {
       addTopping(item);
     } else {
       addDrink(item);
     }
   }
 
-  // Change qty
   function changeQty(index, delta) {
     setOrder(prev =>
       prev
@@ -118,7 +114,6 @@ export default function CashierPage() {
     );
   }
 
-  // Remove drink (and its toppings)
   function removeItem(index) {
     setOrder(prev => prev.filter((_, i) => i !== index));
   }
@@ -127,7 +122,7 @@ export default function CashierPage() {
     return order.reduce((sum, o) => {
       const base = o.item_cost * o.qty;
       const toppingTotal = o.toppings.reduce(
-        (s, t) => s + t.item_cost * o.qty,
+        (s, t) => s + t.topping_cost * o.qty,
         0
       );
       return sum + base + toppingTotal;
@@ -148,7 +143,7 @@ export default function CashierPage() {
             menu_item_id: o.menu_item_id,
             quantity: o.qty,
             toppings: o.toppings.map(t => ({
-              topping_id: t.menu_item_id,
+              topping_id: t.topping_id,
               quantity: 1
             }))
           })),
@@ -167,9 +162,11 @@ export default function CashierPage() {
     }
   }
 
+ 
+
   return (
     <div className="cashier-container">
-      {/* Sidebar */}
+      
       <div className="cashier-sidebar">
         {categories.map(cat => (
           <button
@@ -182,7 +179,7 @@ export default function CashierPage() {
         ))}
       </div>
 
-      {/* Menu */}
+  
       <div className="cashier-content">
         <input
           className="cashier-search"
@@ -194,19 +191,18 @@ export default function CashierPage() {
         <div className="menu-grid">
           {filteredItems.map(item => (
             <button
-              key={item.menu_item_id}
+              key={item.menu_item_id || item.topping_id}
               onClick={() => handleAdd(item)}
             >
-              <div className="item-name">{item.item_name}</div>
+              <div className="item-name">{item.item_name || item.topping_name}</div>
               <div className="item-price">
-                ${Number(item.item_cost).toFixed(2)}
+                ${Number(item.item_cost || item.topping_cost).toFixed(2)}
               </div>
             </button>
           ))}
         </div>
       </div>
 
-      {/* Order Panel */}
       <div className="order-panel">
         <div className="order-header">Current Order</div>
 
@@ -220,7 +216,7 @@ export default function CashierPage() {
                   <div className="order-toppings">
                     {o.toppings.map((t, i) => (
                       <div key={i} className="topping-line">
-                        + {t.item_name} (${t.item_cost})
+                        + {t.topping_name} (${t.topping_cost})
                       </div>
                     ))}
                   </div>
@@ -229,7 +225,7 @@ export default function CashierPage() {
                 <div className="order-item-price">
                   ${(o.item_cost * o.qty +
                     o.toppings.reduce(
-                      (s, t) => s + t.item_cost * o.qty,
+                      (s, t) => s + t.topping_cost * o.qty,
                       0
                     )).toFixed(2)}
                 </div>

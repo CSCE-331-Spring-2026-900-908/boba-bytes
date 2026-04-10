@@ -7,7 +7,7 @@ router.post("/", async (req, res) => {
   const { items, total } = req.body;
 
   if (!items || items.length === 0)
-    return res.status(400).json({ error: "No items in order" });
+    return res.status(400).json({ error: "Order must contain items" });
 
   const client = await pool.connect();
   try {
@@ -55,4 +55,5 @@ router.post("/", async (req, res) => {
 });
 
 export default router;
+
 
