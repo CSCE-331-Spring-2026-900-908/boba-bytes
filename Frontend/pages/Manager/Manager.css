@@ -140,10 +140,102 @@ table th, table td {
     transition: border-color 0.2s;
 }
 
+.form-group select {
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    transition: border-color 0.2s;
+    background: white;
+}
+
 .form-group input:focus {
     outline: none;
     border-color: #2563eb;
     box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
+}
+
+.form-group select:focus {
+    outline: none;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
+}
+
+.recipe-section {
+    margin-top: 18px;
+    border-top: 1px solid #ececec;
+    padding-top: 14px;
+}
+
+.recipe-header-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+}
+
+.recipe-header-row h4 {
+    margin: 0;
+    color: #333;
+}
+
+.recipe-help {
+    margin: 0 0 10px;
+    color: #6b7280;
+    font-size: 0.86rem;
+}
+
+.recipe-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.recipe-row {
+    display: grid;
+    grid-template-columns: 2fr 1fr auto;
+    gap: 8px;
+}
+
+.recipe-row select,
+.recipe-row input {
+    padding: 8px 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 0.9rem;
+}
+
+.btn-add-ingredient {
+    border: none;
+    background: #2563eb;
+    color: white;
+    border-radius: 6px;
+    padding: 7px 10px;
+    font-size: 0.85rem;
+    cursor: pointer;
+}
+
+.btn-add-ingredient:hover {
+    background: #1d4ed8;
+}
+
+.btn-remove-ingredient {
+    border: none;
+    background: #e5e7eb;
+    color: #374151;
+    border-radius: 6px;
+    padding: 7px 10px;
+    font-size: 0.85rem;
+    cursor: pointer;
+}
+
+.btn-remove-ingredient:hover:not(:disabled) {
+    background: #d1d5db;
+}
+
+.btn-remove-ingredient:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
 }
 
 .form-actions {
@@ -359,3 +451,162 @@ table th, table td {
     background: #e0e7ff;
     color: #3730a3;
 }
+
+/* Inventory Management */
+.inv-management h2 {
+    margin: 0;
+    font-size: 1.5rem;
+}
+
+.inv-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.inv-form {
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 20px;
+    margin-top: 12px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+}
+
+.inv-form h3 {
+    margin: 0 0 16px 0;
+    font-size: 1.15rem;
+    color: #333;
+}
+
+.inv-table {
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+}
+
+.inv-table th {
+    background: #f8f9fa;
+    font-weight: 600;
+    color: #555;
+    text-align: left;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.inv-table td {
+    vertical-align: middle;
+}
+
+.btn-restock {
+    padding: 5px 14px;
+    background: #0ea5e9;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 500;
+    transition: background 0.2s;
+}
+
+.btn-restock:hover {
+    background: #0284c7;
+}
+
+/* Reports */
+.report-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin: 14px 0 8px;
+}
+
+.report-error {
+    color: #dc2626;
+    font-size: 0.9rem;
+    margin: 8px 0;
+}
+
+.report-summary-grid {
+    margin-top: 16px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 10px;
+}
+
+.report-card {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 12px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.report-card span {
+    color: #6b7280;
+    font-size: 0.82rem;
+}
+
+.report-card strong {
+    color: #111827;
+    font-size: 1.05rem;
+}
+
+.report-section {
+    margin-top: 16px;
+}
+
+.report-section h3 {
+    margin: 0 0 8px;
+    color: #374151;
+}
+
+.usage-chart {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 14px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+}
+
+.usage-row {
+    display: grid;
+    grid-template-columns: minmax(150px, 220px) 1fr minmax(90px, auto);
+    gap: 8px;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.usage-label {
+    font-size: 0.88rem;
+    color: #374151;
+    font-weight: 500;
+}
+
+.usage-bar-wrap {
+    height: 12px;
+    background: #e5e7eb;
+    border-radius: 999px;
+    overflow: hidden;
+}
+
+.usage-bar {
+    height: 100%;
+    background: #2563eb;
+    border-radius: 999px;
+}
+
+.usage-value {
+    text-align: right;
+    font-size: 0.84rem;
+    color: #374151;
+}
+
