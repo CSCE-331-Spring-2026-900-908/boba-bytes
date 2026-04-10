@@ -1,3 +1,4 @@
+// routes/menuRoutes.js
 import express from "express";
 import pool from "../db/pool.js";
 
@@ -280,6 +281,19 @@ router.get("/categories", async (req, res) => {
     res.json(categories);
   } catch (err) {
     console.error("GET /menu/categories error:", err);
+    res.status(500).send("Server error");
+  }
+});
+
+// (Optional) GET /menu/toppings – if you store toppings in DB
+router.get("/toppings", async (req, res) => {
+  try {
+    const result = await pool.query(
+      "SELECT topping_id, topping_name, topping_cost FROM toppings ORDER BY topping_name ASC"
+    );
+    res.json(result.rows);
+  } catch (err) {
+    console.error("GET /menu/toppings error:", err);
     res.status(500).send("Server error");
   }
 });

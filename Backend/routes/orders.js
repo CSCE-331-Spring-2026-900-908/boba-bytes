@@ -1,8 +1,26 @@
+// routes/ordersRoutes.js
 import express from "express";
 import pool from "../db/pool.js";
 
 const router = express.Router();
 
+/**
+ * Expected body:
+ * {
+ *   items: [
+ *     {
+ *       menu_item_id: number,
+ *       quantity: number,
+ *       toppings?: [
+ *         { topping_id: number, quantity: number }
+ *       ]
+ *     }
+ *   ],
+ *   total: number,
+ *   payment_type?: string,   // 'cash', 'card', 'kiosk', etc.
+ *   order_source?: string    // 'cashier' | 'kiosk' | 'online' | 'phone'
+ * }
+ */
 router.post("/", async (req, res) => {
   console.log("Order received:", req.body);
 
@@ -24,7 +42,7 @@ router.post("/", async (req, res) => {
       `,
       [
         total,
-        payment_type || "cashier", // kiosk can override when calling same route
+        payment_type || "cashier",
         order_source || "cashier",
       ]
     );
@@ -34,15 +52,35 @@ router.post("/", async (req, res) => {
     const insertItemText = `
       INSERT INTO ordereditems (order_id, menu_item_id, quantity)
       VALUES ($1, $2, $3)
+      RETURNING id
+    `;
+
+    const insertToppingText = `
+      INSERT INTO ordereditem_toppings (ordereditem_id, topping_id, quantity)
+      VALUES ($1, $2, $3)
     `;
 
     for (const item of items) {
       if (!item.menu_item_id || !item.quantity) continue;
-      await client.query(insertItemText, [
+
+      const orderedItemResult = await client.query(insertItemText, [
         orderId,
         item.menu_item_id,
         item.quantity,
       ]);
+
+      const orderedItemId = orderedItemResult.rows[0].id;
+
+      if (Array.isArray(item.toppings)) {
+        for (const t of item.toppings) {
+          if (!t.topping_id || !t.quantity) continue;
+          await client.query(insertToppingText, [
+            orderedItemId,
+            t.topping_id,
+            t.quantity,
+          ]);
+        }
+      }
     }
 
     await client.query("COMMIT");

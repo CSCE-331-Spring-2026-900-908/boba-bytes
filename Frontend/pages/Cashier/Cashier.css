@@ -5,8 +5,13 @@
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 
+.loading-center {
+  align-items: center;
+  justify-content: center;
+}
 
-.cashier-queue {
+/* Sidebar */
+.cashier-sidebar {
   width: 220px;
   background: #111827;
   color: white;
@@ -15,86 +20,17 @@
   padding: 16px;
 }
 
-.cashier-queue h2 {
-  font-size: 18px;
-  margin-bottom: 10px;
-  font-weight: 600;
-}
-
-.queue-new-btn {
-  margin-bottom: 10px;
-  padding: 8px 10px;
-  background: #16a34a;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: 500;
-}
-
-.queue-new-btn:hover {
-  background: #15803d;
-}
-
-.queue-list {
-  flex: 1;
-  overflow-y: auto;
-  margin-top: 8px;
-}
-
-.queue-item {
-  width: 100%;
-  text-align: left;
-  padding: 8px 10px;
-  margin-bottom: 6px;
-  background: #1f2937;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  color: #e5e7eb;
-  font-size: 13px;
-}
-
-.queue-item.active {
-  background: #16a34a;
-  color: white;
-}
-
-.queue-item:hover {
-  background: #374151;
-}
-
-.queue-label {
-  font-weight: 600;
-}
-
-.queue-meta {
-  font-size: 11px;
-  color: #9ca3af;
-}
-
-
-.cashier-sidebar {
-  width: 200px;
-  background: #222;
-  color: white;
-  display: flex;
-  flex-direction: column;
-  padding: 20px;
-}
-
 .cashier-sidebar h2 {
   font-size: 18px;
-  margin-bottom: 16px;
+  margin-bottom: 12px;
   font-weight: 600;
 }
 
 .cashier-sidebar button {
   margin-bottom: 8px;
   padding: 10px;
-  background: #374151;
-  color: white;
+  background: #1f2937;
+  color: #e5e7eb;
   border: none;
   cursor: pointer;
   border-radius: 4px;
@@ -103,13 +39,15 @@
 }
 
 .cashier-sidebar button:hover {
-  background: #4b5563;
+  background: #374151;
 }
 
 .cashier-sidebar button.active {
   background: #16a34a;
+  color: white;
 }
 
+/* Center content */
 .cashier-content {
   flex: 1;
   padding: 20px;
@@ -119,64 +57,19 @@
 .cashier-content-header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 12px;
+  justify-content: flex-end;
   margin-bottom: 10px;
 }
 
-.cashier-content h2 {
-  font-size: 20px;
-  margin: 0;
-}
-
 .cashier-search {
-  flex: 0 0 220px;
+  width: 240px;
   padding: 8px 10px;
   border-radius: 4px;
   border: 1px solid #d1d5db;
   font-size: 14px;
 }
 
-.favorites-row {
-  margin-bottom: 12px;
-}
-
-.favorites-title {
-  font-size: 13px;
-  font-weight: 600;
-  color: #4b5563;
-  margin-bottom: 4px;
-}
-
-.favorites-items {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-
-.favorite-btn {
-  padding: 10px;
-  background: #fefce8;
-  border: 1px solid #facc15;
-  border-radius: 6px;
-  cursor: pointer;
-  min-width: 140px;
-  text-align: left;
-}
-
-.favorite-btn .item-name {
-  font-weight: 600;
-  font-size: 14px;
-  color: #1f2937;
-}
-
-.favorite-btn .item-price {
-  color: #16a34a;
-  font-family: monospace;
-  margin-top: 2px;
-  font-size: 13px;
-}
-
+/* Menu grid */
 .menu-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
@@ -218,6 +111,7 @@
   color: #9ca3af;
 }
 
+/* Order panel */
 .order-panel {
   width: 320px;
   background: white;
@@ -231,14 +125,6 @@
   border-bottom: 1px solid #e5e7eb;
   font-size: 16px;
   font-weight: 600;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.order-header-meta {
-  font-size: 12px;
-  color: #6b7280;
 }
 
 .order-items {
@@ -263,7 +149,6 @@
 
 .order-item-info {
   flex: 1;
-  cursor: pointer;
 }
 
 .order-item-name {
@@ -271,9 +156,19 @@
   color: #111827;
 }
 
-.order-item-price {
+.order-toppings {
+  margin-top: 2px;
+}
+
+.topping-line {
   font-size: 12px;
   color: #6b7280;
+}
+
+.order-item-price {
+  font-size: 13px;
+  color: #4b5563;
+  margin-top: 4px;
 }
 
 .order-item-controls {
@@ -291,32 +186,11 @@
   font-weight: bold;
   font-size: 14px;
   line-height: 1;
-}
-
-.btn-minus {
-  background: #fee2e2;
-  color: #dc2626;
-}
-
-.btn-minus:hover {
-  background: #fecaca;
-}
-
-.btn-plus {
-  background: #dcfce7;
-  color: #16a34a;
-}
-
-.btn-plus:hover {
-  background: #bbf7d0;
-}
-
-.btn-remove {
   background: #e5e7eb;
-  color: #4b5563;
+  color: #111827;
 }
 
-.btn-remove:hover {
+.order-item-controls button:hover {
   background: #d1d5db;
 }
 
@@ -378,16 +252,8 @@
   background: #d1d5db;
 }
 
-.hold-btn {
-  background: #fef3c7;
-  color: #92400e;
-}
-
-.hold-btn:hover {
-  background: #fde68a;
-}
-
-.qty-modal-backdrop {
+/* Topping modal */
+.topping-modal-backdrop {
   position: fixed;
   inset: 0;
   background: rgba(15, 23, 42, 0.45);
@@ -397,51 +263,82 @@
   z-index: 40;
 }
 
-.qty-modal {
+.topping-modal {
   background: white;
   border-radius: 8px;
   padding: 16px;
-  width: 260px;
+  width: 280px;
   box-shadow: 0 10px 25px rgba(15, 23, 42, 0.3);
 }
 
-.qty-modal h3 {
+.topping-modal h3 {
   font-size: 15px;
-  margin-bottom: 8px;
-}
-
-.qty-display {
-  text-align: center;
-  font-size: 28px;
-  font-weight: 600;
   margin-bottom: 10px;
 }
 
-.qty-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 6px;
+.topping-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
 }
 
-.qty-grid button {
-  padding: 10px 0;
-  border-radius: 6px;
-  border: none;
+.topping-btn {
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid #d1d5db;
+  background: #f9fafb;
+  font-size: 13px;
   cursor: pointer;
-  background: #f3f4f6;
-  font-size: 14px;
 }
 
-.qty-grid button:hover {
+.topping-btn.active {
+  background: #16a34a;
+  border-color: #16a34a;
+  color: white;
+}
+
+.topping-btn:hover {
   background: #e5e7eb;
 }
 
-.qty-grid .qty-add {
+.no-toppings {
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.topping-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.cancel-btn,
+.add-btn {
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.cancel-btn {
+  background: #e5e7eb;
+  color: #4b5563;
+}
+
+.cancel-btn:hover {
+  background: #d1d5db;
+}
+
+.add-btn {
   background: #16a34a;
   color: white;
 }
 
-.qty-grid .qty-add:hover {
+.add-btn:hover {
   background: #15803d;
 }
+
 
