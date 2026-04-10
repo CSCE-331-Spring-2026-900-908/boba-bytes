@@ -4,72 +4,50 @@ import pool from "../db/pool.js";
 const router = express.Router();
 
 router.post("/", async (req, res) => {
-  console.log("Order received:", req.body);
+  const { items, total } = req.body;
 
-  const { items, total, payment_type, order_source } = req.body;
-
-  if (!Array.isArray(items) || items.length === 0) {
-    return res.status(400).json({ error: "Items array is required" });
-  }
+  if (!items || items.length === 0)
+    return res.status(400).json({ error: "No items in order" });
 
   const client = await pool.connect();
   try {
     await client.query("BEGIN");
 
-    const orderResult = await client.query(
-      `
-      INSERT INTO orders (order_total, payment_type, order_source, timestamp)
-      VALUES ($1, $2, $3, NOW() AT TIME ZONE 'America/Chicago')
-      RETURNING order_id
-      `,
-      [
-        total,
-        payment_type || "cashier",
-        order_source || "cashier",
-      ]
+    const orderRes = await client.query(
+      `INSERT INTO orders (order_total, payment_type, order_source, timestamp)
+       VALUES ($1, 'cashier', 'cashier', NOW() AT TIME ZONE 'America/Chicago')
+       RETURNING order_id`,
+      [total]
     );
 
-    const orderId = orderResult.rows[0].order_id;
-
-    const insertItemText = `
-      INSERT INTO ordereditems (order_id, menu_item_id, quantity)
-      VALUES ($1, $2, $3)
-      RETURNING id
-    `;
-
-    const insertToppingText = `
-      INSERT INTO ordereditem_toppings (ordereditem_id, topping_id, quantity)
-      VALUES ($1, $2, $3)
-    `;
+    const orderId = orderRes.rows[0].order_id;
 
     for (const item of items) {
-      if (!item.menu_item_id || !item.quantity) continue;
+      const itemRes = await client.query(
+        `INSERT INTO ordereditems (order_id, menu_item_id, quantity)
+         VALUES ($1, $2, $3)
+         RETURNING id`,
+        [orderId, item.menu_item_id, item.quantity]
+      );
 
-      const orderedItemResult = await client.query(insertItemText, [
-        orderId,
-        item.menu_item_id,
-        item.quantity,
-      ]);
+      const orderedItemId = itemRes.rows[0].id;
 
-      const orderedItemId = orderedItemResult.rows[0].id;
-
-      if (Array.isArray(item.toppings)) {
+      if (item.toppings) {
         for (const t of item.toppings) {
-          if (!t.topping_id || !t.quantity) continue;
-          await client.query(insertToppingText, [
-            orderedItemId,
-            t.topping_id,
-            t.quantity,
-          ]);
+          await client.query(
+            `INSERT INTO ordereditem_toppings (ordereditem_id, topping_id, quantity)
+             VALUES ($1, $2, 1)`,
+            [orderedItemId, t.topping_id]
+          );
         }
       }
     }
 
     await client.query("COMMIT");
-    res.status(201).json({ success: true, order_id: orderId });
+    res.json({ success: true, order_id: orderId });
   } catch (err) {
     await client.query("ROLLBACK");
-    console.error("Order error:", err.message);
+    console.error(err);
     res.status(500).send("Server error");
   } finally {
     client.release();
@@ -77,3 +55,4 @@ router.post("/", async (req, res) => {
 });
 
 export default router;
+

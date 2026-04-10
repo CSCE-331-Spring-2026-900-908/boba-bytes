@@ -3,39 +3,27 @@ import pool from "../db/pool.js";
 
 const router = express.Router();
 
+// GET all menu items
 router.get("/items", async (req, res) => {
   try {
-    const result = await pool.query(
-      "SELECT * FROM menu ORDER BY item_type ASC, item_name ASC"
-    );
+    const result = await pool.query("SELECT * FROM menu ORDER BY item_type, item_name");
     res.json(result.rows);
   } catch (err) {
-    console.error("GET /menu/items error:", err);
+    console.error(err);
     res.status(500).send("Server error");
   }
 });
 
+// GET categories
 router.get("/categories", async (req, res) => {
   try {
     const result = await pool.query(
-      "SELECT DISTINCT item_type FROM menu WHERE item_type IS NOT NULL ORDER BY item_type ASC"
+      "SELECT DISTINCT item_type FROM menu ORDER BY item_type"
     );
-    const categories = result.rows.map((r) => r.item_type);
+    const categories = result.rows.map(r => r.item_type);
     res.json(categories);
   } catch (err) {
-    console.error("GET /menu/categories error:", err);
-    res.status(500).send("Server error");
-  }
-});
-
-router.get("/toppings", async (req, res) => {
-  try {
-    const result = await pool.query(
-      "SELECT topping_id, topping_name, topping_cost FROM toppings ORDER BY topping_name ASC"
-    );
-    res.json(result.rows);
-  } catch (err) {
-    console.error("GET /menu/toppings error:", err);
+    console.error(err);
     res.status(500).send("Server error");
   }
 });
