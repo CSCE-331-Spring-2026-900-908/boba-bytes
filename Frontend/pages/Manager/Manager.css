@@ -518,3 +518,95 @@ table th, table td {
     background: #0284c7;
 }
 
+/* Reports */
+.report-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin: 14px 0 8px;
+}
+
+.report-error {
+    color: #dc2626;
+    font-size: 0.9rem;
+    margin: 8px 0;
+}
+
+.report-summary-grid {
+    margin-top: 16px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 10px;
+}
+
+.report-card {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 12px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.report-card span {
+    color: #6b7280;
+    font-size: 0.82rem;
+}
+
+.report-card strong {
+    color: #111827;
+    font-size: 1.05rem;
+}
+
+.report-section {
+    margin-top: 16px;
+}
+
+.report-section h3 {
+    margin: 0 0 8px;
+    color: #374151;
+}
+
+.usage-chart {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 14px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+}
+
+.usage-row {
+    display: grid;
+    grid-template-columns: minmax(150px, 220px) 1fr minmax(90px, auto);
+    gap: 8px;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.usage-label {
+    font-size: 0.88rem;
+    color: #374151;
+    font-weight: 500;
+}
+
+.usage-bar-wrap {
+    height: 12px;
+    background: #e5e7eb;
+    border-radius: 999px;
+    overflow: hidden;
+}
+
+.usage-bar {
+    height: 100%;
+    background: #2563eb;
+    border-radius: 999px;
+}
+
+.usage-value {
+    text-align: right;
+    font-size: 0.84rem;
+    color: #374151;
+}
+
