@@ -137,12 +137,24 @@
   transform: scale(1.03);
 }
 
-.item-image {
+.item-image-wrapper {
   width: 100%;
-  height: calc(180px * var(--scale));
-  object-fit: cover;
-  border-radius: calc(12px * var(--scale));
+  height: calc(200px * var(--scale));
+  background: var(--peach);
+  border-radius: calc(14px * var(--scale));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
 }
+
+.item-image {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  border-radius: calc(10px * var(--scale));
+}
+
 
 .item-info {
   padding: calc(18px * var(--scale));
