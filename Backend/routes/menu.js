@@ -116,7 +116,7 @@ const replaceRecipe = async (client, menuItemId, recipe) => {
 
 router.get("/items", async (req, res) => {
   try {
-    const result = await pool.query("SELECT * FROM menu ORDER BY item_name ASC");
+    const result = await pool.query("SELECT * FROM menu ORDER BY menu_item_id ASC");
     res.json(result.rows);
   } catch (err) {
     console.error(err);
