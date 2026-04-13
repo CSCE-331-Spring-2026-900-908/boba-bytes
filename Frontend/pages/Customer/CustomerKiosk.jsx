@@ -303,6 +303,10 @@ function CustomerKiosk() {
               <div className="item-info">
                 <h3>{item.item_name}</h3>
                 <p className="price">${Number(item.item_cost).toFixed(2)}</p>
+                {item.item_description && (
+                <p className="item-description">{item.item_description}</p>
+)}
+
               </div>
             </div>
           ))}
