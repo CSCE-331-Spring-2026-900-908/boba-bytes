@@ -20,6 +20,69 @@ function CustomerKiosk() {
 
   const synth = window.speechSynthesis;
 
+  const normalizeName = (value = "") => value.toLowerCase().trim().replace(/\s+/g, " ");
+
+  const localImageByName = {
+    "classic milk tea": "/images/menu/classic_milk_tea.png",
+    "thai milk tea": "/images/menu/thai_milk_tea.png",
+    "taro milk tea": "/images/menu/taro_milk_tea.png",
+    "matcha milk tea": "/images/menu/matcha_milk_tea.png",
+    "okinawa brown sugar milk tea": "/images/menu/okinawa_brown_sugar_milk_tea.png",
+    "honey green milk tea": "/images/menu/honey_green_milk_tea.png",
+    "wintermelon milk tea": "/images/menu/wintermelon_milk_tea.png",
+    "winter melon milk tea": "/images/menu/wintermelon_milk_tea.png",
+    "coffee milk tea": "/images/menu/coffee_milk_tea.png",
+    "mango green tea": "/images/menu/mango_green_tea.png",
+    "strawberry fruit tea": "/images/menu/strawberry_fruit_tea.png",
+    "peach black tea": "/images/menu/peach_black_tea.png",
+    "lychee oolong tea": "/images/menu/lychee_oolong_tea.png",
+    "additional boba": "/images/menu/additional_boba.png"
+  };
+
+  const generatedDescriptionByName = {
+    "classic milk tea": "Smooth black tea with creamy milk for a rich, classic boba taste.",
+    "thai milk tea": "Bold Thai tea with sweet cream notes and a fragrant spiced finish.",
+    "taro milk tea": "Nutty taro flavor blended with milk for a sweet and velvety drink.",
+    "matcha milk tea": "Earthy matcha and creamy milk balanced into a refreshing green tea latte.",
+    "okinawa brown sugar milk tea": "Caramel-like brown sugar syrup mixed into creamy milk tea.",
+    "honey green milk tea": "Light green tea and milk with a mellow honey sweetness.",
+    "wintermelon milk tea": "Traditional wintermelon syrup and milk tea with a smooth, toasty sweetness.",
+    "winter melon milk tea": "Traditional wintermelon syrup and milk tea with a smooth, toasty sweetness.",
+    "coffee milk tea": "A coffee-forward milk tea with creamy body and a gentle caffeine kick.",
+    "mango green tea": "Crisp green tea with juicy mango flavor for a bright tropical sip.",
+    "strawberry fruit tea": "Fruity strawberry tea that is sweet, vibrant, and refreshing.",
+    "peach black tea": "Classic black tea infused with ripe peach flavor.",
+    "lychee oolong tea": "Floral oolong tea paired with delicate lychee sweetness.",
+    "additional boba": "Chewy tapioca pearls to add extra texture to your drink."
+  };
+
+  const placeholderSvg =
+    "data:image/svg+xml;utf8," +
+    encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="600" height="420"><rect width="100%" height="100%" fill="#f5c4a1"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#5c3d2e" font-size="28" font-family="Arial, sans-serif">Boba Bytes</text></svg>');
+
+  const getItemImageSrc = (item) => {
+    const normalized = normalizeName(item.item_name);
+    const localImage = localImageByName[normalized];
+    if (localImage) return localImage;
+
+    if (item.image) return item.image;
+
+    return placeholderSvg;
+  };
+
+  const getItemDescription = (item) => {
+    if (item.item_description && item.item_description.trim()) {
+      return item.item_description;
+    }
+
+    const normalized = normalizeName(item.item_name);
+    if (generatedDescriptionByName[normalized]) {
+      return generatedDescriptionByName[normalized];
+    }
+
+    return `A ${item.item_type || "house"} favorite made fresh at Boba Bytes.`;
+  };
+
   const speak = (text) => {
     if (!speakMode) return;
     synth.cancel();
@@ -287,19 +350,19 @@ function CustomerKiosk() {
               tabIndex={keyboardMode ? 0 : -1}
               aria-label={`Add ${item.item_name} to cart`}
             >
-              {item.image && (
-                <img
-                  src={item.image}
-                  alt={item.item_name}
-                  className="item-image"
-                />
-              )}
+              <img
+                src={getItemImageSrc(item)}
+                alt={item.item_name}
+                className="item-image"
+                onError={(e) => {
+                  e.currentTarget.onerror = null;
+                  e.currentTarget.src = placeholderSvg;
+                }}
+              />
               <div className="item-info">
                 <h3>{item.item_name}</h3>
+                <p className="item-description">{getItemDescription(item)}</p>
                 <p className="price">${Number(item.item_cost).toFixed(2)}</p>
-                {item.item_description && (
-                <p className="item-description">{item.item_description}</p>
-)}
 
               </div>
             </div>

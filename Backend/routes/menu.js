@@ -16,6 +16,14 @@ const badRequestError = (message) => {
   return err;
 };
 
+const normalizeName = (value = "") => value.trim().toLowerCase().replace(/\s+/g, " ");
+
+const imageMapNormalized = Object.fromEntries(
+  Object.entries(imageMap).map(([name, path]) => [normalizeName(name), path])
+);
+
+const getImageForItem = (itemName = "") => imageMapNormalized[normalizeName(itemName)] || null;
+
 const normalizeRecipe = (recipe) => {
   if (recipe === undefined || recipe === null) {
     return [];
@@ -119,7 +127,7 @@ router.get("/items", async (req, res) => {
 
     const itemsWithImages = result.rows.map(item => ({
       ...item,
-      image: imageMap[item.item_name] || null
+      image: getImageForItem(item.item_name)
     }));
 
     res.json(itemsWithImages);
@@ -130,7 +138,7 @@ router.get("/items", async (req, res) => {
 });
 
 router.post("/items", async (req, res) => {
-  const { item_name, item_cost, item_type, item_description, image, recipe } = req.body;
+  const { item_name, item_cost, item_type, item_description, recipe } = req.body;
 
   if (!item_name || item_cost === undefined || item_cost === null || !item_type) {
     return res.status(400).json({ error: "Missing requirements: item name, item cost, item type" });
@@ -151,10 +159,10 @@ router.post("/items", async (req, res) => {
     const maxID = await client.query("SELECT COALESCE(MAX(menu_item_id), 0) as mid FROM menu");
     const nextID = Number(maxID.rows[0].mid) + 1;
     const result = await client.query(
-        `INSERT INTO menu (menu_item_id, item_name, item_cost, item_type)
-         VALUES($1, $2, $3, $4)
+        `INSERT INTO menu (menu_item_id, item_name, item_cost, item_type, item_description)
+         VALUES($1, $2, $3, $4, $5)
          RETURNING *`,
-        [nextID, item_name, parsedCost, item_type]
+        [nextID, item_name, parsedCost, item_type, item_description ?? null]
     );
 
     await assertInventoryExists(client, parsedRecipe);
@@ -200,7 +208,7 @@ router.delete("/items/:id", async (req, res) => {
 
 router.put("/items/:id", async (req, res) => {
   const { id } = req.params;
-  const { item_name, item_cost, item_type, recipe } = req.body;
+  const { item_name, item_cost, item_type, item_description, recipe } = req.body;
 
   if (!item_name || item_cost === undefined || item_cost === null || !item_type) {
     return res.status(400).json({ error: "Missing requirements: item name, item cost, item type" });
@@ -220,10 +228,10 @@ router.put("/items/:id", async (req, res) => {
 
       const result = await client.query(
           `UPDATE menu
-           SET item_name = $1, item_cost = $2, item_type = $3
-           WHERE menu_item_id = $4
+           SET item_name = $1, item_cost = $2, item_type = $3, item_description = $4
+           WHERE menu_item_id = $5
            RETURNING *`,
-          [item_name, parsedCost, item_type, id]
+          [item_name, parsedCost, item_type, item_description ?? null, id]
       );
 
       if (result.rows.length === 0) {
