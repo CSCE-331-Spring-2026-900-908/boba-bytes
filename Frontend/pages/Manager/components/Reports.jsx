@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { API_BASE } from "../../../config/api.js";
 
 const todayString = () => new Date().toISOString().slice(0, 10);
@@ -24,11 +24,36 @@ function Reports() {
     const [reportData, setReportData] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState("");
+    const [zStatus, setZStatus] = useState({
+        isGeneratedToday: false,
+        reportDate: todayString(),
+        generatedAt: null
+    });
 
     const usageMax = useMemo(() => {
         if (reportType !== "product_usage" || !reportData?.usage_totals?.length) return 0;
         return Math.max(...reportData.usage_totals.map((row) => Number(row.used_quantity || 0)));
     }, [reportData, reportType]);
+
+    useEffect(() => {
+        const fetchZStatus = async () => {
+            try {
+                const response = await fetch(`${API_BASE}/reports/z/status`);
+                const data = await parseJsonSafe(response);
+                if (!response.ok) return;
+
+                setZStatus({
+                    isGeneratedToday: Boolean(data?.is_generated_today),
+                    reportDate: data?.report_date || todayString(),
+                    generatedAt: data?.generated_at || null
+                });
+            } catch {
+                // Keep UI usable even if status lookup fails.
+            }
+        };
+
+        fetchZStatus();
+    }, []);
 
     const handleGenerateReport = async () => {
         setIsLoading(true);
@@ -39,12 +64,14 @@ function Reports() {
             if (reportType === "x") {
                 endpoint = `${API_BASE}/reports/x?date=${encodeURIComponent(date)}`;
             } else if (reportType === "z") {
-                endpoint = `${API_BASE}/reports/z?start_date=${encodeURIComponent(startDate)}&end_date=${encodeURIComponent(endDate)}`;
+                endpoint = `${API_BASE}/reports/z`;
             } else {
                 endpoint = `${API_BASE}/reports/product-usage?start_date=${encodeURIComponent(startDate)}&end_date=${encodeURIComponent(endDate)}`;
             }
 
-            const response = await fetch(endpoint);
+            const response = await fetch(endpoint, {
+                method: reportType === "z" ? "POST" : "GET"
+            });
             const data = await parseJsonSafe(response);
 
             if (!response.ok) {
@@ -52,6 +79,13 @@ function Reports() {
             }
 
             setReportData(data);
+            if (reportType === "z") {
+                setZStatus({
+                    isGeneratedToday: true,
+                    reportDate: data?.date || zStatus.reportDate,
+                    generatedAt: data?.generated_at || new Date().toISOString()
+                });
+            }
         } catch (err) {
             setReportData(null);
             setError(err.message || "Failed to generate report.");
@@ -60,11 +94,13 @@ function Reports() {
         }
     };
 
+    const isZLocked = reportType === "z" && zStatus.isGeneratedToday;
+
     return (
         <div className="emp-management">
             <div className="emp-header">
                 <h2>Reports</h2>
-                <button className="btn-add" type="button" onClick={handleGenerateReport} disabled={isLoading}>
+                <button className="btn-add" type="button" onClick={handleGenerateReport} disabled={isLoading || isZLocked}>
                     {isLoading ? "Generating..." : "Generate Report"}
                 </button>
             </div>
@@ -81,7 +117,7 @@ function Reports() {
                         className="min-w-0 rounded-md border border-slate-300 bg-slate-50 px-3 py-2 text-sm text-slate-700 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
                     >
                         <option value="x">X Report (Daily)</option>
-                        <option value="z">Z Report (Range)</option>
+                        <option value="z">Z Report (End of Day)</option>
                         <option value="product_usage">Product Usage</option>
                     </select>
                 </div>
@@ -97,7 +133,7 @@ function Reports() {
                             className="rounded-md border border-slate-300 bg-slate-50 px-3 py-2 text-sm text-slate-700 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
                         />
                     </div>
-                ) : (
+                ) : reportType === "product_usage" ? (
                     <div className="reportDetail flex items-center gap-3 rounded-lg border border-slate-200 bg-white px-4 py-3 shadow-sm">
                         <label htmlFor="reportStartDate" className="font-semibold text-slate-600 whitespace-nowrap">Start:</label>
                         <input
@@ -115,6 +151,17 @@ function Reports() {
                             onChange={(e) => setEndDate(e.target.value)}
                             className="rounded-md border border-slate-300 bg-slate-50 px-3 py-2 text-sm text-slate-700 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
                         />
+                    </div>
+                ) : (
+                    <div className="reportDetail rounded-lg border border-slate-200 bg-white px-4 py-3 shadow-sm text-sm text-slate-700">
+                        <p>
+                            Z report closes out <span className="font-semibold">{zStatus.reportDate}</span>. It can be generated only once per day.
+                        </p>
+                        {zStatus.isGeneratedToday && (
+                            <p className="mt-1 text-amber-700">
+                                Today&apos;s Z report is already generated{zStatus.generatedAt ? ` at ${new Date(zStatus.generatedAt).toLocaleTimeString()}` : ""}.
+                            </p>
+                        )}
                     </div>
                 )}
             </div>

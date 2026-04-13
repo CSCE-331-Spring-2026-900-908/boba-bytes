@@ -2,6 +2,7 @@ import express from "express";
 import pool from "../db/pool.js";
 
 const router = express.Router();
+const BUSINESS_TZ = "America/Chicago";
 
 const isValidDateString = (value) => {
   if (!value) return false;
@@ -37,6 +38,78 @@ const normalizeRange = (req, res) => {
   }
 
   return { start_date, end_date };
+};
+
+const ensureZReportTable = async (client) => {
+  await client.query(
+    `CREATE TABLE IF NOT EXISTS z_report_runs (
+      report_date date PRIMARY KEY,
+      generated_at timestamp NOT NULL DEFAULT (NOW() AT TIME ZONE '${BUSINESS_TZ}')
+    )`
+  );
+};
+
+const getBusinessDate = async (client) => {
+  const result = await client.query(
+    `SELECT TO_CHAR((NOW() AT TIME ZONE '${BUSINESS_TZ}')::date, 'YYYY-MM-DD') AS report_date`
+  );
+  return result.rows[0].report_date;
+};
+
+const buildZReportData = async (client, reportDate) => {
+  const summaryResult = await client.query(
+    `SELECT
+        COUNT(*)::int AS order_count,
+        COALESCE(SUM(order_total), 0)::float AS gross_sales,
+        COALESCE(AVG(order_total), 0)::float AS avg_order_value,
+        COALESCE(SUM(order_total) FILTER (WHERE payment_type = 'cash'), 0)::float AS cash_sales,
+        COALESCE(SUM(order_total) FILTER (WHERE payment_type = 'card'), 0)::float AS card_sales,
+        COALESCE(SUM(order_total) FILTER (WHERE payment_type = 'kiosk'), 0)::float AS kiosk_sales
+     FROM orders
+     WHERE timestamp >= $1::date
+       AND timestamp < ($1::date + INTERVAL '1 day')`,
+    [reportDate]
+  );
+
+  const categoryResult = await client.query(
+    `SELECT
+        COALESCE(m.item_type, 'Uncategorized') AS item_type,
+        COALESCE(SUM(oi.quantity), 0)::float AS quantity_sold,
+        COALESCE(SUM(oi.quantity * m.item_cost), 0)::float AS sales_amount
+     FROM ordereditems oi
+     JOIN orders o ON o.order_id = oi.order_id
+     JOIN menu m ON m.menu_item_id = oi.menu_item_id
+     WHERE o.timestamp >= $1::date
+       AND o.timestamp < ($1::date + INTERVAL '1 day')
+     GROUP BY COALESCE(m.item_type, 'Uncategorized')
+     ORDER BY sales_amount DESC`,
+    [reportDate]
+  );
+
+  const topItemsResult = await client.query(
+    `SELECT
+        m.menu_item_id,
+        m.item_name,
+        COALESCE(SUM(oi.quantity), 0)::float AS quantity_sold,
+        COALESCE(SUM(oi.quantity * m.item_cost), 0)::float AS sales_amount
+     FROM ordereditems oi
+     JOIN orders o ON o.order_id = oi.order_id
+     JOIN menu m ON m.menu_item_id = oi.menu_item_id
+     WHERE o.timestamp >= $1::date
+       AND o.timestamp < ($1::date + INTERVAL '1 day')
+     GROUP BY m.menu_item_id, m.item_name
+     ORDER BY quantity_sold DESC, sales_amount DESC
+     LIMIT 10`,
+    [reportDate]
+  );
+
+  return {
+    report_type: "z",
+    date: reportDate,
+    summary: summaryResult.rows[0],
+    category_breakdown: categoryResult.rows,
+    top_items: topItemsResult.rows
+  };
 };
 
 router.get("/x", async (req, res) => {
@@ -103,82 +176,71 @@ router.get("/x", async (req, res) => {
   }
 });
 
-router.get("/z", async (req, res) => {
-  const range = normalizeRange(req, res);
-  if (!range) return;
-
+router.get("/z/status", async (_req, res) => {
+  const client = await pool.connect();
   try {
-    const summaryResult = await pool.query(
-      `SELECT
-          COUNT(*)::int AS order_count,
-          COALESCE(SUM(order_total), 0)::float AS gross_sales,
-          COALESCE(AVG(order_total), 0)::float AS avg_order_value,
-          COALESCE(SUM(order_total) FILTER (WHERE payment_type = 'cash'), 0)::float AS cash_sales,
-          COALESCE(SUM(order_total) FILTER (WHERE payment_type = 'card'), 0)::float AS card_sales,
-          COALESCE(SUM(order_total) FILTER (WHERE payment_type = 'kiosk'), 0)::float AS kiosk_sales
-       FROM orders
-       WHERE timestamp >= $1::date
-         AND timestamp < ($2::date + INTERVAL '1 day')`,
-      [range.start_date, range.end_date]
-    );
-
-    const dailyResult = await pool.query(
-      `SELECT
-          DATE(o.timestamp) AS report_date,
-          COUNT(*)::int AS order_count,
-          COALESCE(SUM(o.order_total), 0)::float AS gross_sales
-       FROM orders o
-       WHERE o.timestamp >= $1::date
-         AND o.timestamp < ($2::date + INTERVAL '1 day')
-       GROUP BY DATE(o.timestamp)
-       ORDER BY DATE(o.timestamp)`,
-      [range.start_date, range.end_date]
-    );
-
-    const categoryResult = await pool.query(
-      `SELECT
-          COALESCE(m.item_type, 'Uncategorized') AS item_type,
-          COALESCE(SUM(oi.quantity), 0)::float AS quantity_sold,
-          COALESCE(SUM(oi.quantity * m.item_cost), 0)::float AS sales_amount
-       FROM ordereditems oi
-       JOIN orders o ON o.order_id = oi.order_id
-       JOIN menu m ON m.menu_item_id = oi.menu_item_id
-       WHERE o.timestamp >= $1::date
-         AND o.timestamp < ($2::date + INTERVAL '1 day')
-       GROUP BY COALESCE(m.item_type, 'Uncategorized')
-       ORDER BY sales_amount DESC`,
-      [range.start_date, range.end_date]
-    );
-
-    const topItemsResult = await pool.query(
-      `SELECT
-          m.menu_item_id,
-          m.item_name,
-          COALESCE(SUM(oi.quantity), 0)::float AS quantity_sold,
-          COALESCE(SUM(oi.quantity * m.item_cost), 0)::float AS sales_amount
-       FROM ordereditems oi
-       JOIN orders o ON o.order_id = oi.order_id
-       JOIN menu m ON m.menu_item_id = oi.menu_item_id
-       WHERE o.timestamp >= $1::date
-         AND o.timestamp < ($2::date + INTERVAL '1 day')
-       GROUP BY m.menu_item_id, m.item_name
-       ORDER BY quantity_sold DESC, sales_amount DESC
-       LIMIT 10`,
-      [range.start_date, range.end_date]
+    await ensureZReportTable(client);
+    const reportDate = await getBusinessDate(client);
+    const existing = await client.query(
+      `SELECT generated_at FROM z_report_runs WHERE report_date = $1::date`,
+      [reportDate]
     );
 
     res.json({
       report_type: "z",
-      start_date: range.start_date,
-      end_date: range.end_date,
-      summary: summaryResult.rows[0],
-      daily_sales: dailyResult.rows,
-      category_breakdown: categoryResult.rows,
-      top_items: topItemsResult.rows
+      report_date: reportDate,
+      is_generated_today: existing.rowCount > 0,
+      generated_at: existing.rows[0]?.generated_at || null
     });
   } catch (err) {
-    console.error("GET /reports/z error:", err);
+    console.error("GET /reports/z/status error:", err);
     res.status(500).json({ error: "Server error" });
+  } finally {
+    client.release();
+  }
+});
+
+router.post("/z", async (_req, res) => {
+  const client = await pool.connect();
+  try {
+    await client.query("BEGIN");
+    await ensureZReportTable(client);
+
+    const reportDate = await getBusinessDate(client);
+    const insertResult = await client.query(
+      `INSERT INTO z_report_runs (report_date)
+       VALUES ($1::date)
+       ON CONFLICT (report_date) DO NOTHING
+       RETURNING report_date, generated_at`,
+      [reportDate]
+    );
+
+    if (insertResult.rowCount === 0) {
+      const existing = await client.query(
+        `SELECT generated_at FROM z_report_runs WHERE report_date = $1::date`,
+        [reportDate]
+      );
+      await client.query("ROLLBACK");
+      return res.status(409).json({
+        error: "Z report has already been generated for today.",
+        report_type: "z",
+        report_date: reportDate,
+        generated_at: existing.rows[0]?.generated_at || null
+      });
+    }
+
+    const reportPayload = await buildZReportData(client, reportDate);
+    await client.query("COMMIT");
+    res.status(201).json({
+      ...reportPayload,
+      generated_at: insertResult.rows[0].generated_at
+    });
+  } catch (err) {
+    await client.query("ROLLBACK");
+    console.error("POST /reports/z error:", err);
+    res.status(500).json({ error: "Server error" });
+  } finally {
+    client.release();
   }
 });
 

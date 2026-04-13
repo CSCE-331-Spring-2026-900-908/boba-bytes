@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import './CustomerKiosk.css';
-import { API_BASE } from '../../config/api.js';
+import {API_BASE} from '../../config/api.js';
 
 function CustomerKiosk() {
   const [menuItems, setMenuItems] = useState([]);
@@ -110,13 +110,7 @@ function CustomerKiosk() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           items: cart.flatMap(item => {
-            const arr = [{ menu_item_id: item.menu_item_id, quantity: item.quantity }];
-            if (item.toppings) {
-              item.toppings.forEach(t => {
-                arr.push({ menu_item_id: t.menu_item_id, quantity: t.quantity * item.quantity });
-              });
-            }
-            return arr;
+            return [{menu_item_id: item.menu_item_id, quantity: item.quantity}];
           }),
           total: totalPrice
         })

@@ -23,21 +23,18 @@ router.post("/", async (req, res) => {
     const orderId = orderRes.rows[0].order_id;
 
     for (const item of items) {
-      const itemRes = await client.query(
+      await client.query(
         `INSERT INTO ordereditems (order_id, menu_item_id, quantity)
-         VALUES ($1, $2, $3)
-         RETURNING *`,
+         VALUES ($1, $2, $3)`,
         [orderId, item.menu_item_id, item.quantity]
       );
-
-      const orderedItemId = itemRes.rows[0].id;
 
       if (item.toppings) {
         for (const t of item.toppings) {
           await client.query(
-            `INSERT INTO ordereditem_toppings (ordereditem_id, topping_id, quantity)
-             VALUES ($1, $2, 1)`,
-            [orderedItemId, t.topping_id]
+            `INSERT INTO ordereditems (order_id, menu_item_id, quantity)
+             VALUES ($1, $2, $3)`,
+            [orderId, t.topping_id, t.quantity ?? item.quantity ?? 1]
           );
         }
       }
