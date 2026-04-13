@@ -169,15 +169,6 @@
   margin-top: auto;
 }
 
-.item-description {
-  margin-top: calc(8px * var(--scale));
-  margin-bottom: calc(8px * var(--scale));
-  font-size: calc(1rem * var(--scale));
-  color: #6a4a3a;
-  line-height: 1.35;
-  text-align: center;
-}
-
 .cart-sidebar {
   flex: 0.67;
   background: rgba(255,255,255,0.95);
