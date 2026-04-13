@@ -9,6 +9,7 @@ import kiosk_orders from "./routes/kiosk_orders.js";
 import orders from "./routes/orders.js";
 import login from "./routes/login.js";
 
+
 const app = express();
 app.use(cors({
     origin: ["http://localhost:5173", "https://boba-bytes-production.up.railway.app", "https://boba-bytes.vercel.app"],
