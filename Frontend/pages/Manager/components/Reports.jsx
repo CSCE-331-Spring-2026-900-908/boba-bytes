@@ -17,7 +17,7 @@ const parseJsonSafe = async (response) => {
 const formatCurrency = (value) => `$${Number(value || 0).toFixed(2)}`;
 
 function Reports() {
-    const [reportType, setReportType] = useState("x");
+        const [reportType, setReportType] = useState("order_history");
     const [date, setDate] = useState(todayString());
     const [startDate, setStartDate] = useState(todayString());
     const [endDate, setEndDate] = useState(todayString());
@@ -55,6 +55,31 @@ function Reports() {
         fetchZStatus();
     }, []);
 
+    useEffect(() => {
+        // Load order history by default on mount
+        const loadDefaultReport = async () => {
+            setIsLoading(true);
+            setError("");
+            try {
+                const endpoint = `${API_BASE}/reports/order-history`;
+                const response = await fetch(endpoint);
+                const data = await parseJsonSafe(response);
+                if (!response.ok) {
+                    throw new Error(data?.error || "Failed to generate report.");
+                }
+                setReportData(data);
+            } catch (err) {
+                setReportData(null);
+                setError(err.message || "Failed to generate report.");
+            } finally {
+                setIsLoading(false);
+            }
+        };
+        if (reportData === null) {
+            loadDefaultReport();
+        }
+    }, []);
+
     const handleGenerateReport = async () => {
         setIsLoading(true);
         setError("");
@@ -65,8 +90,10 @@ function Reports() {
                 endpoint = `${API_BASE}/reports/x?date=${encodeURIComponent(date)}`;
             } else if (reportType === "z") {
                 endpoint = `${API_BASE}/reports/z`;
-            } else {
+            } else if (reportType === "product_usage") {
                 endpoint = `${API_BASE}/reports/product-usage?start_date=${encodeURIComponent(startDate)}&end_date=${encodeURIComponent(endDate)}`;
+            } else if (reportType === "order_history") {
+                endpoint = `${API_BASE}/reports/order-history`;
             }
 
             const response = await fetch(endpoint, {
@@ -116,13 +143,14 @@ function Reports() {
                         onChange={(e) => setReportType(e.target.value)}
                         className="min-w-0 rounded-md border border-slate-300 bg-slate-50 px-3 py-2 text-sm text-slate-700 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
                     >
+                        <option value="order_history">Order History</option>
                         <option value="x">X Report (Daily)</option>
                         <option value="z">Z Report (End of Day)</option>
                         <option value="product_usage">Product Usage</option>
                     </select>
                 </div>
 
-                {reportType === "x" ? (
+                {(reportType === "x") ? (
                     <div className="reportDetail flex items-center gap-3 rounded-lg border border-slate-200 bg-white px-4 py-3 shadow-sm">
                         <label htmlFor="reportDate" className="font-semibold text-slate-600 whitespace-nowrap">Date:</label>
                         <input
@@ -152,7 +180,7 @@ function Reports() {
                             className="rounded-md border border-slate-300 bg-slate-50 px-3 py-2 text-sm text-slate-700 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
                         />
                     </div>
-                ) : (
+                ) : reportType === "z" ? (
                     <div className="reportDetail rounded-lg border border-slate-200 bg-white px-4 py-3 shadow-sm text-sm text-slate-700">
                         <p>
                             Z report closes out <span className="font-semibold">{zStatus.reportDate}</span>. It can be generated only once per day.
@@ -163,10 +191,72 @@ function Reports() {
                             </p>
                         )}
                     </div>
-                )}
+                ) : null}
             </div>
 
             {error && <p className="report-error">{error}</p>}
+
+            {reportData && reportType === "order_history" && (
+                <>
+                    <div className="report-section">
+                        <h3>Recent Order History</h3>
+                        <div className="report-summary-grid">
+                            <div className="report-card">
+                                <span>Total Orders Shown</span>
+                                <strong>{reportData.total_orders || 0}</strong>
+                            </div>
+                            <div className="report-card">
+                                <span>Total Sales</span>
+                                <strong>{formatCurrency(reportData.grand_total)}</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    {reportData.orders && reportData.orders.length > 0 ? (
+                        <div className="report-section">
+                            <h3>Orders</h3>
+                            <table className="emp-table">
+                                <thead>
+                                    <tr>
+                                        <th>Order ID</th>
+                                        <th>Time</th>
+                                        <th>Items</th>
+                                        <th>Payment</th>
+                                        <th>Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {reportData.orders.map((order) => (
+                                        <tr key={order.order_id}>
+                                            <td>#{order.order_id}</td>
+                                            <td>{new Date(order.timestamp).toLocaleString()}</td>
+                                            <td>
+                                                <div className="text-sm">
+                                                    {order.items && order.items.length > 0 ? (
+                                                        order.items.map((item, idx) => (
+                                                            <div key={idx} className="text-slate-700">
+                                                                {item.quantity}x {item.item_name}
+                                                            </div>
+                                                        ))
+                                                    ) : (
+                                                        <span className="text-slate-500">No items</span>
+                                                    )}
+                                                </div>
+                                            </td>
+                                            <td className="capitalize">{order.payment_type}</td>
+                                            <td>{formatCurrency(order.order_total)}</td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    ) : (
+                        <div className="report-section">
+                            <p className="empty-row">No orders found for selected date.</p>
+                        </div>
+                    )}
+                </>
+            )}
 
             {reportData && (reportType === "x" || reportType === "z") && (
                 <>

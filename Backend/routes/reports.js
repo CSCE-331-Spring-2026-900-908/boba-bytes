@@ -297,4 +297,43 @@ router.get("/product-usage", async (req, res) => {
   }
 });
 
+router.get("/order-history", async (req, res) => {
+  const limit = req.query.limit || 50;
+
+  try {
+    const ordersResult = await pool.query(
+      `SELECT
+          o.order_id,
+          o.order_total,
+          o.payment_type,
+          o.timestamp,
+          ARRAY_AGG(
+            JSON_BUILD_OBJECT(
+              'menu_item_id', m.menu_item_id,
+              'item_name', m.item_name,
+              'quantity', oi.quantity,
+              'item_cost', m.item_cost
+            ) ORDER BY oi.ordered_item_id
+          ) FILTER (WHERE m.item_type IS NOT NULL) AS items
+       FROM orders o
+       LEFT JOIN ordereditems oi ON o.order_id = oi.order_id
+       LEFT JOIN menu m ON m.menu_item_id = oi.menu_item_id
+       GROUP BY o.order_id, o.order_total, o.payment_type, o.timestamp
+       ORDER BY o.timestamp DESC
+       LIMIT $1`,
+      [limit]
+    );
+
+    res.json({
+      report_type: "order_history",
+      orders: ordersResult.rows,
+      total_orders: ordersResult.rowCount,
+      grand_total: ordersResult.rows.reduce((sum, order) => sum + parseFloat(order.order_total || 0), 0)
+    });
+  } catch (err) {
+    console.error("GET /reports/order-history error:", err);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
 export default router;
