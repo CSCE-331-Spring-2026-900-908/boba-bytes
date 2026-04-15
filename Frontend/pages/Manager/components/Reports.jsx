@@ -17,7 +17,7 @@ const parseJsonSafe = async (response) => {
 const formatCurrency = (value) => `$${Number(value || 0).toFixed(2)}`;
 
 function Reports() {
-        const [reportType, setReportType] = useState("order_history");
+    const [reportType, setReportType] = useState("order_history");
     const [date, setDate] = useState(todayString());
     const [startDate, setStartDate] = useState(todayString());
     const [endDate, setEndDate] = useState(todayString());

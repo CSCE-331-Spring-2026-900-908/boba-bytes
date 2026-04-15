@@ -9,7 +9,7 @@ function CustomerKiosk() {
   const [cart, setCart] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const [fontScale, setFontScale] = useState(1);
+  const [fontScale, setFontScale] = useState(1.2);
   const [speakMode, setSpeakMode] = useState(false);
   const [keyboardMode, setKeyboardMode] = useState(false);
 
@@ -264,79 +264,67 @@ function CustomerKiosk() {
       className="kiosk-container"
       style={{ '--scale': fontScale }}
     >
-      <header className="kiosk-header-small">
-        <h1>Boba Bytes</h1>
-        <div className="cart-icon-header">
-          <span>Cart: {cart.length}</span>
+      <header className="kiosk-top-header">
+        <div className="kiosk-header-small">
+          <h1>Boba Bytes</h1>
+          <div className="kiosk-header-actions">
+            <div className="category-bar">
+              {categories.map((cat, index) => (
+                  <button
+                      key={cat ?? index}
+                      ref={(el) => (categoryRefs.current[index] = el)}
+                      tabIndex={keyboardMode ? 0 : -1}
+                      onClick={() => {
+                        setSelectedCategory(cat);
+                        speak(`Category: ${cat}`);
+                      }}
+                      className={`category-btn ${selectedCategory === cat ? 'active' : ''}`}
+                      aria-label={`Select category ${cat}`}
+                  >
+                    {cat}
+                  </button>
+              ))}
+            </div>
+            <div className="accessibility-bar">
+              <label>Text Size:</label>
+              <button
+                className="size-btn"
+                onClick={() => setFontScale(prev => Math.max(0.6, prev - 0.1))}
+                aria-label="Decrease text size"
+              >
+                -
+              </button>
+              <button
+                className="size-btn"
+                onClick={() => setFontScale(prev => Math.min(1.6, prev + 0.1))}
+                aria-label="Increase text size"
+              >
+                +
+              </button>
+
+              <button
+                className={`access-btn ${speakMode ? 'active' : ''}`}
+                onClick={() => {
+                  setSpeakMode(!speakMode);
+                  speak(!speakMode ? "Audio guidance enabled" : "Audio guidance disabled");
+                }}
+              >
+                {speakMode ? "Speaker On" : "Speaker Off"}
+              </button>
+
+              <button
+                className={`access-btn ${keyboardMode ? 'active' : ''}`}
+                onClick={() => {
+                  setKeyboardMode(!keyboardMode);
+                  speak(!keyboardMode ? "Keyboard navigation enabled" : "Keyboard navigation disabled");
+                }}
+              >
+                {keyboardMode ? "Keyboard On" : "Keyboard Off"}
+              </button>
+            </div>
+          </div>
         </div>
       </header>
-
-      <div className="accessibility-bar">
-        <label>Text Size:</label>
-        <div className="text-size-controls">
-          <button 
-            className="size-btn" 
-            onClick={() => setFontScale(prev => Math.max(0.6, prev - 0.1))}
-            aria-label="Decrease text size"
-          >
-            -
-          </button>
-          <input
-            type="range"
-            min="0.6"
-            max="1.6"
-            step="0.1"
-            value={fontScale}
-            onChange={(e) => setFontScale(Number(e.target.value))}
-            aria-label="Text size slider"
-          />
-          <button 
-            className="size-btn" 
-            onClick={() => setFontScale(prev => Math.min(1.6, prev + 0.1))}
-            aria-label="Increase text size"
-          >
-            +
-          </button>
-        </div>
-
-        <button
-          className={`access-btn ${speakMode ? 'active' : ''}`}
-          onClick={() => {
-            setSpeakMode(!speakMode);
-            speak(!speakMode ? "Audio guidance enabled" : "Audio guidance disabled");
-          }}
-        >
-          {speakMode ? "Speaker On" : "Speaker Off"}
-        </button>
-
-        <button
-          className={`access-btn ${keyboardMode ? 'active' : ''}`}
-          onClick={() => {
-            setKeyboardMode(!keyboardMode);
-            speak(!keyboardMode ? "Keyboard navigation enabled" : "Keyboard navigation disabled");
-          }}
-        >
-          {keyboardMode ? "Keyboard On" : "Keyboard Off"}
-        </button>
-      </div>
-
-      <div className="category-bar">
-        {categories.map((cat, index) => (
-          <button
-            key={cat ?? index}
-            ref={(el) => (categoryRefs.current[index] = el)}
-            tabIndex={keyboardMode ? 0 : -1}
-            onClick={() => {
-              setSelectedCategory(cat);
-              speak(`Category: ${cat}`);
-            }}
-            className={`category-btn ${selectedCategory === cat ? 'active' : ''}`}
-            aria-label={`Select category ${cat}`}
-          >
-            {cat}
-          </button>
-        ))}
-      </div>
 
       <div className="main-content">
         <div className="menu-grid">

@@ -13,6 +13,7 @@
 
 .kiosk-container {
   height: 100vh;
+  height: 100dvh;
   background: linear-gradient(135deg, var(--peach), var(--blush));
   color: var(--brown);
   font-family: system-ui, -apple-system, sans-serif;
@@ -21,37 +22,77 @@
   flex-direction: column;
 }
 
+.kiosk-top-header {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.42);
+}
+
 .kiosk-header-small {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding: calc(12px * var(--scale)) calc(20px * var(--scale));
-  background: rgba(255, 255, 255, 0.4);
+  justify-content: space-between;
+  gap: 60px;
+  flex: 1;
+  min-width: 0;
+  padding: 0;
+  background: transparent;
   color: var(--brown);
-  font-size: calc(2rem * var(--scale));
+  font-size: calc(1.35rem * var(--scale));
   font-weight: bold;
+  line-height: 1;
+  flex-wrap: nowrap;
+}
+
+.kiosk-header-small h1 {
+  margin: 0;
+  font-size: inherit;
+  line-height: 1;
 }
 
 .cart-icon-header {
-  font-size: calc(1.6rem * var(--scale));
+  font-size: calc(1rem * var(--scale));
   font-weight: bold;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.kiosk-header-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: calc(10px * var(--scale));
+  flex: 1;
+  min-width: 0;
+}
+
+.kiosk-header-actions .accessibility-bar {
+  flex: 1;
+  justify-content: center;
 }
 
 .accessibility-bar {
   display: flex;
   align-items: center;
-  gap: calc(18px * var(--scale));
-  padding: calc(12px * var(--scale)) calc(20px * var(--scale));
-  background: rgba(255,255,255,0.5);
-  font-size: calc(1.2rem * var(--scale));
+  gap: calc(8px * var(--scale));
+  padding: 0;
+  background: transparent;
+  font-size: calc(1rem * var(--scale));
+}
+
+.accessibility-bar label {
+  font-weight: 700;
+  white-space: nowrap;
 }
 
 .access-btn {
   background: var(--white);
   border: calc(2px * var(--scale)) solid var(--border);
-  padding: calc(10px * var(--scale)) calc(18px * var(--scale));
-  border-radius: calc(12px * var(--scale));
-  font-size: calc(1.2rem * var(--scale));
+  padding: calc(7px * var(--scale)) calc(12px * var(--scale));
+  border-radius: calc(10px * var(--scale));
+  font-size: calc(1rem * var(--scale));
   cursor: pointer;
   font-weight: 600;
   transition: background 0.2s, transform 0.2s;
@@ -64,17 +105,20 @@
 
 .category-bar {
   display: flex;
-  gap: calc(15px * var(--scale));
-  padding: calc(15px * var(--scale)) calc(20px * var(--scale));
-  background: rgba(255, 255, 255, 0.5);
+  gap: calc(6px * var(--scale));
+  flex: 1.1;
+  min-width: 0;
+  padding: 0;
+  background: transparent;
   overflow-x: auto;
+  justify-content: flex-start;
   white-space: nowrap;
-  justify-content: center;
+  scrollbar-width: thin;
 }
 
 .category-btn {
-  padding: calc(18px * var(--scale)) calc(36px * var(--scale));
-  font-size: calc(1.5rem * var(--scale));
+  padding: calc(7px * var(--scale)) calc(14px * var(--scale));
+  font-size: calc(0.9rem * var(--scale));
   border: none;
   border-radius: calc(50px * var(--scale));
   background: var(--white);
@@ -93,6 +137,7 @@
 .main-content {
   display: flex;
   flex: 1;
+  min-height: 0;
   gap: calc(25px * var(--scale));
   padding: calc(20px * var(--scale));
   overflow: hidden;
@@ -100,6 +145,7 @@
 
 .menu-grid {
   flex: 2;
+  min-height: 0;
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(calc(240px * var(--scale)), 1fr));
   gap: calc(25px * var(--scale));
@@ -171,6 +217,7 @@
 
 .cart-sidebar {
   flex: 0.67;
+  min-height: 0;
   background: rgba(255,255,255,0.95);
   color: var(--brown);
   border-radius: calc(24px * var(--scale));
