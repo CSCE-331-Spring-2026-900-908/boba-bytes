@@ -506,7 +506,116 @@
   font-weight: 600;
   opacity: 0.8;
 }
+.chatbot-button {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  background: var(--yellow-pastel, #ffe9a9);
+  border-radius: 50%;
+  width: 80px;
+  height: 80px;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.18);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+}
 
+.chatbot-button img {
+  width: 60%;
+  height: 60%;
+  object-fit: contain;
+}
+
+.chatbot-modal {
+  position: fixed;
+  bottom: 130px;
+  right: 30px;
+  width: 380px;
+  height: 520px;
+  background: #ffffff;
+  border-radius: 20px;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.22);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  z-index: 60;
+}
+
+.chatbot-header {
+  background: var(--peach, #f9c2a2);
+  padding: 14px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 700;
+  color: var(--brown, #5c3d2e);
+  font-size: 1.1rem;
+}
+
+.chatbot-header button {
+  background: transparent;
+  border: none;
+  font-size: 1.4rem;
+  cursor: pointer;
+  color: var(--brown, #5c3d2e);
+}
+
+.chatbot-messages {
+  flex: 1;
+  padding: 12px 14px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: #fffaf5;
+}
+
+.msg-user {
+  align-self: flex-end;
+  background: var(--yellow-pastel, #ffe9a9);
+  padding: 8px 12px;
+  border-radius: 14px 14px 2px 14px;
+  max-width: 80%;
+  font-size: 0.95rem;
+}
+
+.msg-bot {
+  align-self: flex-start;
+  background: #f1f1f1;
+  padding: 8px 12px;
+  border-radius: 14px 14px 14px 2px;
+  max-width: 80%;
+  font-size: 0.95rem;
+}
+
+.chatbot-input {
+  display: flex;
+  padding: 10px;
+  gap: 8px;
+  border-top: 1px solid #e2e2e2;
+  background: #ffffff;
+}
+
+.chatbot-input input {
+  flex: 1;
+  padding: 8px 10px;
+  border-radius: 12px;
+  border: 1px solid #d0d0d0;
+  font-size: 0.95rem;
+}
+
+.chatbot-input button {
+  background: var(--blush, #f28b82);
+  color: #ffffff;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
 
 .text-size-controls {
   display: flex;

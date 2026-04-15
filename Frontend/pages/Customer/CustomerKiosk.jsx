@@ -30,6 +30,17 @@ function CustomerKiosk() {
   const [selectedToppings, setSelectedToppings] = useState([]);
   const [openTopping, setOpenTopping] = useState(null);
 
+  const [chatOpen, setChatOpen] = useState(false);
+  const [chatMessages, setChatMessages] = useState([
+    {
+      role: 'assistant',
+      content:
+        'Hi, I am Boba Buddy! Tell me the weather, any allergies or diet needs, and I will recommend a drink.'
+    }
+  ]);
+  const [chatInput, setChatInput] = useState('');
+  const [chatLoading, setChatLoading] = useState(false);
+
   const itemRefs = useRef([]);
   const categoryRefs = useRef([]);
   const synth = window.speechSynthesis;
@@ -193,7 +204,8 @@ function CustomerKiosk() {
       sugar: selectedSugar || '100%',
       toppings: selectedToppings.filter((t) => t.quantity > 0),
       quantity: editingIndex !== null ? cart[editingIndex].quantity : 1,
-      base_cost: basePrice
+      base_cost: basePrice,
+      toppings_cost_per_drink: toppingsCost
     };
 
     if (editingIndex !== null) {
@@ -242,8 +254,7 @@ function CustomerKiosk() {
   };
 
   const totalPrice = cart.reduce((total, item) => {
-    const toppingsCost = computeToppingsCostPerDrink(item.toppings);
-    const perDrink = Number(item.base_cost) + toppingsCost;
+    const perDrink = Number(item.base_cost) + computeToppingsCostPerDrink(item.toppings);
     return total + perDrink * item.quantity;
   }, 0);
 
@@ -360,6 +371,39 @@ function CustomerKiosk() {
     });
   };
 
+  const sendChatMessage = async () => {
+    const trimmed = chatInput.trim();
+    if (!trimmed) return;
+    const newMessages = [...chatMessages, { role: 'user', content: trimmed }];
+    setChatMessages(newMessages);
+    setChatInput('');
+    setChatLoading(true);
+    try {
+      const res = await fetch(`${API_BASE}/chatbot`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          messages: newMessages,
+          menu: menuItems
+        })
+      });
+      const data = await res.json();
+      if (data && data.reply) {
+        setChatMessages((prev) => [...prev, data.reply]);
+      }
+    } catch (e) {
+      setChatMessages((prev) => [
+        ...prev,
+        {
+          role: 'assistant',
+          content: 'Sorry, I had trouble answering. Please try again.'
+        }
+      ]);
+    } finally {
+      setChatLoading(false);
+    }
+  };
+
   if (loading) return <div className="kiosk-loading">Loading menu...</div>;
 
   return (
@@ -464,8 +508,8 @@ function CustomerKiosk() {
             <p className="empty-cart">Tap any drink to start your order</p>
           ) : (
             cart.map((item, index) => {
-              const toppingsCost = computeToppingsCostPerDrink(item.toppings);
-              const perDrink = Number(item.base_cost) + toppingsCost;
+              const perDrink =
+                Number(item.base_cost) + computeToppingsCostPerDrink(item.toppings);
               return (
                 <div key={item.cart_item_id} className="cart-item">
                   <div style={{ flex: 1 }} onClick={() => openCustomization(item, index)}>
@@ -664,6 +708,43 @@ function CustomerKiosk() {
             >
               Cancel
             </button>
+          </div>
+        </div>
+      )}
+
+      <div className="chatbot-button" onClick={() => setChatOpen(true)}>
+        <img src="/images/chatbot.png" alt="Chatbot" />
+      </div>
+
+      {chatOpen && (
+        <div className="chatbot-modal">
+          <div className="chatbot-header">
+            <span>Boba Buddy</span>
+            <button onClick={() => setChatOpen(false)}>×</button>
+          </div>
+          <div className="chatbot-messages">
+            {chatMessages.map((m, i) => (
+              <div
+                key={i}
+                className={m.role === 'user' ? 'msg-user' : 'msg-bot'}
+              >
+                {m.content}
+              </div>
+            ))}
+            {chatLoading && (
+              <div className="msg-bot">Thinking of a drink for you...</div>
+            )}
+          </div>
+          <div className="chatbot-input">
+            <input
+              value={chatInput}
+              onChange={(e) => setChatInput(e.target.value)}
+              placeholder="Tell me the weather, allergies, diet..."
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') sendChatMessage();
+              }}
+            />
+            <button onClick={sendChatMessage}>Send</button>
           </div>
         </div>
       )}
