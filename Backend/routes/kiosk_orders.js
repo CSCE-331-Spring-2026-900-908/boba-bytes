@@ -4,7 +4,7 @@ import pool from '../db/pool.js';
 const router = express.Router();
 
 router.post("/", async (req, res) => {
-    console.log("Order received:", req.body); // add this
+    console.log("Order received:", req.body);
     const { items, total } = req.body;
     try {
         const orderResult = await pool.query(

@@ -4,8 +4,7 @@ import { API_BASE } from "../../../config/api.js";
 const emptyForm = {
     item_name: "",
     item_cost: "",
-    item_type: "",
-    item_description: ""
+    item_type: ""
 };
 
 const emptyRecipeRow = {
@@ -133,7 +132,6 @@ export default function MenuManagement() {
             item_name: form.item_name,
             item_cost: parseFloat(form.item_cost),
             item_type: form.item_type,
-            item_description: form.item_description?.trim() || null,
             recipe
         };
 
@@ -171,8 +169,7 @@ export default function MenuManagement() {
         setForm({
             item_name: item.item_name,
             item_cost: item.item_cost,
-            item_type: item.item_type,
-            item_description: item.item_description ?? ""
+            item_type: item.item_type
         });
         setShowForm(true);
 
@@ -292,16 +289,6 @@ export default function MenuManagement() {
                                     <option key={cat} value={cat} />
                                 ))}
                             </datalist>
-                        </div>
-                        <div className="form-group">
-                            <label>Description</label>
-                            <textarea
-                                name="item_description"
-                                placeholder="Short description shown on kiosk"
-                                value={form.item_description}
-                                onChange={handleChange}
-                                rows={3}
-                            />
                         </div>
                     </div>
 

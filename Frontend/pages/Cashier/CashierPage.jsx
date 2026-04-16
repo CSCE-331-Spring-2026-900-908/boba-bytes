@@ -2,6 +2,9 @@ import React, { useState, useEffect, useMemo, useRef } from "react";
 import "./Cashier.css";
 import { API_BASE } from "../../config/api.js";
 
+const ICE_OPTIONS = ["No Ice", "Less Ice", "Regular Ice", "Extra Ice"];
+const SUGAR_OPTIONS = ["0%", "25%", "50%", "75%", "100%"];
+
 export default function CashierPage() {
   const [items, setItems] = useState([]);
   const [categories, setCategories] = useState([]);
@@ -12,8 +15,20 @@ export default function CashierPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [favoriteIds, setFavoriteIds] = useState([]);
 
+  const [customModalOpen, setCustomModalOpen] = useState(false);
+  const [currentDrink, setCurrentDrink] = useState(null);
+  const [editingIndex, setEditingIndex] = useState(null);
+  const [selectedIce, setSelectedIce] = useState("Regular Ice");
+  const [selectedSugar, setSelectedSugar] = useState("100%");
+  const [selectedToppings, setSelectedToppings] = useState([]);
+
   const [placing, setPlacing] = useState(false);
   const searchInputRef = useRef(null);
+
+  const toppingItems = useMemo(
+    () => items.filter(i => i.item_type === "Toppings"),
+    [items]
+  );
 
   // Load menu + categories
   useEffect(() => {
@@ -97,21 +112,79 @@ export default function CashierPage() {
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [filteredItems, searchTerm, order.length, placeOrder]);
 
-  // Add drink
-  function addDrink(item) {
-    setOrder(prev => [
-      ...prev,
-      {
-        menu_item_id: item.menu_item_id,
-        item_name: item.item_name,
-        item_cost: item.item_cost,
-        qty: 1,
-        toppings: []
-      }
-    ]);
+  const sameDrinkConfig = (a, b) => {
+    const toppingsA = [...(a.toppings || [])]
+      .map(t => ({ id: t.menu_item_id, qty: t.quantity }))
+      .sort((x, y) => x.id - y.id);
+    const toppingsB = [...(b.toppings || [])]
+      .map(t => ({ id: t.menu_item_id, qty: t.quantity }))
+      .sort((x, y) => x.id - y.id);
+
+    return (
+      a.menu_item_id === b.menu_item_id &&
+      a.ice === b.ice &&
+      a.sugar === b.sugar &&
+      JSON.stringify(toppingsA) === JSON.stringify(toppingsB)
+    );
+  };
+
+  function openCustomization(item, index = null) {
+    setCurrentDrink(item);
+    setEditingIndex(index);
+
+    if (index !== null) {
+      const existing = order[index];
+      setSelectedIce(existing.ice || "Regular Ice");
+      setSelectedSugar(existing.sugar || "100%");
+      setSelectedToppings(existing.toppings || []);
+    } else {
+      setSelectedIce("Regular Ice");
+      setSelectedSugar("100%");
+      setSelectedToppings([]);
+    }
+
+    setCustomModalOpen(true);
   }
 
-  // Add topping to last drink
+  function saveDrinkCustomization() {
+    if (!currentDrink) return;
+
+    const nextDrink = {
+      menu_item_id: currentDrink.menu_item_id,
+      item_name: currentDrink.item_name,
+      item_cost: Number(currentDrink.item_cost),
+      qty: editingIndex !== null ? order[editingIndex].qty : 1,
+      ice: selectedIce,
+      sugar: selectedSugar,
+      toppings: selectedToppings
+        .filter(t => t.quantity > 0)
+        .map(t => ({ ...t, item_cost: Number(t.item_cost) }))
+    };
+
+    if (editingIndex !== null) {
+      setOrder(prev => {
+        const copy = [...prev];
+        copy[editingIndex] = nextDrink;
+        return copy;
+      });
+    } else {
+      setOrder(prev => {
+        const existingIndex = prev.findIndex(o => sameDrinkConfig(o, nextDrink));
+        if (existingIndex !== -1) {
+          const copy = [...prev];
+          copy[existingIndex] = { ...copy[existingIndex], qty: copy[existingIndex].qty + 1 };
+          return copy;
+        }
+        return [...prev, nextDrink];
+      });
+    }
+
+    setCustomModalOpen(false);
+    setCurrentDrink(null);
+    setEditingIndex(null);
+  }
+
+  // Add topping to last drink for quick cashier flow
   function addTopping(item) {
     setOrder(prev => {
       if (prev.length === 0) {
@@ -124,7 +197,19 @@ export default function CashierPage() {
 
       const updated = {
         ...last,
-        toppings: [...last.toppings, item]
+        toppings: (() => {
+          const existing = (last.toppings || []).find(
+            t => t.menu_item_id === item.menu_item_id
+          );
+          if (existing) {
+            return last.toppings.map(t =>
+              t.menu_item_id === item.menu_item_id
+                ? { ...t, quantity: (t.quantity || 1) + 1 }
+                : t
+            );
+          }
+          return [...(last.toppings || []), { ...item, quantity: 1 }];
+        })()
       };
 
       const copy = [...prev];
@@ -138,8 +223,41 @@ export default function CashierPage() {
     if (item.item_type === "Toppings") {
       addTopping(item);
     } else {
-      addDrink(item);
+      openCustomization(item);
     }
+  }
+
+  function getSelectedToppingQty(toppingId) {
+    return selectedToppings.find(t => t.menu_item_id === toppingId)?.quantity || 0;
+  }
+
+  function incrementSelectedTopping(item) {
+    setSelectedToppings(prev => {
+      const existing = prev.find(t => t.menu_item_id === item.menu_item_id);
+      if (existing) {
+        return prev.map(t =>
+          t.menu_item_id === item.menu_item_id
+            ? { ...t, quantity: t.quantity + 1 }
+            : t
+        );
+      }
+      return [...prev, { ...item, item_cost: Number(item.item_cost), quantity: 1 }];
+    });
+  }
+
+  function decrementSelectedTopping(item) {
+    setSelectedToppings(prev => {
+      const existing = prev.find(t => t.menu_item_id === item.menu_item_id);
+      if (!existing) return prev;
+      if (existing.quantity <= 1) {
+        return prev.filter(t => t.menu_item_id !== item.menu_item_id);
+      }
+      return prev.map(t =>
+        t.menu_item_id === item.menu_item_id
+          ? { ...t, quantity: t.quantity - 1 }
+          : t
+      );
+    });
   }
 
   // Change qty
@@ -160,7 +278,7 @@ export default function CashierPage() {
     return order.reduce((sum, o) => {
       const base = o.item_cost * o.qty;
       const toppingTotal = o.toppings.reduce(
-        (s, t) => s + t.item_cost * o.qty,
+        (s, t) => s + Number(t.item_cost) * (t.quantity || 1) * o.qty,
         0
       );
       return sum + base + toppingTotal;
@@ -180,9 +298,11 @@ export default function CashierPage() {
           items: order.map(o => ({
             menu_item_id: o.menu_item_id,
             quantity: o.qty,
+            ice_level: o.ice,
+            sugar_level: o.sugar,
             toppings: o.toppings.map(t => ({
               topping_id: t.menu_item_id,
-              quantity: 1
+              quantity: t.quantity || 1
             }))
           })),
           total: orderTotal
@@ -262,13 +382,19 @@ export default function CashierPage() {
           {order.map((o, index) => (
             <div key={index} className="order-row">
               <div className="order-item-info">
-                <div className="order-item-name">{o.item_name}</div>
+                <div className="order-item-name" onClick={() => openCustomization(o, index)}>
+                  {o.item_name}
+                </div>
+                <div className="order-customization-line">
+                  Ice: {o.ice || "Regular Ice"} • Sugar: {o.sugar || "100%"}
+                </div>
 
                 {o.toppings.length > 0 && (
                   <div className="order-toppings">
                     {o.toppings.map((t, i) => (
                       <div key={i} className="topping-line">
-                        + {t.item_name} (${t.item_cost})
+                        + {t.item_name}
+                        {t.quantity > 1 ? ` x${t.quantity}` : ""} (${Number(t.item_cost).toFixed(2)})
                       </div>
                     ))}
                   </div>
@@ -277,7 +403,7 @@ export default function CashierPage() {
                 <div className="order-item-price">
                   ${(o.item_cost * o.qty +
                     o.toppings.reduce(
-                      (s, t) => s + t.item_cost * o.qty,
+                      (s, t) => s + Number(t.item_cost) * (t.quantity || 1) * o.qty,
                       0
                     )).toFixed(2)}
                 </div>
@@ -312,6 +438,81 @@ export default function CashierPage() {
           </button>
         </div>
       </div>
+
+      {customModalOpen && currentDrink && (
+        <div className="cashier-modal-overlay" onClick={() => setCustomModalOpen(false)}>
+          <div className="cashier-modal-content" onClick={e => e.stopPropagation()}>
+            <h2>Customize {currentDrink.item_name}</h2>
+
+            <div className="cashier-custom-section">
+              <label>Ice Level</label>
+              <div className="cashier-option-group">
+                {ICE_OPTIONS.map(option => (
+                  <button
+                    key={option}
+                    className={`cashier-option-btn ${selectedIce === option ? "active" : ""}`}
+                    onClick={() => setSelectedIce(option)}
+                  >
+                    {option}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="cashier-custom-section">
+              <label>Sugar Level</label>
+              <div className="cashier-option-group">
+                {SUGAR_OPTIONS.map(option => (
+                  <button
+                    key={option}
+                    className={`cashier-option-btn ${selectedSugar === option ? "active" : ""}`}
+                    onClick={() => setSelectedSugar(option)}
+                  >
+                    {option}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="cashier-custom-section">
+              <label>Toppings</label>
+              <div className="cashier-topping-list">
+                {toppingItems.map(t => (
+                  <div key={t.menu_item_id} className="cashier-topping-row">
+                    <span>
+                      {t.item_name} (${Number(t.item_cost).toFixed(2)})
+                    </span>
+                    <div className="cashier-topping-controls">
+                      <button onClick={() => decrementSelectedTopping(t)}>-</button>
+                      <span>{getSelectedToppingQty(t.menu_item_id)}</span>
+                      <button onClick={() => incrementSelectedTopping(t)}>+</button>
+                    </div>
+                  </div>
+                ))}
+                {toppingItems.length === 0 && (
+                  <div className="cashier-empty-toppings">No topping items found in menu.</div>
+                )}
+              </div>
+            </div>
+
+            <div className="cashier-modal-actions">
+              <button className="cashier-confirm-btn" onClick={saveDrinkCustomization}>
+                {editingIndex !== null ? "Save Changes" : "Add Drink"}
+              </button>
+              <button
+                className="cashier-cancel-btn"
+                onClick={() => {
+                  setCustomModalOpen(false);
+                  setCurrentDrink(null);
+                  setEditingIndex(null);
+                }}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
