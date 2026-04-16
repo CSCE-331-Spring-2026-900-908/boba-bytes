@@ -1,3 +1,6 @@
+import dotenv from "dotenv";
+dotenv.config();
+
 import express from "express";
 import cors from "cors";
 
@@ -8,7 +11,7 @@ import reports from "./routes/reports.js";
 import kiosk_orders from "./routes/kiosk_orders.js";
 import orders from "./routes/orders.js";
 import login from "./routes/login.js";
-
+import chatbotRouter from './routes/chatbot.js';
 
 const app = express();
 app.use(cors({
@@ -25,5 +28,6 @@ app.use("/api/reports", reports);
 app.use("/api/kiosk_orders", kiosk_orders);
 app.use("/api/orders", orders);
 app.use("/api/login", login);
+app.use('/api/chatbot', chatbotRouter);
 
 app.listen(3001, () => console.log("Backend running on port 3001"));
