@@ -295,6 +295,7 @@ export default function CashierPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          payment_type: "cashier",
           items: order.map(o => ({
             menu_item_id: o.menu_item_id,
             quantity: o.qty,

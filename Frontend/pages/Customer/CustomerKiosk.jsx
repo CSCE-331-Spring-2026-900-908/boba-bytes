@@ -266,6 +266,7 @@ function CustomerKiosk() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          payment_type: 'kiosk',
           items: cart.map((item) => ({
             menu_item_id: item.menu_item_id,
             quantity: item.quantity
