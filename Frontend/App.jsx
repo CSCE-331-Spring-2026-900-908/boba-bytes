@@ -6,6 +6,7 @@ import Login from "./pages/Login/Login.jsx";
 import ManagerPage from "./pages/Manager/ManagerPage.jsx";
 import CashierPage from "./pages/Cashier/CashierPage.jsx";
 import CustomerKiosk from './pages/Customer/CustomerKiosk';
+import OAuthSuccess from "./pages/OAuthSuccess.jsx";
 
 function App() {
     return (
@@ -13,6 +14,7 @@ function App() {
             <Routes>
                 <Route path="/" element={<Portal />} />
                 <Route path="/login" element={<Login />} />
+                <Route path="/oauth/success" element={<OAuthSuccess />} />
                 <Route path="/manager" element={<ManagerPage />} />
                 <Route path="/cashier" element={<CashierPage />} />
                 <Route path="/customer" element={<CustomerKiosk />} />
