@@ -148,24 +148,29 @@
   min-height: 0;
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(calc(240px * var(--scale)), 1fr));
+  grid-auto-rows: minmax(calc(360px * var(--scale)), 1fr);
   gap: calc(25px * var(--scale));
   overflow-y: auto;
   padding-right: calc(10px * var(--scale));
 }
 
 .menu-card {
-  margin-top: calc(15px * var(--scale));
+  margin-top: 0;
   background: var(--white);
   border-radius: calc(18px * var(--scale));
   border: calc(1.5px * var(--scale)) solid var(--border);
-  padding: calc(16px * var(--scale));
+  padding: calc(14px * var(--scale));
   display: flex;
   flex-direction: column;
-  gap: calc(8px * var(--scale));
+  gap: calc(10px * var(--scale));
   box-shadow: var(--shadow);
   cursor: pointer;
   transition: transform 0.2s ease, box-shadow 0.2s ease, border 0.2s;
   outline: none;
+  min-height: calc(360px * var(--scale));
+  height: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 .menu-card:hover {
@@ -186,33 +191,51 @@
 .item-image {
   display: block;
   width: 100%;
-  height: clamp(130px, 20vh, 190px);
-  max-height: 190px;
+  height: clamp(160px, 22vh, 200px);
   flex-shrink: 0;
+  object-fit: cover;
   object-position: center;
   border-radius: calc(10px * var(--scale));
 }
 
 .item-info {
-  padding: calc(18px * var(--scale));
-  display: flex;
-  flex-direction: column;
-  flex: 1.2;
+  padding: calc(4px * var(--scale));
+  display: grid;
+  grid-template-rows: auto auto auto;
+  flex: 1;
+  gap: calc(8px * var(--scale));
+  padding-bottom: calc(10px * var(--scale));
+  min-height: 0;
 }
 
 .item-info h3 {
-  font-size: calc(2rem * var(--scale));
-  font-weight: 600;
+  margin: 0;
+  font-size: calc(1.15rem * var(--scale));
+  font-weight: 700;
   color: var(--brown);
-  text-align: center;
+  text-align: left;
+  line-height: 1.3;
+  min-height: calc(3em * var(--scale));
+}
+
+.item-description {
+  color: rgba(92, 61, 46, 0.9);
+  font-size: calc(0.86rem * var(--scale));
+  line-height: 1.35;
+  min-height: 0;
+  display: block;
+  overflow: visible;
+  overflow-wrap: anywhere;
 }
 
 .price {
-  font-size: calc(2rem * var(--scale));
-  text-align: center;
+  margin-top: 60px;
+  font-size: calc(1.2rem * var(--scale));
+  text-align: left;
   color: var(--blush);
-  font-weight: 500;
-  margin-top: auto;
+  font-weight: 700;
+  padding-bottom: calc(8px * var(--scale));
+  flex-shrink: 0;
 }
 
 .cart-sidebar {
@@ -431,6 +454,50 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+}
+
+.topping-checkbox-list {
+  display: flex;
+  flex-direction: column;
+  gap: calc(8px * var(--scale));
+}
+
+.topping-checkbox-row {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  gap: calc(10px * var(--scale));
+  border: calc(1px * var(--scale)) solid var(--border);
+  border-radius: calc(10px * var(--scale));
+  padding: calc(10px * var(--scale)) calc(12px * var(--scale));
+  font-size: calc(1rem * var(--scale));
+  cursor: pointer;
+  color: var(--brown);
+  text-align: left;
+  background: rgba(255, 255, 255, 0.88);
+  appearance: none;
+  transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+}
+
+.topping-checkbox-row:hover {
+  background: #fff9e8;
+  border-color: #e9ceb8;
+}
+
+.topping-checkbox-row.selected {
+  border-color: var(--blush);
+  background: #fff3e8;
+}
+
+.topping-checkbox-row.selected span:first-child {
+  font-weight: 700;
+}
+
+.topping-checkbox-price {
+  margin-left: auto;
+  font-weight: 700;
+  color: var(--blush);
 }
 
 .topping-header-row {
