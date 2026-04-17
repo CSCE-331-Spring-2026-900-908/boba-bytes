@@ -19,7 +19,6 @@ function CustomerKiosk() {
   const [speakMode, setSpeakMode] = useState(false);
   const [keyboardMode, setKeyboardMode] = useState(false);
   const [focusIndex, setFocusIndex] = useState(0);
-  const [toppingModal, setToppingModal] = useState({ isOpen: false, topping: null });
 
   const [customModalOpen, setCustomModalOpen] = useState(false);
   const [currentDrink, setCurrentDrink] = useState(null);
@@ -28,7 +27,6 @@ function CustomerKiosk() {
   const [selectedIce, setSelectedIce] = useState(null);
   const [selectedSugar, setSelectedSugar] = useState(null);
   const [selectedToppings, setSelectedToppings] = useState([]);
-  const [openTopping, setOpenTopping] = useState(null);
 
   const [chatOpen, setChatOpen] = useState(false);
   const [chatMessages, setChatMessages] = useState([
@@ -125,7 +123,7 @@ function CustomerKiosk() {
           cats = [...new Set(items.map((item) => item.item_type).filter(Boolean))];
         }
         setMenuItems(items);
-        setCategories(['All', ...cats]);
+        setCategories(['All', ...cats.filter((cat) => cat !== 'Toppings')]);
       } catch (error) {
         alert('Could not load menu. Is the backend running?');
       } finally {
@@ -135,14 +133,16 @@ function CustomerKiosk() {
     loadMenu();
   }, []);
 
+  const browseableMenuItems = menuItems.filter((item) => item.item_type !== 'Toppings');
+
   const filteredItems =
     selectedCategory === 'All'
-      ? menuItems
-      : menuItems.filter((item) => item.item_type === selectedCategory);
+      ? browseableMenuItems
+      : browseableMenuItems.filter((item) => item.item_type === selectedCategory);
 
   const drinksMatch = (a, b) => {
-    const aT = (a.toppings || []).map((t) => ({ name: t.name, quantity: t.quantity })).sort((x, y) => x.name.localeCompare(y.name));
-    const bT = (b.toppings || []).map((t) => ({ name: t.name, quantity: t.quantity })).sort((x, y) => x.name.localeCompare(y.name));
+    const aT = (a.toppings || []).map((t) => t.name).sort((x, y) => x.localeCompare(y));
+    const bT = (b.toppings || []).map((t) => t.name).sort((x, y) => x.localeCompare(y));
     return (
       a.menu_item_id === b.menu_item_id &&
       a.size === b.size &&
@@ -167,25 +167,15 @@ function CustomerKiosk() {
       setSelectedSugar(null);
       setSelectedToppings([]);
     }
-    setOpenTopping(null);
     setCustomModalOpen(true);
   };
 
   const handleItemClick = (item) => {
-    if (item.item_type === 'Toppings') {
-      const drinksInCart = cart.filter((c) => c.item_type !== 'Toppings');
-      if (drinksInCart.length === 0) {
-        alert('Please add a drink first.');
-        return;
-      }
-      setToppingModal({ isOpen: true, topping: item });
-    } else {
-      openCustomization(item);
-    }
+    openCustomization(item);
   };
 
   const computeToppingsCostPerDrink = (toppings) =>
-    (toppings || []).reduce((sum, t) => sum + Number(t.price) * t.quantity, 0);
+    (toppings || []).reduce((sum, t) => sum + Number(t.price), 0);
 
   const saveDrink = () => {
     const basePrice = Number(currentDrink.item_cost);
@@ -202,7 +192,7 @@ function CustomerKiosk() {
       size: selectedSize || 'Medium',
       ice: selectedIce || 'Regular Ice',
       sugar: selectedSugar || '100%',
-      toppings: selectedToppings.filter((t) => t.quantity > 0),
+      toppings: selectedToppings,
       quantity: editingIndex !== null ? cart[editingIndex].quantity : 1,
       base_cost: basePrice,
       toppings_cost_per_drink: toppingsCost
@@ -339,36 +329,16 @@ function CustomerKiosk() {
     }
   }, [focusIndex, keyboardMode]);
 
-  const handleToppingHeaderClick = (name) => {
-    setOpenTopping((prev) => (prev === name ? null : name));
-  };
+  const isToppingSelected = (name) =>
+    selectedToppings.some((t) => t.name === name);
 
-  const getSelectedTopping = (name) =>
-    selectedToppings.find((t) => t.name === name) || null;
-
-  const incrementTopping = (name) => {
+  const toggleTopping = (name) => {
     setSelectedToppings((prev) => {
-      const existing = prev.find((t) => t.name === name);
-      if (existing) {
-        return prev.map((t) =>
-          t.name === name ? { ...t, quantity: t.quantity + 1 } : t
-        );
-      }
-      const price = getToppingPriceByName(name);
-      return [...prev, { name, price, quantity: 1 }];
-    });
-  };
-
-  const decrementTopping = (name) => {
-    setSelectedToppings((prev) => {
-      const existing = prev.find((t) => t.name === name);
-      if (!existing) return prev;
-      if (existing.quantity <= 1) {
+      if (prev.some((t) => t.name === name)) {
         return prev.filter((t) => t.name !== name);
       }
-      return prev.map((t) =>
-        t.name === name ? { ...t, quantity: t.quantity - 1 } : t
-      );
+      const price = getToppingPriceByName(name);
+      return [...prev, { name, price }];
     });
   };
 
@@ -527,7 +497,6 @@ function CustomerKiosk() {
                         item.toppings.map((t, idx) => (
                           <div key={idx}>
                             + {t.name}
-                            {t.quantity > 1 ? ` x${t.quantity}` : ''}
                           </div>
                         ))}
                     </div>
@@ -621,32 +590,19 @@ function CustomerKiosk() {
 
             <div className="custom-section">
               <label>Toppings</label>
-              {TOPPINGS.map((t) => {
-                const selected = getSelectedTopping(t.name);
-                const qty = selected ? selected.quantity : 0;
-                const isOpen = openTopping === t.name;
-                return (
-                  <div key={t.name}>
-                    <hr className="topping-separator" />
-                    <div
-                      className="topping-header-row"
-                      onClick={() => handleToppingHeaderClick(t.name)}
-                    >
-                      <span>{t.name}</span>
-                      <span>{isOpen ? '▼' : '►'}</span>
-                    </div>
-                    {isOpen && (
-                      <div className="topping-quantity-row">
-                        <button onClick={() => decrementTopping(t.name)}>-</button>
-                        <span>{qty}</span>
-                        <button onClick={() => incrementTopping(t.name)}>+</button>
-                        <span>${t.price.toFixed(2)} each</span>
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
-              <hr className="topping-separator" />
+              <div className="topping-checkbox-list">
+                {TOPPINGS.map((t) => (
+                  <button
+                    type="button"
+                    key={t.name}
+                    className={`topping-checkbox-row ${isToppingSelected(t.name) ? 'selected' : ''}`}
+                    onClick={() => toggleTopping(t.name)}
+                  >
+                    <span>{t.name}</span>
+                    <span className="topping-checkbox-price">+${t.price.toFixed(2)}</span>
+                  </button>
+                ))}
+              </div>
             </div>
 
             <button className="confirm-btn" onClick={saveDrink}>
@@ -658,54 +614,6 @@ function CustomerKiosk() {
                 setCustomModalOpen(false);
                 setEditingIndex(null);
               }}
-            >
-              Cancel
-            </button>
-          </div>
-        </div>
-      )}
-
-      {toppingModal.isOpen && (
-        <div className="topping-modal-overlay">
-          <div className="topping-modal-content">
-            <h2>Add {toppingModal.topping?.item_name} to which drink?</h2>
-            <div style={{ marginTop: '20px', maxHeight: '50vh', overflowY: 'auto' }}>
-              {cart
-                .filter((c) => c.item_type !== 'Toppings')
-                .map((drink) => (
-                  <button
-                    key={drink.cart_item_id}
-                    className="drink-list-btn"
-                    onClick={() => {
-                      setCart((prev) =>
-                        prev.map((c) => {
-                          if (c.cart_item_id === drink.cart_item_id) {
-                            const name = toppingModal.topping.item_name;
-                            const price = getToppingPriceByName(name);
-                            const existing = (c.toppings || []).find((t) => t.name === name);
-                            let newToppings;
-                            if (existing) {
-                              newToppings = c.toppings.map((t) =>
-                                t.name === name ? { ...t, quantity: t.quantity + 1 } : t
-                              );
-                            } else {
-                              newToppings = [...(c.toppings || []), { name, price, quantity: 1 }];
-                            }
-                            return { ...c, toppings: newToppings };
-                          }
-                          return c;
-                        })
-                      );
-                      setToppingModal({ isOpen: false, topping: null });
-                    }}
-                  >
-                    {drink.item_name} (Qty: {drink.quantity})
-                  </button>
-                ))}
-            </div>
-            <button
-              className="cancel-modal-btn"
-              onClick={() => setToppingModal({ isOpen: false, topping: null })}
             >
               Cancel
             </button>
