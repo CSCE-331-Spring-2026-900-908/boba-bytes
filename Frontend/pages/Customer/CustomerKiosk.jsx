@@ -523,8 +523,11 @@ function CustomerKiosk() {
     <div className="kiosk-container" style={{ "--scale": fontScale }}>
       <header className="kiosk-top-header">
         <div className="kiosk-header-small">
-          <h1>{t("Boba Bytes")}</h1>
-
+          <img
+            src="/images/menu/logo.png"
+            alt="Boba Bytes Logo"
+            className="kiosk-logo"
+          />
           <div className="kiosk-header-actions">
             <div className="category-bar">
               {categories.map((cat, index) => (
