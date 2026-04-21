@@ -591,6 +591,13 @@ function CustomerKiosk() {
 
   const browseableMenuItems = menuItems.filter((item) => item.item_type !== "Toppings");
 
+  const TOPPINGS = menuItems
+    .filter((item) => item.item_type === "Toppings")
+    .map((item) => ({
+      name: item.item_name,
+      price: Number(item.item_cost)
+    }));
+
   const filteredItems =
     selectedCategory === "All"
       ? browseableMenuItems
