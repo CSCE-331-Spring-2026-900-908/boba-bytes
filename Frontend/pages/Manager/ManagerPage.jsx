@@ -5,6 +5,7 @@ import MenuManagement from "./components/MenuManagement.jsx";
 import InventoryManagement from "./components/InventoryManagment";
 import Reports from "./components/Reports.jsx";
 import "./Manager.css";
+import Recommendations from "./components/Recommendations";
 
 export default function ManagerPage() {
     const [tab, setTab] = useState("employees");
@@ -18,6 +19,7 @@ export default function ManagerPage() {
                 {tab === "menu" && <MenuManagement />}
                 {tab === "inventory" && <InventoryManagement />}
                 {tab === "reports" && <Reports />}
+                {tab === "recommendations" && <Recommendations />}
             </div>
         </div>
     );

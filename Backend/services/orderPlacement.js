@@ -10,6 +10,27 @@ const asPositiveNumber = (value) => {
   return Number.isFinite(num) && num > 0 ? num : null;
 };
 
+const normalizeIceLevel = (value) =>
+  String(value || "")
+    .trim()
+    .toLowerCase();
+
+const getIceMultiplier = (iceLevel) => {
+  switch (normalizeIceLevel(iceLevel)) {
+    case "no ice":
+      return 0;
+    case "less ice":
+      return 0.5;
+    case "extra ice":
+      return 1.5;
+    default:
+      return 1;
+  }
+};
+
+const isIceInventoryItem = (name) => /\bice\b/i.test(String(name || ""));
+const DEFAULT_ICE_USAGE_PER_DRINK = 1;
+
 const buildOrderLines = (items) => {
   if (!Array.isArray(items) || items.length === 0) {
     const err = new Error("No items in order");
@@ -29,14 +50,18 @@ const buildOrderLines = (items) => {
       throw err;
     }
 
-    lines.push({ menu_item_id: menuItemId, quantity });
+    lines.push({
+      menu_item_id: menuItemId,
+      quantity,
+      ice_level: item?.ice_level ?? item?.ice ?? null
+    });
 
     if (Array.isArray(item.toppings)) {
       item.toppings.forEach((topping, toppingIndex) => {
         const toppingId = asPositiveInt(topping?.topping_id ?? topping?.menu_item_id);
-        const toppingQty = asPositiveNumber(topping?.quantity ?? 1);
+        const toppingQtyPerDrink = asPositiveNumber(topping?.quantity ?? 1);
 
-        if (!toppingId || !toppingQty) {
+        if (!toppingId || !toppingQtyPerDrink) {
           const err = new Error(
             `Invalid topping at item index ${itemIndex}, topping index ${toppingIndex}`
           );
@@ -44,7 +69,7 @@ const buildOrderLines = (items) => {
           throw err;
         }
 
-        lines.push({ menu_item_id: toppingId, quantity: toppingQty });
+        lines.push({ menu_item_id: toppingId, quantity: toppingQtyPerDrink * quantity });
       });
     }
   });
@@ -52,7 +77,7 @@ const buildOrderLines = (items) => {
   return lines;
 };
 
-const aggregateRecipeUsage = (orderLines, recipeRows) => {
+const aggregateRecipeUsage = (orderLines, recipeRows, fallbackIceInvItemId = null) => {
   const recipeByMenuId = new Map();
   recipeRows.forEach((row) => {
     const list = recipeByMenuId.get(Number(row.menu_item_id)) || [];
@@ -64,14 +89,36 @@ const aggregateRecipeUsage = (orderLines, recipeRows) => {
 
   orderLines.forEach((line) => {
     const recipeForItem = recipeByMenuId.get(Number(line.menu_item_id)) || [];
+    let hasIceInRecipe = false;
+
     recipeForItem.forEach((recipe) => {
       const invItemId = Number(recipe.inv_item_id);
-      const requiredQty = Number(recipe.quantity) * Number(line.quantity);
+      let requiredQty = Number(recipe.quantity) * Number(line.quantity);
+
+      if (isIceInventoryItem(recipe.item_name)) {
+        hasIceInRecipe = true;
+      }
+
+      if (line.ice_level && isIceInventoryItem(recipe.item_name)) {
+        requiredQty *= getIceMultiplier(line.ice_level);
+      }
+
       usageByInventoryId.set(
         invItemId,
         (usageByInventoryId.get(invItemId) || 0) + requiredQty
       );
     });
+
+    if (line.ice_level && !hasIceInRecipe && fallbackIceInvItemId) {
+      const fallbackIceQty =
+        DEFAULT_ICE_USAGE_PER_DRINK * Number(line.quantity) * getIceMultiplier(line.ice_level);
+      if (fallbackIceQty > 0) {
+        usageByInventoryId.set(
+          Number(fallbackIceInvItemId),
+          (usageByInventoryId.get(Number(fallbackIceInvItemId)) || 0) + fallbackIceQty
+        );
+      }
+    }
   });
 
   return usageByInventoryId;
@@ -104,13 +151,35 @@ export async function placeOrderWithInventory({ items, total, paymentType = "cas
 
     const menuIds = [...new Set(orderLines.map((line) => Number(line.menu_item_id)))];
     const recipeResult = await client.query(
-      `SELECT menu_item_id, inv_item_id, quantity
-       FROM recipeitems
-       WHERE menu_item_id = ANY($1::int[])`,
+      `SELECT r.menu_item_id, r.inv_item_id, r.quantity, i.item_name
+       FROM recipeitems r
+       JOIN inventory i ON i.inv_item_id = r.inv_item_id
+       WHERE r.menu_item_id = ANY($1::int[])`,
       [menuIds]
     );
 
-    const usageByInventoryId = aggregateRecipeUsage(orderLines, recipeResult.rows);
+    const fallbackIceResult = await client.query(
+      `SELECT inv_item_id
+       FROM inventory
+       WHERE LOWER(item_name) LIKE '%ice%'
+       ORDER BY CASE
+         WHEN LOWER(item_name) = 'ice' THEN 0
+         WHEN LOWER(item_name) LIKE 'ice %' THEN 1
+         WHEN LOWER(item_name) LIKE '% ice%' THEN 2
+         ELSE 3
+       END,
+       inv_item_id ASC
+       LIMIT 1`
+    );
+    const fallbackIceInvItemId = fallbackIceResult.rows[0]?.inv_item_id
+      ? Number(fallbackIceResult.rows[0].inv_item_id)
+      : null;
+
+    const usageByInventoryId = aggregateRecipeUsage(
+      orderLines,
+      recipeResult.rows,
+      fallbackIceInvItemId
+    );
 
     if (usageByInventoryId.size > 0) {
       const inventoryIds = [...usageByInventoryId.keys()];

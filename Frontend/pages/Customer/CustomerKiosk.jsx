@@ -332,7 +332,7 @@ const TRANSLATIONS = {
     es: "Té Thai intenso con notas dulces y un final especiado.",
     fr: "Thé thaï intense aux notes crémeuses et épicées.",
     zh: "浓郁泰式茶，香甜奶香与香料尾韵。",
-    ja: "濃厚なタイティーに甘いクリームとスパイシーな余韻。",
+    ja: "濃厚なタイティーに甘いクリームとスパイシーな余韵。",
     ko: "진한 타이티에 달콤한 크림과 향긋한 향신료 여운.",
     vi: "Trà Thái đậm đà với vị kem ngọt và hậu vị thơm gia vị."
   },
@@ -559,11 +559,6 @@ function CustomerKiosk() {
     synth.speak(new SpeechSynthesisUtterance(text));
   };
 
-  const getToppingPriceByName = (name) => {
-    const t = TOPPINGS.find((x) => x.name === name);
-    return t ? t.price : 0;
-  };
-
   useEffect(() => {
     async function loadMenu() {
       try {
@@ -594,6 +589,7 @@ function CustomerKiosk() {
   const TOPPINGS = menuItems
     .filter((item) => item.item_type === "Toppings")
     .map((item) => ({
+      menu_item_id: Number(item.menu_item_id),
       name: item.item_name,
       price: Number(item.item_cost)
     }));
@@ -605,11 +601,11 @@ function CustomerKiosk() {
 
   const drinksMatch = (a, b) => {
     const aT = (a.toppings || [])
-      .map((t) => t.name)
-      .sort((x, y) => x.localeCompare(y));
+      .map((t) => Number(t.menu_item_id))
+      .sort((x, y) => x - y);
     const bT = (b.toppings || [])
-      .map((t) => t.name)
-      .sort((x, y) => x.localeCompare(y));
+      .map((t) => Number(t.menu_item_id))
+      .sort((x, y) => x - y);
 
     return (
       a.menu_item_id === b.menu_item_id &&
@@ -730,7 +726,13 @@ function CustomerKiosk() {
           payment_type: "kiosk",
           items: cart.map((item) => ({
             menu_item_id: item.menu_item_id,
-            quantity: item.quantity
+            quantity: item.quantity,
+            ice_level: item.ice,
+            sugar_level: item.sugar,
+            toppings: (item.toppings || []).map((top) => ({
+              topping_id: top.menu_item_id,
+              quantity: 1
+            }))
           })),
           total: totalPrice
         })
@@ -825,16 +827,22 @@ function CustomerKiosk() {
     }
   }, [focusIndex, keyboardMode]);
 
-  const isToppingSelected = (name) =>
-    selectedToppings.some((t) => t.name === name);
+  const isToppingSelected = (toppingId) =>
+    selectedToppings.some((t) => Number(t.menu_item_id) === Number(toppingId));
 
-  const toggleTopping = (name) => {
+  const toggleTopping = (topping) => {
     setSelectedToppings((prev) => {
-      if (prev.some((t) => t.name === name)) {
-        return prev.filter((t) => t.name !== name);
+      if (prev.some((t) => Number(t.menu_item_id) === Number(topping.menu_item_id))) {
+        return prev.filter((t) => Number(t.menu_item_id) !== Number(topping.menu_item_id));
       }
-      const price = getToppingPriceByName(name);
-      return [...prev, { name, price }];
+      return [
+        ...prev,
+        {
+          menu_item_id: Number(topping.menu_item_id),
+          name: topping.name,
+          price: Number(topping.price)
+        }
+      ];
     });
   };
 
@@ -1212,9 +1220,9 @@ function CustomerKiosk() {
                     type="button"
                     key={top.name}
                     className={`topping-checkbox-row ${
-                      isToppingSelected(top.name) ? "selected" : ""
+                      isToppingSelected(top.menu_item_id) ? "selected" : ""
                     }`}
-                    onClick={() => toggleTopping(top.name)}
+                    onClick={() => toggleTopping(top)}
                   >
                     <span>{translateItemName(top.name)}</span>
                     <span className="topping-checkbox-price">
