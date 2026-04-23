@@ -275,18 +275,6 @@ const TRANSLATIONS = {
     es: "Té de leche de mango", fr: "Thé au lait à la mangue", zh: "芒果奶茶",
     ja: "マンゴーミルクティー", ko: "망고 밀크티", vi: "Trà sữa xoài"
   },
-  "grapefruit coffee tea": {
-    es: "Té de café y pomelo", fr: "Thé café et pamplemousse", zh: "葡萄柚咖啡茶",
-    ja: "グレープフルーツコーヒーティー", ko: "자몽 커피차", vi: "Trà cà phê bưởi"
-  },
-  "grapefruit milk tea": {
-    es: "Té de leche de pomelo", fr: "Thé au lait au pamplemousse", zh: "葡萄柚奶茶",
-    ja: "グレープフルーツミルクティー", ko: "자몽 밀크티", vi: "Trà sữa bưởi"
-  },
-  "grapefruit green tea": {
-    es: "Té verde de pomelo", fr: "Thé vert au pamplemousse", zh: "葡萄柚绿茶",
-    ja: "グレープフルーツグリーンティー", ko: "자몽 녹차", vi: "Trà xanh bưởi"
-  },
   "kiwi fruit tea": {
     es: "Té de kiwi", fr: "Thé au kiwi", zh: "奇异果水果茶",
     ja: "キウイフルーツティー", ko: "키위 과일차", vi: "Trà trái cây kiwi"
@@ -295,10 +283,6 @@ const TRANSLATIONS = {
     es: "Té verde de maracuyá", fr: "Thé vert aux fruits de la passion",
     zh: "百香果绿茶", ja: "パッションフルーツグリーンティー",
     ko: "패션프루트 녹차", vi: "Trà xanh chanh dây"
-  },
-  "pineapple green tea": {
-    es: "Té verde de piña", fr: "Thé vert à l'ananas", zh: "菠萝绿茶",
-    ja: "パイナップルグリーンティー", ko: "파인애플 녹차", vi: "Trà xanh dứa"
   },
 
   // Toppings
@@ -317,6 +301,160 @@ const TRANSLATIONS = {
   "taro balls": {
     es: "Bolas de taro", fr: "Boules de taro", zh: "芋圆",
     ja: "タロイモボール", ko: "타로 볼", vi: "Viên khoai môn"
+  },
+  "rainbow jelly": {
+    es: "Gelatina arcoíris", fr: "Gelée arc-en-ciel", zh: "彩虹椰果",
+    ja: "レインボーゼリー", ko: "레인보우 젤리", vi: "Thạch cầu vồng"
+  },
+  "red bean": {
+    es: "Frijol rojo", fr: "Haricot rouge", zh: "红豆",
+    ja: "あずき", ko: "팥", vi: "Đậu đỏ"
+  },
+
+  // New drinks (ticket SCRUM-63)
+  "caramel macchiato": {
+    es: "Caramel Macchiato", fr: "Caramel Macchiato", zh: "焦糖玛奇朵",
+    ja: "キャラメルマキアート", ko: "카라멜 마키아토", vi: "Caramel Macchiato"
+  },
+  "hazelnut latte": {
+    es: "Latte de avellana", fr: "Latte noisette", zh: "榛果拿铁",
+    ja: "ヘーゼルナッツラテ", ko: "헤이즐넛 라떼", vi: "Latte hạt dẻ"
+  },
+  "vietnamese iced coffee": {
+    es: "Café helado vietnamita", fr: "Café glacé vietnamien", zh: "越南冰咖啡",
+    ja: "ベトナムアイスコーヒー", ko: "베트남식 아이스커피", vi: "Cà phê sữa đá"
+  },
+  "roasted oolong milk tea": {
+    es: "Té de leche de oolong tostado", fr: "Thé au lait oolong torréfié",
+    zh: "烘焙乌龙奶茶", ja: "焙煎ウーロンミルクティー",
+    ko: "로스팅 우롱 밀크티", vi: "Trà sữa ô long rang"
+  },
+  "vanilla milk tea": {
+    es: "Té de leche de vainilla", fr: "Thé au lait vanille", zh: "香草奶茶",
+    ja: "バニラミルクティー", ko: "바닐라 밀크티", vi: "Trà sữa vani"
+  },
+  "chocolate milk tea": {
+    es: "Té de leche de chocolate", fr: "Thé au lait au chocolat",
+    zh: "巧克力奶茶", ja: "チョコレートミルクティー",
+    ko: "초콜릿 밀크티", vi: "Trà sữa socola"
+  },
+  "pumpkin spice milk tea": {
+    es: "Té de leche de especias de calabaza",
+    fr: "Thé au lait aux épices de citrouille",
+    zh: "南瓜香料奶茶", ja: "パンプキンスパイスミルクティー",
+    ko: "펌킨 스파이스 밀크티", vi: "Trà sữa bí ngô gia vị"
+  },
+  "cherry blossom tea": {
+    es: "Té de flor de cerezo", fr: "Thé à la fleur de cerisier",
+    zh: "樱花茶", ja: "桜茶",
+    ko: "벚꽃차", vi: "Trà hoa anh đào"
+  },
+  "brown sugar oolong tea": {
+    es: "Té oolong con azúcar morena", fr: "Thé oolong au sucre brun",
+    zh: "黑糖乌龙茶", ja: "黒糖ウーロン茶",
+    ko: "흑당 우롱차", vi: "Trà ô long đường nâu"
+  },
+  "jasmine green tea": {
+    es: "Té verde de jazmín", fr: "Thé vert au jasmin", zh: "茉莉绿茶",
+    ja: "ジャスミングリーンティー", ko: "재스민 녹차", vi: "Trà xanh hoa nhài"
+  },
+
+  // New descriptions (ticket SCRUM-63)
+  "Rich espresso layered with silky vanilla milk and buttery caramel drizzle.": {
+    es: "Espresso intenso sobre leche de vainilla sedosa con un toque de caramelo mantecoso.",
+    fr: "Expresso riche en couches avec un lait vanillé soyeux et un filet de caramel beurré.",
+    zh: "浓郁浓缩咖啡配丝滑香草牛奶和奶油焦糖酱。",
+    ja: "濃厚なエスプレッソに滑らかなバニラミルクとバターキャラメル。",
+    ko: "진한 에스프레소에 부드러운 바닐라 우유와 버터 캐러멜 드리즐.",
+    vi: "Espresso đậm đà xếp lớp với sữa vani mượt và siro caramel bơ."
+  },
+  "Smooth espresso with nutty hazelnut syrup and creamy steamed milk.": {
+    es: "Espresso suave con jarabe de avellanas y leche vaporizada cremosa.",
+    fr: "Expresso onctueux avec sirop noisette et lait vapeur crémeux.",
+    zh: "丝滑浓缩咖啡搭配榛果糖浆与浓郁蒸奶。",
+    ja: "滑らかなエスプレッソにヘーゼルナッツシロップとクリーミーなスチームミルク。",
+    ko: "부드러운 에스프레소에 고소한 헤이즐넛 시럽과 크리미한 스팀 밀크.",
+    vi: "Espresso mượt với siro hạt dẻ thơm và sữa hấp béo."
+  },
+  "Strong dark roast poured over sweet condensed milk, chilled over ice.": {
+    es: "Café oscuro fuerte vertido sobre leche condensada dulce, con hielo.",
+    fr: "Café torréfié fort versé sur du lait concentré sucré, glacé.",
+    zh: "浓郁深焙咖啡倒入甜炼乳中，冰镇享用。",
+    ja: "濃いダークローストを甘い練乳にのせ、氷で冷やしたコーヒー。",
+    ko: "진한 다크 로스트를 달콤한 연유 위에 부어 얼음과 함께 차갑게.",
+    vi: "Cà phê rang đậm rót lên sữa đặc ngọt, uống lạnh với đá."
+  },
+  "Toasty roasted oolong balanced with creamy milk for a nutty finish.": {
+    es: "Oolong tostado equilibrado con leche cremosa y un final de sabor a nuez.",
+    fr: "Oolong torréfié équilibré avec du lait crémeux, finale noisetée.",
+    zh: "烘焙乌龙香气与奶香平衡，带有坚果尾韵。",
+    ja: "香ばしい焙煎ウーロンにクリーミーなミルクでナッツの余韻。",
+    ko: "고소한 로스팅 우롱에 크리미한 우유, 견과류 여운.",
+    vi: "Ô long rang thơm hòa quyện sữa béo, hậu vị bùi hạt."
+  },
+  "Classic black milk tea infused with sweet Madagascar vanilla.": {
+    es: "Té negro clásico con leche infusionado con dulce vainilla de Madagascar.",
+    fr: "Thé noir au lait classique infusé à la vanille douce de Madagascar.",
+    zh: "经典黑奶茶融入甘甜的马达加斯加香草。",
+    ja: "クラシックなブラックミルクティーに甘いマダガスカルバニラ。",
+    ko: "클래식 블랙 밀크티에 달콤한 마다가스카르 바닐라.",
+    vi: "Trà đen sữa cổ điển hòa quyện vani Madagascar ngọt ngào."
+  },
+  "Rich cocoa blended with creamy milk tea for a dessert-like sip.": {
+    es: "Cacao intenso mezclado con té de leche cremoso, como un postre.",
+    fr: "Cacao riche mélangé au thé au lait crémeux, comme un dessert.",
+    zh: "浓郁可可与奶茶融合，宛如甜点一般。",
+    ja: "濃厚なココアとクリーミーなミルクティーがデザート感覚。",
+    ko: "진한 코코아와 크리미한 밀크티가 디저트 같은 한 모금.",
+    vi: "Ca cao đậm đà quyện trà sữa béo, ngọt như món tráng miệng."
+  },
+  "Warm pumpkin, cinnamon and nutmeg swirled into cozy milk tea.": {
+    es: "Calabaza, canela y nuez moscada en un té de leche reconfortante.",
+    fr: "Potiron, cannelle et muscade fondus dans un thé au lait réconfortant.",
+    zh: "温暖南瓜、肉桂与肉豆蔻融入温馨奶茶。",
+    ja: "かぼちゃ、シナモン、ナツメグを温かいミルクティーに。",
+    ko: "따뜻한 호박, 계피, 넛맥이 아늑한 밀크티에 어우러짐.",
+    vi: "Bí ngô ấm, quế và nhục đậu khấu hòa trong trà sữa ấm áp."
+  },
+  "Delicate sakura and white tea for a lightly floral spring sip.": {
+    es: "Sakura delicada y té blanco para un sorbo floral de primavera.",
+    fr: "Sakura délicat et thé blanc pour une gorgée florale de printemps.",
+    zh: "细腻樱花与白茶，轻盈花香的春日一饮。",
+    ja: "繊細な桜とホワイトティーで春の花の香り。",
+    ko: "섬세한 벚꽃과 백차로 가벼운 봄 꽃 한 모금.",
+    vi: "Hoa anh đào tinh tế và trà trắng, hương hoa xuân nhẹ nhàng."
+  },
+  "Caramelized brown sugar drizzled over fragrant roasted oolong.": {
+    es: "Azúcar morena caramelizada sobre oolong tostado y fragante.",
+    fr: "Sucre brun caramélisé sur un oolong torréfié parfumé.",
+    zh: "焦糖黑糖淋在香气四溢的烘焙乌龙上。",
+    ja: "キャラメライズした黒糖を香ばしい焙煎ウーロンに。",
+    ko: "캐러멜라이즈드 흑당이 향긋한 로스팅 우롱에.",
+    vi: "Đường nâu caramen rưới lên ô long rang thơm nức."
+  },
+  "Fragrant jasmine petals steeped with fresh green tea leaves.": {
+    es: "Pétalos de jazmín fragantes infusionados con hojas de té verde.",
+    fr: "Pétales de jasmin parfumés infusés avec des feuilles de thé vert frais.",
+    zh: "芬芳茉莉花瓣与新鲜绿茶叶一同冲泡。",
+    ja: "香り高いジャスミンの花と新鮮な緑茶葉を一緒に。",
+    ko: "향긋한 재스민 꽃잎과 신선한 녹차 잎을 함께.",
+    vi: "Hoa nhài thơm ngát ủ cùng lá trà xanh tươi."
+  },
+  "Chewy fruit-flavored jellies that add a burst of color and taste.": {
+    es: "Gelatinas masticables con sabor a frutas que añaden color y sabor.",
+    fr: "Gelées fruitées moelleuses qui apportent couleur et saveur.",
+    zh: "嚼劲十足的水果味果冻，带来色彩与风味。",
+    ja: "フルーツ味のもちもちゼリーで色と味が弾ける。",
+    ko: "쫀득한 과일 맛 젤리로 색과 맛이 팡!",
+    vi: "Thạch trái cây dai đầy màu sắc và hương vị."
+  },
+  "Sweet simmered azuki red beans with a soft, creamy bite.": {
+    es: "Frijoles azuki dulces cocidos, suaves y cremosos.",
+    fr: "Haricots rouges azuki sucrés mijotés, tendres et crémeux.",
+    zh: "甜煮红豆，口感柔软绵密。",
+    ja: "甘く煮たあずきの柔らかくクリーミーな食感。",
+    ko: "달콤하게 졸인 팥, 부드럽고 크리미한 식감.",
+    vi: "Đậu đỏ azuki ninh ngọt mềm mịn."
   },
 
   // Descriptions
@@ -479,7 +617,21 @@ function CustomerKiosk() {
     "strawberry fruit tea": "/images/menu/strawberry_fruit_tea.png",
     "peach black tea": "/images/menu/peach_black_tea.png",
     "lychee oolong tea": "/images/menu/lychee_oolong_tea.png",
-    "additional boba": "/images/menu/additional_boba.png"
+    "additional boba": "/images/menu/additional_boba.png",
+    "caramel macchiato": "/images/menu/caramel_macchiato.png",
+    "hazelnut latte": "/images/menu/hazelnut_latte.png",
+    "vietnamese iced coffee": "/images/menu/vietnamese_iced_coffee.png",
+    "roasted oolong milk tea": "/images/menu/roasted_oolong_milk_tea.png",
+    "vanilla milk tea": "/images/menu/vanilla_milk_tea.png",
+    "chocolate milk tea": "/images/menu/chocolate_milk_tea.png",
+    "pumpkin spice milk tea": "/images/menu/pumpkin_spice_milk_tea.png",
+    "cherry blossom tea": "/images/menu/cherry_blossom_tea.png",
+    "brown sugar oolong tea": "/images/menu/brown_sugar_oolong_tea.png",
+    "jasmine green tea": "/images/menu/jasmine_green_tea.png",
+    "passionfruit green tea": "/images/menu/passionfruit_green_tea.png",
+    "kiwi fruit tea": "/images/menu/kiwi_fruit_tea.png",
+    "mango milk tea": "/images/menu/mango_milk_tea.png",
+    "coffee fruit tea": "/images/menu/coffee_fruit_tea.png"
   };
 
   const generatedDescriptionByName = {
@@ -510,7 +662,31 @@ function CustomerKiosk() {
     "lychee oolong tea":
       "Floral oolong tea paired with delicate lychee sweetness.",
     "additional boba":
-      "Chewy tapioca pearls to add extra texture to your drink."
+      "Chewy tapioca pearls to add extra texture to your drink.",
+    "caramel macchiato":
+      "Rich espresso layered with silky vanilla milk and buttery caramel drizzle.",
+    "hazelnut latte":
+      "Smooth espresso with nutty hazelnut syrup and creamy steamed milk.",
+    "vietnamese iced coffee":
+      "Strong dark roast poured over sweet condensed milk, chilled over ice.",
+    "roasted oolong milk tea":
+      "Toasty roasted oolong balanced with creamy milk for a nutty finish.",
+    "vanilla milk tea":
+      "Classic black milk tea infused with sweet Madagascar vanilla.",
+    "chocolate milk tea":
+      "Rich cocoa blended with creamy milk tea for a dessert-like sip.",
+    "pumpkin spice milk tea":
+      "Warm pumpkin, cinnamon and nutmeg swirled into cozy milk tea.",
+    "cherry blossom tea":
+      "Delicate sakura and white tea for a lightly floral spring sip.",
+    "brown sugar oolong tea":
+      "Caramelized brown sugar drizzled over fragrant roasted oolong.",
+    "jasmine green tea":
+      "Fragrant jasmine petals steeped with fresh green tea leaves.",
+    "rainbow jelly":
+      "Chewy fruit-flavored jellies that add a burst of color and taste.",
+    "red bean":
+      "Sweet simmered azuki red beans with a soft, creamy bite."
   };
 
   const placeholderSvg =
