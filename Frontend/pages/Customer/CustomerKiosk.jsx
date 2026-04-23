@@ -458,6 +458,7 @@ function CustomerKiosk() {
   const [chatLoading, setChatLoading] = useState(false);
 
   const itemRefs = useRef([]);
+  const menuGridRef = useRef(null);
   const categoryRefs = useRef([]);
   const synth = window.speechSynthesis;
 
@@ -553,11 +554,33 @@ function CustomerKiosk() {
     }
     return english;
   };
-  const speak = (text) => {
-    if (!speakMode) return;
-    synth.cancel();
-    synth.speak(new SpeechSynthesisUtterance(text));
+const speak = (text) => {
+  if (!speakMode || !text) return;
+  synth.cancel();
+  const utterance = new SpeechSynthesisUtterance(text);
+
+  const langMap = {
+    en: "en-US",
+    es: "es-ES",
+    fr: "fr-FR",
+    zh: "zh-CN",
+    ja: "ja-JP",
+    ko: "ko-KR",
+    vi: "vi-VN",
   };
+  utterance.lang = langMap[language] || "en-US";
+
+  synth.speak(utterance);
+};
+
+const speakKey = (key) => {
+  speak(t(key));
+};
+
+const speakDrinkName = (item) => {
+  speak(getTranslatedDrinkName(item));
+};
+
 
   const getToppingPriceByName = (name) => {
     const t = TOPPINGS.find((x) => x.name === name);
@@ -588,6 +611,82 @@ function CustomerKiosk() {
     }
     loadMenu();
   }, []);
+  
+  useEffect(() => {
+  if (!menuGridRef.current) return;
+
+  let startX = 0;
+  let startY = 0;
+  let touchStartTime = 0;
+  let holdTimer = null;
+
+  const handleTouchStart = (e) => {
+    const touch = e.touches[0];
+    startX = touch.clientX;
+    startY = touch.clientY;
+    touchStartTime = Date.now();
+
+    // Tap-and-hold on the currently focused item
+    holdTimer = setTimeout(() => {
+      const item = filteredItems[focusIndex];
+      if (item) {
+        speakDrinkName(item);
+        openCustomization(item);
+      }
+    }, 600);
+  };
+
+  const handleTouchEnd = (e) => {
+    clearTimeout(holdTimer);
+    const touch = e.changedTouches[0];
+    const dx = touch.clientX - startX;
+    const dy = touch.clientY - startY;
+
+    const absX = Math.abs(dx);
+    const absY = Math.abs(dy);
+
+    // Ignore tiny movements
+    if (absX < 30 && absY < 30) return;
+
+    // Horizontal swipe → previous/next item
+    if (absX > absY) {
+      if (dx > 0 && focusIndex > 0) {
+        const prev = focusIndex - 1;
+        setFocusIndex(prev);
+        itemRefs.current[prev]?.focus();
+        speakDrinkName(filteredItems[prev]);
+      } else if (dx < 0 && focusIndex < filteredItems.length - 1) {
+        const next = focusIndex + 1;
+        setFocusIndex(next);
+        itemRefs.current[next]?.focus();
+        speakDrinkName(filteredItems[next]);
+      }
+    } else {
+      // Vertical swipe → treat like up/down
+      if (dy > 0 && focusIndex < filteredItems.length - 1) {
+        const next = focusIndex + 1;
+        setFocusIndex(next);
+        itemRefs.current[next]?.focus();
+        speakDrinkName(filteredItems[next]);
+      } else if (dy < 0 && focusIndex > 0) {
+        const prev = focusIndex - 1;
+        setFocusIndex(prev);
+        itemRefs.current[prev]?.focus();
+        speakDrinkName(filteredItems[prev]);
+      }
+    }
+  };
+
+  const grid = menuGridRef.current;
+  grid.addEventListener("touchstart", handleTouchStart, { passive: true });
+  grid.addEventListener("touchend", handleTouchEnd);
+
+  return () => {
+    grid.removeEventListener("touchstart", handleTouchStart);
+    grid.removeEventListener("touchend", handleTouchEnd);
+  };
+}, [filteredItems, focusIndex, language, speakMode]);
+
 
   const browseableMenuItems = menuItems.filter((item) => item.item_type !== "Toppings");
 
@@ -642,6 +741,7 @@ function CustomerKiosk() {
 
   const handleItemClick = (item) => {
     openCustomization(item);
+    speakDrinkName(item);
   };
 
   const computeToppingsCostPerDrink = (toppings) =>
@@ -757,39 +857,91 @@ function CustomerKiosk() {
       const activeCategory = categoryRefs.current.findIndex(
         (el) => el === document.activeElement
       );
+      const activeItem = itemRefs.current.
+      findIndex(
+        (el) => el === document.activeElement
+      );
 
       if (e.key === "ArrowDown") {
+        e.preventDefault();
         if (activeCategory !== -1) {
           setFocusIndex(0);
           itemRefs.current[0]?.focus();
+          speakDrinkName(filteredItems[0]);
           return;
         }
-        if (focusIndex < totalItems - 1) setFocusIndex(focusIndex + 1);
+        if (focusIndex < totalItems - 1) {
+          const next = focusIndex + 1;
+          setFocusIndex(next);
+          itemRefs.current[next]?.focus();
+          speakDrinkName(filteredItems[next]);
+        }
       }
 
+      // UP: move up in items, or back to first category
       if (e.key === "ArrowUp") {
-        if (focusIndex > 0) setFocusIndex(focusIndex - 1);
-        else categoryRefs.current[0]?.focus();
+        e.preventDefault();
+        if (focusIndex > 0) {
+          const prev = focusIndex - 1;
+          setFocusIndex(prev);
+          itemRefs.current[prev]?.focus();
+          speakDrinkName(filteredItems[prev]);
+        } else {
+          categoryRefs.current[0]?.focus();
+          speakKey("Category");
+        }
       }
 
+      // LEFT: move between categories OR previous item
       if (e.key === "ArrowLeft") {
-        if (activeCategory > 0) categoryRefs.current[activeCategory - 1]?.focus();
+        e.preventDefault();
+        if (activeCategory > 0) {
+          const prevCat = activeCategory - 1;
+          categoryRefs.current[prevCat]?.focus();
+          const cat = categories[prevCat];
+          speak(`${t("Category")}: ${t(cat)}`);
+          return;
+        }
+        if (activeItem > 0) {
+          const prev = activeItem - 1;
+          setFocusIndex(prev);
+          itemRefs.current[prev]?.focus();
+          speakDrinkName(filteredItems[prev]);
+        }
       }
 
+      // RIGHT: move between categories OR next item
       if (e.key === "ArrowRight") {
-        if (activeCategory !== -1 && activeCategory < totalCategories - 1)
-          categoryRefs.current[activeCategory + 1]?.focus();
+        e.preventDefault();
+        if (activeCategory !== -1 && activeCategory < totalCategories - 1) {
+          const nextCat = activeCategory + 1;
+          categoryRefs.current[nextCat]?.focus();
+          const cat = categories[nextCat];
+          speak(`${t("Category")}: ${t(cat)}`);
+          return;
+        }
+        if (activeItem !== -1 && activeItem < totalItems - 1) {
+          const next = activeItem + 1;
+          setFocusIndex(next);
+          itemRefs.current[next]?.focus();
+          speakDrinkName(filteredItems[next]);
+        }
       }
 
+      // ENTER: activate category or item
       if (e.key === "Enter") {
+        e.preventDefault();
         if (activeCategory !== -1) {
           const cat = categories[activeCategory];
           setSelectedCategory(cat);
-          speak(`${t("Category")}: ${cat}`);
+          speak(`${t("Category")}: ${t(cat)}`);
           return;
         }
         const item = filteredItems[focusIndex];
-        handleItemClick(item);
+        if (item) {
+          speakDrinkName(item);
+          handleItemClick(item);
+        }
       }
     };
 
@@ -1040,7 +1192,7 @@ function CustomerKiosk() {
       </header>
 
       <div className="main-content">
-        <div className="menu-grid">
+        <div className="menu-grid" ref={menuGridRef}>
           {filteredItems.map((item, index) => (
             <div
               key={item.menu_item_id}
@@ -1117,21 +1269,27 @@ function CustomerKiosk() {
                   <div className="cart-item-right">
                     <span>${(perDrink * item.quantity).toFixed(2)}</span>
 
-                    <button
-                      onClick={() => duplicateDrink(item.cart_item_id)}
-                      className="remove-btn"
-                      aria-label={`${t("Duplicate")} ${getTranslatedDrinkName(item)}`}
-                    >
-                      +
-                    </button>
+                  <button
+                    onClick={() => {
+                      duplicateDrink(item.cart_item_id);
+                      speak(`${t("Duplicate")} ${getTranslatedDrinkName(item)}`);
+                    }}
+                    className="remove-btn"
+                    aria-label={`${t("Duplicate")} ${getTranslatedDrinkName(item)}`}
+                  >
+                    +
+                  </button>
 
-                    <button
-                      onClick={() => removeFromCart(item.cart_item_id)}
-                      className="remove-btn"
-                      aria-label={`${t("Remove")} ${getTranslatedDrinkName(item)}`}
-                    >
-                      ×
-                    </button>
+                  <button
+                    onClick={() => {
+                      removeFromCart(item.cart_item_id);
+                      speak(`${t("Remove")} ${getTranslatedDrinkName(item)}`);
+                    }}
+                    className="remove-btn"
+                    aria-label={`${t("Remove")} ${getTranslatedDrinkName(item)}`}
+                  >
+                    ×
+                  </button>
                   </div>
                 </div>
               );
@@ -1158,7 +1316,6 @@ function CustomerKiosk() {
             <h2>
               {t("Customize")} {getTranslatedDrinkName(currentDrink)}
             </h2>
-
             <div className="custom-section">
               <label>{t("Size")}</label>
               <div className="option-group">
@@ -1166,7 +1323,11 @@ function CustomerKiosk() {
                   <button
                     key={s}
                     className={`option-btn ${selectedSize === s ? "active" : ""}`}
-                    onClick={() => setSelectedSize(s)}
+                    onClick={() => {
+                      setSelectedSize(s);
+                      speak(`${t("Size")}: ${s}`);
+                    }}
+                    aria-label={`${t("Size")}: ${s}`}
                   >
                     {s}
                   </button>
@@ -1181,7 +1342,11 @@ function CustomerKiosk() {
                   <button
                     key={i}
                     className={`option-btn ${selectedIce === i ? "active" : ""}`}
-                    onClick={() => setSelectedIce(i)}
+                    onClick={() => {
+                      setSelectedIce(i);
+                      speak(`${t("Ice")}: ${i}`);
+                    }}
+                    aria-label={`${t("Ice")}: ${i}`}
                   >
                     {i}
                   </button>
@@ -1196,7 +1361,11 @@ function CustomerKiosk() {
                   <button
                     key={s}
                     className={`option-btn ${selectedSugar === s ? "active" : ""}`}
-                    onClick={() => setSelectedSugar(s)}
+                    onClick={() => {
+                      setSelectedSugar(s);
+                      speak(`${t("Sugar")}: ${s}`);
+                    }}
+                    aria-label={`${t("Sugar")}: ${s}`}
                   >
                     {s}
                   </button>
@@ -1207,21 +1376,30 @@ function CustomerKiosk() {
             <div className="custom-section">
               <label>{t("Toppings")}</label>
               <div className="topping-checkbox-list">
-                {TOPPINGS.map((top) => (
-                  <button
-                    type="button"
-                    key={top.name}
-                    className={`topping-checkbox-row ${
-                      isToppingSelected(top.name) ? "selected" : ""
-                    }`}
-                    onClick={() => toggleTopping(top.name)}
-                  >
-                    <span>{translateItemName(top.name)}</span>
-                    <span className="topping-checkbox-price">
-                      +${top.price.toFixed(2)}
-                    </span>
-                  </button>
-                ))}
+                {TOPPINGS.map((top) => {
+                  const translated = translateItemName(top.name);
+                  const selected = isToppingSelected(top.name);
+
+                  return (
+                    <button
+                      type="button"
+                      key={top.name}
+                      className={`topping-checkbox-row ${selected ? "selected" : ""}`}
+                      onClick={() => {
+                        toggleTopping(top.name);
+                        speak(
+                          `${selected ? t("Remove") : t("Add")} ${translated}`
+                        );
+                      }}
+                      aria-label={`${selected ? t("Remove") : t("Add")} ${translated}`}
+                    >
+                      <span>{translated}</span>
+                      <span className="topping-checkbox-price">
+                        +${top.price.toFixed(2)}
+                      </span>
+                    </button>
+                  );
+                })}
               </div>
             </div>
 
