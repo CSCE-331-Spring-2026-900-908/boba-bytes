@@ -3,6 +3,7 @@ dotenv.config();
 
 import express from "express";
 import cors from "cors";
+import weatherRoute from "./routes/weather.js";
 
 import employees from "./routes/employees.js";
 import menu from "./routes/menu.js";
@@ -19,6 +20,8 @@ app.use(cors({
     credentials: true
 }));
 
+
+
 app.use(express.json());
 
 app.use("/api/employees", employees);
@@ -29,5 +32,5 @@ app.use("/api/kiosk_orders", kiosk_orders);
 app.use("/api/orders", orders);
 app.use("/api/login", login);
 app.use('/api/chatbot', chatbotRouter);
-
+app.use("/weather", weatherRoute);
 app.listen(3001, () => console.log("Backend running on port 3001"));

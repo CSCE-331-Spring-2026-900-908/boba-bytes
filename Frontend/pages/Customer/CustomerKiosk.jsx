@@ -565,6 +565,7 @@ function CustomerKiosk() {
     if (language === "en") return key;
     return TRANSLATIONS[key]?.[language] || key;
   };
+
   const [menuItems, setMenuItems] = useState([]);
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("All");
@@ -589,8 +590,8 @@ function CustomerKiosk() {
       role: "assistant",
       content: t(
         "Hi, I am Boba Buddy! Tell me the weather, any allergies or diet needs, and I will recommend a drink."
-      )
-    }
+      ),
+    },
   ]);
   const [chatInput, setChatInput] = useState("");
   const [chatLoading, setChatLoading] = useState(false);
@@ -608,7 +609,8 @@ function CustomerKiosk() {
     "thai milk tea": "/images/menu/thai_milk_tea.png",
     "taro milk tea": "/images/menu/taro_milk_tea.png",
     "matcha milk tea": "/images/menu/matcha_milk_tea.png",
-    "okinawa brown sugar milk tea": "/images/menu/okinawa_brown_sugar_milk_tea.png",
+    "okinawa brown sugar milk tea":
+      "/images/menu/okinawa_brown_sugar_milk_tea.png",
     "honey green milk tea": "/images/menu/honey_green_milk_tea.png",
     "wintermelon milk tea": "/images/menu/wintermelon_milk_tea.png",
     "winter melon milk tea": "/images/menu/wintermelon_milk_tea.png",
@@ -631,7 +633,7 @@ function CustomerKiosk() {
     "passionfruit green tea": "/images/menu/passionfruit_green_tea.png",
     "kiwi fruit tea": "/images/menu/kiwi_fruit_tea.png",
     "mango milk tea": "/images/menu/mango_milk_tea.png",
-    "coffee fruit tea": "/images/menu/coffee_fruit_tea.png"
+    "coffee fruit tea": "/images/menu/coffee_fruit_tea.png",
   };
 
   const generatedDescriptionByName = {
@@ -686,7 +688,7 @@ function CustomerKiosk() {
     "rainbow jelly":
       "Chewy fruit-flavored jellies that add a burst of color and taste.",
     "red bean":
-      "Sweet simmered azuki red beans with a soft, creamy bite."
+      "Sweet simmered azuki red beans with a soft, creamy bite.",
   };
 
   const placeholderSvg =
@@ -724,59 +726,60 @@ function CustomerKiosk() {
     const english = item.item_description?.trim()
       ? item.item_description
       : generatedDescriptionByName[normalizeName(item.item_name)];
-
     if (language !== "en" && TRANSLATIONS[english]?.[language]) {
       return TRANSLATIONS[english][language];
     }
     return english;
   };
-const speak = (text) => {
-  if (!speakMode || !text) return;
-  synth.cancel();
-  const utterance = new SpeechSynthesisUtterance(text);
 
-  const langMap = {
-    en: "en-US",
-    es: "es-ES",
-    fr: "fr-FR",
-    zh: "zh-CN",
-    ja: "ja-JP",
-    ko: "ko-KR",
-    vi: "vi-VN",
+  const speak = (text) => {
+    if (!speakMode || !text) return;
+    synth.cancel();
+    const utterance = new SpeechSynthesisUtterance(text);
+    const langMap = {
+      en: "en-US",
+      es: "es-ES",
+      fr: "fr-FR",
+      zh: "zh-CN",
+      ja: "ja-JP",
+      ko: "ko-KR",
+      vi: "vi-VN",
+    };
+    utterance.lang = langMap[language] || "en-US";
+    synth.speak(utterance);
   };
-  utterance.lang = langMap[language] || "en-US";
 
-  synth.speak(utterance);
-};
+  const speakKey = (key) => {
+    speak(t(key));
+  };
 
-const speakKey = (key) => {
-  speak(t(key));
-};
+  const speakDrinkName = (item) => {
+    speak(getTranslatedDrinkName(item));
+  };
 
-const speakDrinkName = (item) => {
-  speak(getTranslatedDrinkName(item));
-};
+  const getToppingPriceByName = (name) => {
+    const t = TOPPINGS.find((x) => x.name === name);
+    return t ? t.price : 0;
+  };
 
-const getToppingPriceByName = (name) => {
-  const t = TOPPINGS.find((x) => x.name === name);
-  return t ? t.price : 0;
-};
-
+  // Load menu
   useEffect(() => {
     async function loadMenu() {
       try {
         const itemsRes = await fetch(`${API_BASE}/menu/items`);
         const items = await itemsRes.json();
-
         const catsRes = await fetch(`${API_BASE}/menu/categories`);
         let cats = await catsRes.json();
 
         if (!cats || cats.length === 0) {
-          cats = [...new Set(items.map((item) => item.item_type).filter(Boolean))];
+          cats = [
+            ...new Set(
+              items.map((item) => item.item_type).filter(Boolean)
+            ),
+          ];
         }
 
         setMenuItems(items);
-
         setCategories(["All", ...cats.filter((c) => c !== "Toppings")]);
       } catch (error) {
         alert(t("Network error"));
@@ -787,90 +790,93 @@ const getToppingPriceByName = (name) => {
     loadMenu();
   }, []);
 
-  const browseableMenuItems = menuItems.filter((item) => item.item_type !== "Toppings");
+  const browseableMenuItems = menuItems.filter(
+    (item) => item.item_type !== "Toppings"
+  );
 
   const TOPPINGS = menuItems
     .filter((item) => item.item_type === "Toppings")
     .map((item) => ({
       name: item.item_name,
-      price: Number(item.item_cost)
+      price: Number(item.item_cost),
     }));
 
   const filteredItems =
     selectedCategory === "All"
       ? browseableMenuItems
-      : browseableMenuItems.filter((item) => item.item_type === selectedCategory);
+      : browseableMenuItems.filter(
+          (item) => item.item_type === selectedCategory
+        );
 
+  // Touch navigation
   useEffect(() => {
-  if (!menuGridRef.current) return;
+    if (!menuGridRef.current) return;
 
-  let startX = 0;
-  let startY = 0;
-  let touchStartTime = 0;
-  let holdTimer = null;
+    let startX = 0;
+    let startY = 0;
+    let holdTimer = null;
 
-  const handleTouchStart = (e) => {
-    const touch = e.touches[0];
-    startX = touch.clientX;
-    startY = touch.clientY;
-    touchStartTime = Date.now();
+    const handleTouchStart = (e) => {
+      const touch = e.touches[0];
+      startX = touch.clientX;
+      startY = touch.clientY;
 
-    holdTimer = setTimeout(() => {
-      const item = filteredItems[focusIndex];
-      if (item) {
-        speakDrinkName(item);
-        openCustomization(item);
+      holdTimer = setTimeout(() => {
+        const item = filteredItems[focusIndex];
+        if (item) {
+          speakDrinkName(item);
+          openCustomization(item);
+        }
+      }, 600);
+    };
+
+    const handleTouchEnd = (e) => {
+      clearTimeout(holdTimer);
+      const touch = e.changedTouches[0];
+      const dx = touch.clientX - startX;
+      const dy = touch.clientY - startY;
+
+      const absX = Math.abs(dx);
+      const absY = Math.abs(dy);
+
+      if (absX < 30 && absY < 30) return;
+
+      if (absX > absY) {
+        if (dx > 0 && focusIndex > 0) {
+          const prev = focusIndex - 1;
+          setFocusIndex(prev);
+          itemRefs.current[prev]?.focus();
+          speakDrinkName(filteredItems[prev]);
+        } else if (dx < 0 && focusIndex < filteredItems.length - 1) {
+          const next = focusIndex + 1;
+          setFocusIndex(next);
+          itemRefs.current[next]?.focus();
+          speakDrinkName(filteredItems[next]);
+        }
+      } else {
+        if (dy > 0 && focusIndex < filteredItems.length - 1) {
+          const next = focusIndex + 1;
+          setFocusIndex(next);
+          itemRefs.current[next]?.focus();
+          speakDrinkName(filteredItems[next]);
+        } else if (dy < 0 && focusIndex > 0) {
+          const prev = focusIndex - 1;
+          setFocusIndex(prev);
+          itemRefs.current[prev]?.focus();
+          speakDrinkName(filteredItems[prev]);
+        }
       }
-    }, 600);
-  };
+    };
 
-  const handleTouchEnd = (e) => {
-    clearTimeout(holdTimer);
-    const touch = e.changedTouches[0];
-    const dx = touch.clientX - startX;
-    const dy = touch.clientY - startY;
+    const grid = menuGridRef.current;
+    grid.addEventListener("touchstart", handleTouchStart, { passive: true });
+    grid.addEventListener("touchend", handleTouchEnd);
 
-    const absX = Math.abs(dx);
-    const absY = Math.abs(dy);
-
-    if (absX < 30 && absY < 30) return;
-
-    if (absX > absY) {
-      if (dx > 0 && focusIndex > 0) {
-        const prev = focusIndex - 1;
-        setFocusIndex(prev);
-        itemRefs.current[prev]?.focus();
-        speakDrinkName(filteredItems[prev]);
-      } else if (dx < 0 && focusIndex < filteredItems.length - 1) {
-        const next = focusIndex + 1;
-        setFocusIndex(next);
-        itemRefs.current[next]?.focus();
-        speakDrinkName(filteredItems[next]);
-      }
-    } else {
-      if (dy > 0 && focusIndex < filteredItems.length - 1) {
-        const next = focusIndex + 1;
-        setFocusIndex(next);
-        itemRefs.current[next]?.focus();
-        speakDrinkName(filteredItems[next]);
-      } else if (dy < 0 && focusIndex > 0) {
-        const prev = focusIndex - 1;
-        setFocusIndex(prev);
-        itemRefs.current[prev]?.focus();
-        speakDrinkName(filteredItems[prev]);
-      }
-    }
-  };
-
-  const grid = menuGridRef.current;
-  grid.addEventListener("touchstart", handleTouchStart, { passive: true });
-  grid.addEventListener("touchend", handleTouchEnd);
-
-  return () => {
-    grid.removeEventListener("touchstart", handleTouchStart);
-    grid.removeEventListener("touchend", handleTouchEnd);
-  };
-}, [filteredItems, focusIndex, language, speakMode]);
+    return () => {
+      grid.removeEventListener("touchstart", handleTouchStart);
+      grid.removeEventListener("touchend", handleTouchEnd);
+    };
+  }, [filteredItems, focusIndex, language, speakMode]);
 
   const drinksMatch = (a, b) => {
     const aT = (a.toppings || [])
@@ -935,7 +941,7 @@ const getToppingPriceByName = (name) => {
       toppings: selectedToppings,
       quantity: editingIndex !== null ? cart[editingIndex].quantity : 1,
       base_cost: basePrice,
-      toppings_cost_per_drink: toppingsCost
+      toppings_cost_per_drink: toppingsCost,
     };
 
     if (editingIndex !== null) {
@@ -944,12 +950,14 @@ const getToppingPriceByName = (name) => {
       setCart(updated);
     } else {
       setCart((prev) => {
-        const existingIndex = prev.findIndex((c) => drinksMatch(c, drinkOrder));
+        const existingIndex = prev.findIndex((c) =>
+          drinksMatch(c, drinkOrder)
+        );
         if (existingIndex !== -1) {
           const updated = [...prev];
           updated[existingIndex] = {
             ...updated[existingIndex],
-            quantity: updated[existingIndex].quantity + 1
+            quantity: updated[existingIndex].quantity + 1,
           };
           return updated;
         }
@@ -988,6 +996,7 @@ const getToppingPriceByName = (name) => {
       Number(item.base_cost) + computeToppingsCostPerDrink(item.toppings);
     return total + perDrink * item.quantity;
   }, 0);
+
   const submitOrder = async () => {
     if (cart.length === 0) return;
     speak(t("Order submitted successfully"));
@@ -1000,10 +1009,10 @@ const getToppingPriceByName = (name) => {
           payment_type: "kiosk",
           items: cart.map((item) => ({
             menu_item_id: item.menu_item_id,
-            quantity: item.quantity
+            quantity: item.quantity,
           })),
-          total: totalPrice
-        })
+          total: totalPrice,
+        }),
       });
 
       if (response.ok) {
@@ -1017,6 +1026,7 @@ const getToppingPriceByName = (name) => {
     }
   };
 
+  // Keyboard navigation
   useEffect(() => {
     if (!keyboardMode) return;
 
@@ -1027,8 +1037,7 @@ const getToppingPriceByName = (name) => {
       const activeCategory = categoryRefs.current.findIndex(
         (el) => el === document.activeElement
       );
-      const activeItem = itemRefs.current.
-      findIndex(
+      const activeItem = itemRefs.current.findIndex(
         (el) => el === document.activeElement
       );
 
@@ -1047,6 +1056,7 @@ const getToppingPriceByName = (name) => {
           speakDrinkName(filteredItems[next]);
         }
       }
+
       if (e.key === "ArrowUp") {
         e.preventDefault();
         if (focusIndex > 0) {
@@ -1059,6 +1069,7 @@ const getToppingPriceByName = (name) => {
           speakKey("Category");
         }
       }
+
       if (e.key === "ArrowLeft") {
         e.preventDefault();
         if (activeCategory > 0) {
@@ -1076,10 +1087,12 @@ const getToppingPriceByName = (name) => {
         }
       }
 
-      // RIGHT: move between categories OR next item
       if (e.key === "ArrowRight") {
         e.preventDefault();
-        if (activeCategory !== -1 && activeCategory < totalCategories - 1) {
+        if (
+          activeCategory !== -1 &&
+          activeCategory < totalCategories - 1
+        ) {
           const nextCat = activeCategory + 1;
           categoryRefs.current[nextCat]?.focus();
           const cat = categories[nextCat];
@@ -1094,7 +1107,6 @@ const getToppingPriceByName = (name) => {
         }
       }
 
-      // ENTER: activate category or item
       if (e.key === "Enter") {
         e.preventDefault();
         if (activeCategory !== -1) {
@@ -1115,16 +1127,23 @@ const getToppingPriceByName = (name) => {
     return () => window.removeEventListener("keydown", handleKey);
   }, [keyboardMode, filteredItems, focusIndex, categories, language]);
 
+  // Language menu close
   useEffect(() => {
     if (!languageMenuOpen) return;
+
     const handleClickOutside = (e) => {
-      if (languageMenuRef.current && !languageMenuRef.current.contains(e.target)) {
+      if (
+        languageMenuRef.current &&
+        !languageMenuRef.current.contains(e.target)
+      ) {
         setLanguageMenuOpen(false);
       }
     };
+
     const handleEsc = (e) => {
       if (e.key === "Escape") setLanguageMenuOpen(false);
     };
+
     document.addEventListener("mousedown", handleClickOutside);
     document.addEventListener("keydown", handleEsc);
     return () => {
@@ -1133,12 +1152,13 @@ const getToppingPriceByName = (name) => {
     };
   }, [languageMenuOpen]);
 
+  // Focus scroll
   useEffect(() => {
     if (keyboardMode && itemRefs.current[focusIndex]) {
       itemRefs.current[focusIndex].focus();
       itemRefs.current[focusIndex].scrollIntoView({
         behavior: "smooth",
-        block: "center"
+        block: "center",
       });
     }
   }, [focusIndex, keyboardMode]);
@@ -1156,14 +1176,62 @@ const getToppingPriceByName = (name) => {
     });
   };
 
+  // WEATHER STATE + LOGIC
+  const [weather, setWeather] = useState(null);
+
+  useEffect(() => {
+    async function loadWeather() {
+      try {
+        const res = await fetch(`${API_BASE}/weather`);
+        const data = await res.json();
+        setWeather(data);
+      } catch (err) {
+        console.log("Weather error", err);
+      }
+    }
+    loadWeather();
+  }, []);
+
+  const getWeatherRecommendation = () => {
+    if (!weather) return null;
+
+    if (weather.temp >= 85) {
+      return "It's hot today! Try a refreshing fruit tea like Mango Green Tea or Lychee Oolong.";
+    }
+
+    if (weather.temp <= 50) {
+      return "It's chilly outside. A warm drink like Thai Milk Tea or Roasted Oolong Milk Tea would be perfect.";
+    }
+
+    if (weather.condition === "Rain") {
+      return "Rainy weather calls for something cozy — maybe a Classic Milk Tea.";
+    }
+
+    return "Weather looks nice today! Pick anything you like.";
+  };
+
   const sendChatMessage = async () => {
     const trimmed = chatInput.trim();
     if (!trimmed) return;
 
-    const newMessages = [...chatMessages, { role: "user", content: trimmed }];
+    const newMessages = [
+      ...chatMessages,
+      { role: "user", content: trimmed },
+    ];
     setChatMessages(newMessages);
     setChatInput("");
     setChatLoading(true);
+
+    // If user mentions weather, answer immediately with weather-based suggestion
+    if (trimmed.toLowerCase().includes("weather")) {
+      const rec = getWeatherRecommendation();
+      if (rec) {
+        setChatMessages((prev) => [
+          ...prev,
+          { role: "assistant", content: rec },
+        ]);
+      }
+    }
 
     try {
       const res = await fetch(`${API_BASE}/chatbot`, {
@@ -1171,8 +1239,8 @@ const getToppingPriceByName = (name) => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           messages: newMessages,
-          menu: menuItems
-        })
+          menu: menuItems,
+        }),
       });
 
       const data = await res.json();
@@ -1185,14 +1253,19 @@ const getToppingPriceByName = (name) => {
         ...prev,
         {
           role: "assistant",
-          content: t("Sorry, I had trouble answering. Please try again.")
-        }
+          content: t(
+            "Sorry, I had trouble answering. Please try again."
+          ),
+        },
       ]);
     } finally {
       setChatLoading(false);
     }
   };
-  if (loading) return <div className="kiosk-loading">Loading menu...</div>;
+
+  if (loading) {
+    return <div className="kiosk-loading">Loading menu...</div>;
+  }
 
   return (
     <div className="kiosk-container" style={{ "--scale": fontScale }}>
@@ -1251,13 +1324,13 @@ const getToppingPriceByName = (name) => {
               </button>
 
               <button
-                className={`access-btn ${speakMode ? "active" : ""}`}
+                className={`access-btn ${
+                  speakMode ? "active" : ""
+                }`}
                 onClick={() => {
                   setSpeakMode(!speakMode);
                   speak(
-                    !speakMode
-                      ? t("Speaker On")
-                      : t("Speaker Off")
+                    !speakMode ? t("Speaker On") : t("Speaker Off")
                   );
                 }}
               >
@@ -1265,32 +1338,40 @@ const getToppingPriceByName = (name) => {
               </button>
 
               <button
-                className={`access-btn ${keyboardMode ? "active" : ""}`}
+                className={`access-btn ${
+                  keyboardMode ? "active" : ""
+                }`}
                 onClick={() => {
                   setKeyboardMode(!keyboardMode);
                   speak(
-                    !keyboardMode
-                      ? t("Keyboard On")
-                      : t("Keyboard Off")
+                    !keyboardMode ? t("Keyboard On") : t("Keyboard Off")
                   );
                 }}
               >
                 {keyboardMode ? t("Keyboard On") : t("Keyboard Off")}
               </button>
 
-              <label className="language-label">{t("Language")}:</label>
-              <div className="language-dropdown" ref={languageMenuRef}>
+              <label className="language-label">
+                {t("Language")}:
+              </label>
+              <div
+                className="language-dropdown"
+                ref={languageMenuRef}
+              >
                 <button
                   type="button"
                   className="language-toggle"
-                  onClick={() => setLanguageMenuOpen((open) => !open)}
+                  onClick={() =>
+                    setLanguageMenuOpen((open) => !open)
+                  }
                   aria-haspopup="listbox"
                   aria-expanded={languageMenuOpen}
                   aria-label={t("Language")}
                 >
                   {(() => {
                     const current =
-                      LANGUAGES.find((l) => l.code === language) || LANGUAGES[0];
+                      LANGUAGES.find((l) => l.code === language) ||
+                      LANGUAGES[0];
                     return (
                       <>
                         <img
@@ -1315,7 +1396,6 @@ const getToppingPriceByName = (name) => {
                     );
                   })()}
                 </button>
-
                 {languageMenuOpen && (
                   <ul className="language-menu" role="listbox">
                     {LANGUAGES.map((lang) => (
@@ -1357,6 +1437,13 @@ const getToppingPriceByName = (name) => {
         </div>
       </header>
 
+      {/* WEATHER BANNER */}
+      {weather && (
+        <div className="weather-banner">
+          {getWeatherRecommendation()}
+        </div>
+      )}
+
       <div className="main-content">
         <div className="menu-grid" ref={menuGridRef}>
           {filteredItems.map((item, index) => (
@@ -1369,7 +1456,9 @@ const getToppingPriceByName = (name) => {
               onClick={() => handleItemClick(item)}
               role="button"
               tabIndex={keyboardMode ? 0 : -1}
-              aria-label={`${t("Add")} ${getTranslatedDrinkName(item)} ${t("to cart")}`}
+              aria-label={`${t("Add")} ${getTranslatedDrinkName(
+                item
+              )} ${t("to cart")}`}
             >
               <img
                 src={getItemImageSrc(item)}
@@ -1380,39 +1469,48 @@ const getToppingPriceByName = (name) => {
                   e.currentTarget.src = placeholderSvg;
                 }}
               />
-
               <div className="item-info">
                 <h3>{getTranslatedDrinkName(item)}</h3>
-                <p className="item-description">{getItemDescription(item)}</p>
-                <p className="price">${Number(item.item_cost).toFixed(2)}</p>
+                <p className="item-description">
+                  {getItemDescription(item)}
+                </p>
+                <p className="price">
+                  ${Number(item.item_cost).toFixed(2)}
+                </p>
               </div>
             </div>
           ))}
         </div>
+
         <div className="cart-sidebar" aria-live="polite">
           <h2>
             {t("Your Cart")} ({cart.length})
           </h2>
-
           {cart.length === 0 ? (
-            <p className="empty-cart">{t("Tap any drink to start your order")}</p>
+            <p className="empty-cart">
+              {t("Tap any drink to start your order")}
+            </p>
           ) : (
             cart.map((item, index) => {
               const perDrink =
                 Number(item.base_cost) +
                 computeToppingsCostPerDrink(item.toppings);
-
               return (
-                <div key={item.cart_item_id} className="cart-item">
+                <div
+                  key={item.cart_item_id}
+                  className="cart-item"
+                >
                   <div
                     style={{ flex: 1 }}
                     onClick={() => openCustomization(item, index)}
                   >
                     <div>
                       <span>{getTranslatedDrinkName(item)}</span>
-                      <span className="qty"> x {item.quantity}</span>
+                      <span className="qty">
+                        {" "}
+                        x {item.quantity}
+                      </span>
                     </div>
-
                     <div className="topping-items">
                       <div>
                         {t("Size")}: {item.size}
@@ -1423,50 +1521,60 @@ const getToppingPriceByName = (name) => {
                       <div>
                         {t("Sugar")}: {item.sugar}
                       </div>
-
                       {item.toppings &&
                         item.toppings.length > 0 &&
                         item.toppings.map((top, idx) => (
-                          <div key={idx}>+ {translateItemName(top.name)}</div>
+                          <div key={idx}>
+                            +{translateItemName(top.name)}
+                          </div>
                         ))}
                     </div>
                   </div>
-
                   <div className="cart-item-right">
-                    <span>${(perDrink * item.quantity).toFixed(2)}</span>
-
-                  <button
-                    onClick={() => {
-                      duplicateDrink(item.cart_item_id);
-                      speak(`${t("Duplicate")} ${getTranslatedDrinkName(item)}`);
-                    }}
-                    className="remove-btn"
-                    aria-label={`${t("Duplicate")} ${getTranslatedDrinkName(item)}`}
-                  >
-                    +
-                  </button>
-
-                  <button
-                    onClick={() => {
-                      removeFromCart(item.cart_item_id);
-                      speak(`${t("Remove")} ${getTranslatedDrinkName(item)}`);
-                    }}
-                    className="remove-btn"
-                    aria-label={`${t("Remove")} ${getTranslatedDrinkName(item)}`}
-                  >
-                    ×
-                  </button>
+                    <span>
+                      ${(perDrink * item.quantity).toFixed(2)}
+                    </span>
+                    <button
+                      onClick={() => {
+                        duplicateDrink(item.cart_item_id);
+                        speak(
+                          `${t("Duplicate")} ${getTranslatedDrinkName(
+                            item
+                          )}`
+                        );
+                      }}
+                      className="remove-btn"
+                      aria-label={`${t("Duplicate")} ${getTranslatedDrinkName(
+                        item
+                      )}`}
+                    >
+                      +
+                    </button>
+                    <button
+                      onClick={() => {
+                        removeFromCart(item.cart_item_id);
+                        speak(
+                          `${t("Remove")} ${getTranslatedDrinkName(
+                            item
+                          )}`
+                        );
+                      }}
+                      className="remove-btn"
+                      aria-label={`${t("Remove")} ${getTranslatedDrinkName(
+                        item
+                      )}`}
+                    >
+                      ×
+                    </button>
                   </div>
                 </div>
               );
             })
           )}
-
           <div className="cart-total">
             <span>{t("Total")}</span>
             <span>${totalPrice.toFixed(2)}</span>
           </div>
-
           <button
             onClick={submitOrder}
             className="submit-order-btn"
@@ -1476,19 +1584,23 @@ const getToppingPriceByName = (name) => {
           </button>
         </div>
       </div>
+
       {customModalOpen && currentDrink && (
         <div className="topping-modal-overlay">
           <div className="topping-modal-content">
             <h2>
               {t("Customize")} {getTranslatedDrinkName(currentDrink)}
             </h2>
+
             <div className="custom-section">
               <label>{t("Size")}</label>
               <div className="option-group">
                 {["Small", "Medium", "Large"].map((s) => (
                   <button
                     key={s}
-                    className={`option-btn ${selectedSize === s ? "active" : ""}`}
+                    className={`option-btn ${
+                      selectedSize === s ? "active" : ""
+                    }`}
                     onClick={() => {
                       setSelectedSize(s);
                       speak(`${t("Size")}: ${s}`);
@@ -1504,10 +1616,17 @@ const getToppingPriceByName = (name) => {
             <div className="custom-section">
               <label>{t("Ice")}</label>
               <div className="option-group">
-                {["No Ice", "Less Ice", "Regular Ice", "Extra Ice"].map((i) => (
+                {[
+                  "No Ice",
+                  "Less Ice",
+                  "Regular Ice",
+                  "Extra Ice",
+                ].map((i) => (
                   <button
                     key={i}
-                    className={`option-btn ${selectedIce === i ? "active" : ""}`}
+                    className={`option-btn ${
+                      selectedIce === i ? "active" : ""
+                    }`}
                     onClick={() => {
                       setSelectedIce(i);
                       speak(`${t("Ice")}: ${i}`);
@@ -1526,7 +1645,9 @@ const getToppingPriceByName = (name) => {
                 {["0%", "25%", "50%", "75%", "100%"].map((s) => (
                   <button
                     key={s}
-                    className={`option-btn ${selectedSugar === s ? "active" : ""}`}
+                    className={`option-btn ${
+                      selectedSugar === s ? "active" : ""
+                    }`}
                     onClick={() => {
                       setSelectedSugar(s);
                       speak(`${t("Sugar")}: ${s}`);
@@ -1545,12 +1666,13 @@ const getToppingPriceByName = (name) => {
                 {TOPPINGS.map((top) => {
                   const translated = translateItemName(top.name);
                   const selected = isToppingSelected(top.name);
-
                   return (
                     <button
                       type="button"
                       key={top.name}
-                      className={`topping-checkbox-row ${selected ? "selected" : ""}`}
+                      className={`topping-checkbox-row ${
+                        selected ? "selected" : ""
+                      }`}
                       onClick={() => {
                         toggleTopping(top.name);
                         speak(
@@ -1570,7 +1692,9 @@ const getToppingPriceByName = (name) => {
             </div>
 
             <button className="confirm-btn" onClick={saveDrink}>
-              {editingIndex !== null ? t("Save Changes") : t("Add to Cart")}
+              {editingIndex !== null
+                ? t("Save Changes")
+                : t("Add to Cart")}
             </button>
 
             <button
@@ -1585,6 +1709,7 @@ const getToppingPriceByName = (name) => {
           </div>
         </div>
       )}
+
       <div
         className="chatbot-button"
         onClick={() => setChatOpen(true)}
@@ -1596,44 +1721,40 @@ const getToppingPriceByName = (name) => {
         <div className="chatbot-modal">
           <div className="chatbot-header">
             <span>Boba Buddy</span>
-            <button onClick={() => setChatOpen(false)}>×</button>
+            <button onClick={() => setChatOpen(false)}>x</button>
           </div>
-
           <div className="chatbot-messages">
-            {chatMessages.map((m, i) => (
+            {chatMessages.map((m, idx) => (
               <div
-                key={i}
-                className={m.role === "user" ? "msg-user" : "msg-bot"}
+                key={idx}
+                className={`chat-message chat-${m.role}`}
               >
                 {m.content}
               </div>
             ))}
-
             {chatLoading && (
-              <div className="msg-bot">
+              <div className="chat-message chat-assistant">
                 {t("Thinking of a drink for you...")}
               </div>
             )}
           </div>
-
           <div className="chatbot-input">
             <input
+              type="text"
               value={chatInput}
               onChange={(e) => setChatInput(e.target.value)}
-              placeholder={t("Tell me the weather, allergies, diet ...")}
+              placeholder={t(
+                "Tell me the weather, allergies, diet ..."
+              )}
               onKeyDown={(e) => {
                 if (e.key === "Enter") sendChatMessage();
               }}
             />
-
-            <button onClick={sendChatMessage}>
-              {t("Send")}
-            </button>
+            <button onClick={sendChatMessage}>{t("Send")}</button>
           </div>
         </div>
       )}
     </div>
   );
 }
-
 export default CustomerKiosk;
