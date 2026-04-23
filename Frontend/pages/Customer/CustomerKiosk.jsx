@@ -756,12 +756,22 @@ const speakKey = (key) => {
 const speakDrinkName = (item) => {
   speak(getTranslatedDrinkName(item));
 };
+const browseableMenuItems = menuItems.filter(
+  (item) => item.item_type !== "Toppings"
+);
+
+const TOPPINGS = menuItems
+  .filter((item) => item.item_type === "Toppings")
+  .map((item) => ({
+    name: item.item_name,
+    price: Number(item.item_cost),
+  }));
 
 
-  const getToppingPriceByName = (name) => {
-    const t = TOPPINGS.find((x) => x.name === name);
-    return t ? t.price : 0;
-  };
+const getToppingPriceByName = (name) => {
+  const t = TOPPINGS.find((x) => x.name === name);
+  return t ? t.price : 0;
+};
 
   useEffect(() => {
     async function loadMenu() {
@@ -816,7 +826,6 @@ const speakDrinkName = (item) => {
     startY = touch.clientY;
     touchStartTime = Date.now();
 
-    // Tap-and-hold on the currently focused item
     holdTimer = setTimeout(() => {
       const item = filteredItems[focusIndex];
       if (item) {
@@ -835,10 +844,8 @@ const speakDrinkName = (item) => {
     const absX = Math.abs(dx);
     const absY = Math.abs(dy);
 
-    // Ignore tiny movements
     if (absX < 30 && absY < 30) return;
 
-    // Horizontal swipe → previous/next item
     if (absX > absY) {
       if (dx > 0 && focusIndex > 0) {
         const prev = focusIndex - 1;
@@ -852,7 +859,6 @@ const speakDrinkName = (item) => {
         speakDrinkName(filteredItems[next]);
       }
     } else {
-      // Vertical swipe → treat like up/down
       if (dy > 0 && focusIndex < filteredItems.length - 1) {
         const next = focusIndex + 1;
         setFocusIndex(next);
@@ -1052,8 +1058,6 @@ const speakDrinkName = (item) => {
           speakDrinkName(filteredItems[next]);
         }
       }
-
-      // UP: move up in items, or back to first category
       if (e.key === "ArrowUp") {
         e.preventDefault();
         if (focusIndex > 0) {
@@ -1066,8 +1070,6 @@ const speakDrinkName = (item) => {
           speakKey("Category");
         }
       }
-
-      // LEFT: move between categories OR previous item
       if (e.key === "ArrowLeft") {
         e.preventDefault();
         if (activeCategory > 0) {
