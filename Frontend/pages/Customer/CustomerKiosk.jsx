@@ -787,7 +787,21 @@ const speakDrinkName = (item) => {
     }
     loadMenu();
   }, []);
-  
+
+  const browseableMenuItems = menuItems.filter((item) => item.item_type !== "Toppings");
+
+  const TOPPINGS = menuItems
+    .filter((item) => item.item_type === "Toppings")
+    .map((item) => ({
+      name: item.item_name,
+      price: Number(item.item_cost)
+    }));
+
+  const filteredItems =
+    selectedCategory === "All"
+      ? browseableMenuItems
+      : browseableMenuItems.filter((item) => item.item_type === selectedCategory);
+
   useEffect(() => {
   if (!menuGridRef.current) return;
 
@@ -862,21 +876,6 @@ const speakDrinkName = (item) => {
     grid.removeEventListener("touchend", handleTouchEnd);
   };
 }, [filteredItems, focusIndex, language, speakMode]);
-
-
-  const browseableMenuItems = menuItems.filter((item) => item.item_type !== "Toppings");
-
-  const TOPPINGS = menuItems
-    .filter((item) => item.item_type === "Toppings")
-    .map((item) => ({
-      name: item.item_name,
-      price: Number(item.item_cost)
-    }));
-
-  const filteredItems =
-    selectedCategory === "All"
-      ? browseableMenuItems
-      : browseableMenuItems.filter((item) => item.item_type === selectedCategory);
 
   const drinksMatch = (a, b) => {
     const aT = (a.toppings || [])
