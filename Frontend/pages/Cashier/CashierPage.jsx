@@ -1,19 +1,35 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useRef } from "react";
 import "./Cashier.css";
 import { API_BASE } from "../../config/api.js";
+
+const ICE_OPTIONS = ["No Ice", "Less Ice", "Regular Ice", "Extra Ice"];
+const SUGAR_OPTIONS = ["0%", "25%", "50%", "75%", "100%"];
 
 export default function CashierPage() {
   const [items, setItems] = useState([]);
   const [categories, setCategories] = useState([]);
   const [toppings, setToppings] = useState([]);
 
-  const [activeCategory, setActiveCategory] = useState("Favorites");
+  const [activeCategory, setActiveCategory] = useState("All");
   const [order, setOrder] = useState([]);
 
   const [searchTerm, setSearchTerm] = useState("");
   const [favoriteIds, setFavoriteIds] = useState([]);
 
+  const [customModalOpen, setCustomModalOpen] = useState(false);
+  const [currentDrink, setCurrentDrink] = useState(null);
+  const [editingIndex, setEditingIndex] = useState(null);
+  const [selectedIce, setSelectedIce] = useState("Regular Ice");
+  const [selectedSugar, setSelectedSugar] = useState("100%");
+  const [selectedToppings, setSelectedToppings] = useState([]);
+
   const [placing, setPlacing] = useState(false);
+  const searchInputRef = useRef(null);
+
+  const toppingItems = useMemo(
+    () => items.filter(i => i.item_type === "Toppings"),
+    [items]
+  );
 
 
 
@@ -25,8 +41,7 @@ export default function CashierPage() {
     ])
       .then(([itemData, catData, toppingData]) => {
         setItems(itemData);
-        setCategories(["Favorites", ...catData, "Toppings"]);
-        setToppings(toppingData);
+        setCategories(["All", "Favorites", ...catData.filter(cat => cat !== "Toppings")]);
       })
       .catch(err => console.error(err));
   }, []);
@@ -52,8 +67,12 @@ export default function CashierPage() {
 
 
   const filteredItems = useMemo(() => {
+    let list = items.filter(i => i.item_type !== "Toppings");
+
     if (activeCategory === "Favorites") {
-      return items.filter(i => favoriteIds.includes(i.menu_item_id));
+      list = list.filter(i => favoriteIds.includes(i.menu_item_id));
+    } else if (activeCategory !== "All") {
+      list = list.filter(i => i.item_type === activeCategory);
     }
 
     if (activeCategory === "Toppings") {
@@ -64,46 +83,124 @@ export default function CashierPage() {
   }, [items, toppings, activeCategory, favoriteIds]);
 
 
-  function addDrink(item) {
-    setOrder(prev => [
-      ...prev,
-      {
-        menu_item_id: item.menu_item_id,
-        item_name: item.item_name,
-        item_cost: item.item_cost,
-        qty: 1,
-        toppings: []
-      }
-    ]);
-  }
+  useEffect(() => {
+    const onKeyDown = (e) => {
+      const targetTag = e.target?.tagName?.toLowerCase();
+      const typingTarget = targetTag === "input" || targetTag === "textarea" || targetTag === "select";
 
-  function addTopping(t) {
-    setOrder(prev => {
-      if (prev.length === 0) {
-        alert("Add a drink first");
-        return prev;
+      if ((e.key === "/" || (e.ctrlKey && e.key.toLowerCase() === "k")) && !typingTarget) {
+        e.preventDefault();
+        searchInputRef.current?.focus();
+        searchInputRef.current?.select?.();
       }
 
-      const lastIndex = prev.length - 1;
-      const last = prev[lastIndex];
+      if (e.key === "Escape" && searchTerm) {
+        setSearchTerm("");
+      }
 
-      const updated = {
-        ...last,
-        toppings: [...last.toppings, t]
-      };
+      if (e.ctrlKey && e.key === "Enter") {
+        e.preventDefault();
+        placeOrder();
+      }
 
-      const copy = [...prev];
-      copy[lastIndex] = updated;
-      return copy;
-    });
-  }
+      if (e.key === "Enter" && document.activeElement === searchInputRef.current) {
+        e.preventDefault();
+        if (filteredItems.length > 0) {
+          handleAdd(filteredItems[0]);
+        }
+      }
+    };
 
-  function handleAdd(item) {
-    if (activeCategory === "Toppings") {
-      addTopping(item);
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [filteredItems, searchTerm, order.length, placeOrder]);
+
+  const sameDrinkConfig = (a, b) => {
+    const toppingsA = [...(a.toppings || [])]
+      .map(t => ({ id: t.menu_item_id }))
+      .sort((x, y) => x.id - y.id);
+    const toppingsB = [...(b.toppings || [])]
+      .map(t => ({ id: t.menu_item_id }))
+      .sort((x, y) => x.id - y.id);
+
+    return (
+      a.menu_item_id === b.menu_item_id &&
+      a.ice === b.ice &&
+      a.sugar === b.sugar &&
+      JSON.stringify(toppingsA) === JSON.stringify(toppingsB)
+    );
+  };
+
+  function openCustomization(item, index = null) {
+    setCurrentDrink(item);
+    setEditingIndex(index);
+
+    if (index !== null) {
+      const existing = order[index];
+      setSelectedIce(existing.ice || "Regular Ice");
+      setSelectedSugar(existing.sugar || "100%");
+      setSelectedToppings(existing.toppings || []);
     } else {
-      addDrink(item);
+      setSelectedIce("Regular Ice");
+      setSelectedSugar("100%");
+      setSelectedToppings([]);
     }
+
+    setCustomModalOpen(true);
+  }
+
+  function saveDrinkCustomization() {
+    if (!currentDrink) return;
+
+    const nextDrink = {
+      menu_item_id: currentDrink.menu_item_id,
+      item_name: currentDrink.item_name,
+      item_cost: Number(currentDrink.item_cost),
+      qty: editingIndex !== null ? order[editingIndex].qty : 1,
+      ice: selectedIce,
+      sugar: selectedSugar,
+      toppings: selectedToppings.map(t => ({ ...t, item_cost: Number(t.item_cost) }))
+    };
+
+    if (editingIndex !== null) {
+      setOrder(prev => {
+        const copy = [...prev];
+        copy[editingIndex] = nextDrink;
+        return copy;
+      });
+    } else {
+      setOrder(prev => {
+        const existingIndex = prev.findIndex(o => sameDrinkConfig(o, nextDrink));
+        if (existingIndex !== -1) {
+          const copy = [...prev];
+          copy[existingIndex] = { ...copy[existingIndex], qty: copy[existingIndex].qty + 1 };
+          return copy;
+        }
+        return [...prev, nextDrink];
+      });
+    }
+
+    setCustomModalOpen(false);
+    setCurrentDrink(null);
+    setEditingIndex(null);
+  }
+
+  // Add item (drink)
+  function handleAdd(item) {
+    openCustomization(item);
+  }
+
+  function isSelectedTopping(toppingId) {
+    return selectedToppings.some(t => t.menu_item_id === toppingId);
+  }
+
+  function toggleSelectedTopping(item) {
+    setSelectedToppings(prev => {
+      if (prev.some(t => t.menu_item_id === item.menu_item_id)) {
+        return prev.filter(t => t.menu_item_id !== item.menu_item_id);
+      }
+      return [...prev, { ...item, item_cost: Number(item.item_cost) }];
+    });
   }
 
   function changeQty(index, delta) {
@@ -122,7 +219,7 @@ export default function CashierPage() {
     return order.reduce((sum, o) => {
       const base = o.item_cost * o.qty;
       const toppingTotal = o.toppings.reduce(
-        (s, t) => s + t.topping_cost * o.qty,
+        (s, t) => s + Number(t.item_cost) * o.qty,
         0
       );
       return sum + base + toppingTotal;
@@ -139,9 +236,12 @@ export default function CashierPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          payment_type: "cashier",
           items: order.map(o => ({
             menu_item_id: o.menu_item_id,
             quantity: o.qty,
+            ice_level: o.ice,
+            sugar_level: o.sugar,
             toppings: o.toppings.map(t => ({
               topping_id: t.topping_id,
               quantity: 1
@@ -168,6 +268,7 @@ export default function CashierPage() {
     <div className="cashier-container">
       
       <div className="cashier-sidebar">
+        <div className="cashier-sidebar-title">Quick Categories</div>
         {categories.map(cat => (
           <button
             key={cat}
@@ -181,22 +282,34 @@ export default function CashierPage() {
 
   
       <div className="cashier-content">
-        <input
-          className="cashier-search"
-          placeholder="Search..."
-          value={searchTerm}
-          onChange={e => setSearchTerm(e.target.value)}
-        />
+        <div className="cashier-toolbar">
+          <input
+            ref={searchInputRef}
+            className="cashier-search"
+            placeholder="Search menu items...  / or Ctrl+K"
+            value={searchTerm}
+            onChange={e => setSearchTerm(e.target.value)}
+          />
+          <div className="cashier-hints">
+            <span>Enter: add first match</span>
+            <span>Ctrl+Enter: place order</span>
+            <span>Esc: clear search</span>
+          </div>
+        </div>
 
-        <div className="menu-grid">
+        <div className="cashier-results-meta">
+          <span>{filteredItems.length} item{filteredItems.length !== 1 ? "s" : ""} visible</span>
+        </div>
+
+        <div className="cashier-menu-grid">
           {filteredItems.map(item => (
             <button
               key={item.menu_item_id || item.topping_id}
               onClick={() => handleAdd(item)}
             >
-              <div className="item-name">{item.item_name || item.topping_name}</div>
-              <div className="item-price">
-                ${Number(item.item_cost || item.topping_cost).toFixed(2)}
+              <div className="cashier-item-name">{item.item_name}</div>
+              <div className="cashier-item-price">
+                ${Number(item.item_cost).toFixed(2)}
               </div>
             </button>
           ))}
@@ -205,18 +318,26 @@ export default function CashierPage() {
 
       <div className="order-panel">
         <div className="order-header">Current Order</div>
+        <div className="order-subheader">Ctrl+Enter to send fast</div>
 
         <div className="order-items">
+          {order.length === 0 && <div className="order-empty">No items added yet.</div>}
           {order.map((o, index) => (
             <div key={index} className="order-row">
               <div className="order-item-info">
-                <div className="order-item-name">{o.item_name}</div>
+                <div className="order-item-name" onClick={() => openCustomization(o, index)}>
+                  {o.item_name}
+                </div>
+                <div className="order-customization-line">
+                  Ice: {o.ice || "Regular Ice"} • Sugar: {o.sugar || "100%"}
+                </div>
 
                 {o.toppings.length > 0 && (
                   <div className="order-toppings">
                     {o.toppings.map((t, i) => (
                       <div key={i} className="topping-line">
-                        + {t.topping_name} (${t.topping_cost})
+                        + {t.item_name}
+                        (${Number(t.item_cost).toFixed(2)})
                       </div>
                     ))}
                   </div>
@@ -225,7 +346,7 @@ export default function CashierPage() {
                 <div className="order-item-price">
                   ${(o.item_cost * o.qty +
                     o.toppings.reduce(
-                      (s, t) => s + t.topping_cost * o.qty,
+                      (s, t) => s + Number(t.item_cost) * o.qty,
                       0
                     )).toFixed(2)}
                 </div>
@@ -260,6 +381,80 @@ export default function CashierPage() {
           </button>
         </div>
       </div>
+
+      {customModalOpen && currentDrink && (
+        <div className="cashier-modal-overlay" onClick={() => setCustomModalOpen(false)}>
+          <div className="cashier-modal-content" onClick={e => e.stopPropagation()}>
+            <h2>Customize {currentDrink.item_name}</h2>
+
+            <div className="cashier-custom-section">
+              <label>Ice Level</label>
+              <div className="cashier-option-group">
+                {ICE_OPTIONS.map(option => (
+                  <button
+                    key={option}
+                    className={`cashier-option-btn ${selectedIce === option ? "active" : ""}`}
+                    onClick={() => setSelectedIce(option)}
+                  >
+                    {option}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="cashier-custom-section">
+              <label>Sugar Level</label>
+              <div className="cashier-option-group">
+                {SUGAR_OPTIONS.map(option => (
+                  <button
+                    key={option}
+                    className={`cashier-option-btn ${selectedSugar === option ? "active" : ""}`}
+                    onClick={() => setSelectedSugar(option)}
+                  >
+                    {option}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="cashier-custom-section">
+              <label>Toppings</label>
+              <div className="cashier-topping-list">
+                {toppingItems.map(t => (
+                  <button
+                    type="button"
+                    key={t.menu_item_id}
+                    className={`cashier-topping-row ${isSelectedTopping(t.menu_item_id) ? "selected" : ""}`}
+                    onClick={() => toggleSelectedTopping(t)}
+                  >
+                    <span className="cashier-topping-name">{t.item_name}</span>
+                    <span className="cashier-topping-price">+${Number(t.item_cost).toFixed(2)}</span>
+                  </button>
+                ))}
+                {toppingItems.length === 0 && (
+                  <div className="cashier-empty-toppings">No topping items found in menu.</div>
+                )}
+              </div>
+            </div>
+
+            <div className="cashier-modal-actions">
+              <button className="cashier-confirm-btn" onClick={saveDrinkCustomization}>
+                {editingIndex !== null ? "Save Changes" : "Add Drink"}
+              </button>
+              <button
+                className="cashier-cancel-btn"
+                onClick={() => {
+                  setCustomModalOpen(false);
+                  setCurrentDrink(null);
+                  setEditingIndex(null);
+                }}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

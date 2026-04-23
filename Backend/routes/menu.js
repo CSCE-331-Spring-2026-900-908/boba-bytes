@@ -1,5 +1,6 @@
 import express from "express";
 import pool from "../db/pool.js";
+import { imageMap } from "../data/imageMap.js";
 
 const router = express.Router();
 
@@ -13,6 +14,14 @@ const badRequestError = (message) => {
   err.status = 400;
   return err;
 };
+
+const normalizeName = (value = "") => value.trim().toLowerCase().replace(/\s+/g, " ");
+
+const imageMapNormalized = Object.fromEntries(
+  Object.entries(imageMap).map(([name, path]) => [normalizeName(name), path])
+);
+
+const getImageForItem = (itemName = "") => imageMapNormalized[normalizeName(itemName)] || null;
 
 const normalizeRecipe = (recipe) => {
   if (recipe === undefined || recipe === null) {
@@ -88,7 +97,6 @@ const replaceRecipe = async (client, menuItemId, recipe) => {
     return;
   }
 
-  // recipe_id has no DB default, so allocate IDs atomically in this transaction.
   await client.query("LOCK TABLE recipeitems IN EXCLUSIVE MODE");
   const maxRecipeIdResult = await client.query(
     "SELECT COALESCE(MAX(recipe_id), 0) AS max_recipe_id FROM recipeitems"
@@ -112,11 +120,16 @@ const replaceRecipe = async (client, menuItemId, recipe) => {
   }
 };
 
-
 router.get("/items", async (req, res) => {
   try {
-    const result = await pool.query("SELECT * FROM menu ORDER BY item_name ASC");
-    res.json(result.rows);
+    const result = await pool.query("SELECT * FROM menu ORDER BY menu_item_id ASC");
+
+    const itemsWithImages = result.rows.map(item => ({
+      ...item,
+      image: getImageForItem(item.item_name)
+    }));
+
+    res.json(itemsWithImages);
   } catch (err) {
     console.error(err);
     res.status(500).send("Server error");
@@ -125,6 +138,7 @@ router.get("/items", async (req, res) => {
 
 router.post("/items", async (req, res) => {
   const { item_name, item_cost, item_type, recipe } = req.body;
+
   if (!item_name || item_cost === undefined || item_cost === null || !item_type) {
     return res.status(400).json({ error: "Missing requirements: item name, item cost, item type" });
   }
@@ -139,7 +153,7 @@ router.post("/items", async (req, res) => {
     const client = await pool.connect();
 
     try {
-    await client.query("BEGIN");
+      await client.query("BEGIN");
 
     const maxID = await client.query("SELECT COALESCE(MAX(menu_item_id), 0) as mid FROM menu");
     const nextID = Number(maxID.rows[0].mid) + 1;

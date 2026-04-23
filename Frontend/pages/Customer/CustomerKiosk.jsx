@@ -1,13 +1,568 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import './CustomerKiosk.css';
 import { API_BASE } from '../../config/api.js';
 
+const LANGUAGES = [
+  { code: "en", label: "English", country: "us" },
+  { code: "es", label: "Español", country: "es" },
+  { code: "fr", label: "Français", country: "fr" },
+  { code: "zh", label: "中文", country: "cn" },
+  { code: "ja", label: "日本語", country: "jp" },
+  { code: "ko", label: "한국어", country: "kr" },
+  { code: "vi", label: "Tiếng Việt", country: "vn" }
+];
+
+const TRANSLATIONS = {
+  "Boba Bytes": {
+    es: "Boba Bytes", fr: "Boba Bytes", zh: "Boba Bytes",
+    ja: "Boba Bytes", ko: "Boba Bytes", vi: "Boba Bytes"
+  },
+  "Text Size": {
+    es: "Tamaño de Texto", fr: "Taille du texte", zh: "文字大小",
+    ja: "文字サイズ", ko: "글자 크기", vi: "Cỡ chữ"
+  },
+  "Decrease text size": {
+    es: "Reducir tamaño de texto", fr: "Diminuer la taille du texte", zh: "减小字号",
+    ja: "文字を小さく", ko: "글자 크기 줄이기", vi: "Giảm cỡ chữ"
+  },
+  "Increase text size": {
+    es: "Aumentar tamaño de texto", fr: "Augmenter la taille du texte", zh: "放大字号",
+    ja: "文字を大きく", ko: "글자 크기 늘리기", vi: "Tăng cỡ chữ"
+  },
+  "Speaker On": {
+    es: "Audio Activado", fr: "Audio Activé", zh: "音频开启",
+    ja: "音声オン", ko: "음성 켜짐", vi: "Bật loa"
+  },
+  "Speaker Off": {
+    es: "Audio Desactivado", fr: "Audio Désactivé", zh: "音频关闭",
+    ja: "音声オフ", ko: "음성 꺼짐", vi: "Tắt loa"
+  },
+  "Keyboard On": {
+    es: "Teclado Activado", fr: "Clavier Activé", zh: "键盘开启",
+    ja: "キーボードオン", ko: "키보드 켜짐", vi: "Bật bàn phím"
+  },
+  "Keyboard Off": {
+    es: "Teclado Desactivado", fr: "Clavier Désactivé", zh: "键盘关闭",
+    ja: "キーボードオフ", ko: "키보드 꺼짐", vi: "Tắt bàn phím"
+  },
+  "Your Cart": {
+    es: "Tu Carrito", fr: "Votre Panier", zh: "您的购物车",
+    ja: "カート", ko: "장바구니", vi: "Giỏ hàng"
+  },
+  "Tap any drink to start your order": {
+    es: "Toca una bebida para comenzar tu orden",
+    fr: "Touchez une boisson pour commencer votre commande",
+    zh: "点击任意饮品开始下单",
+    ja: "ドリンクをタップして注文を開始",
+    ko: "음료를 탭하여 주문을 시작하세요",
+    vi: "Chạm vào đồ uống để bắt đầu đặt hàng"
+  },
+  "Total": {
+    es: "Total", fr: "Total", zh: "总计",
+    ja: "合計", ko: "합계", vi: "Tổng"
+  },
+  "Place Order": {
+    es: "Realizar Pedido", fr: "Passer la commande", zh: "下单",
+    ja: "注文する", ko: "주문하기", vi: "Đặt hàng"
+  },
+  "Customize": {
+    es: "Personalizar", fr: "Personnaliser", zh: "定制",
+    ja: "カスタマイズ", ko: "맞춤 설정", vi: "Tùy chỉnh"
+  },
+  "Size": {
+    es: "Tamaño", fr: "Taille", zh: "尺寸",
+    ja: "サイズ", ko: "크기", vi: "Cỡ"
+  },
+  "Ice": {
+    es: "Hielo", fr: "Glace", zh: "冰量",
+    ja: "氷", ko: "얼음", vi: "Đá"
+  },
+  "Sugar": {
+    es: "Azúcar", fr: "Sucre", zh: "糖度",
+    ja: "砂糖", ko: "당도", vi: "Đường"
+  },
+  "Toppings": {
+    es: "Toppings", fr: "Garnitures", zh: "配料",
+    ja: "トッピング", ko: "토핑", vi: "Topping"
+  },
+  "Add to Cart": {
+    es: "Agregar al Carrito", fr: "Ajouter au panier", zh: "加入购物车",
+    ja: "カートに追加", ko: "장바구니에 담기", vi: "Thêm vào giỏ"
+  },
+  "Save Changes": {
+    es: "Guardar Cambios", fr: "Enregistrer", zh: "保存更改",
+    ja: "変更を保存", ko: "변경 저장", vi: "Lưu thay đổi"
+  },
+  "Cancel": {
+    es: "Cancelar", fr: "Annuler", zh: "取消",
+    ja: "キャンセル", ko: "취소", vi: "Hủy"
+  },
+  "Send": {
+    es: "Enviar", fr: "Envoyer", zh: "发送",
+    ja: "送信", ko: "보내기", vi: "Gửi"
+  },
+  "Tell me the weather, allergies, diet ...": {
+    es: "Dime el clima, alergias, dieta...",
+    fr: "Dites-moi la météo, allergies, régime...",
+    zh: "告诉我天气、过敏、饮食...",
+    ja: "天気、アレルギー、食事を教えて...",
+    ko: "날씨, 알레르기, 식단을 알려주세요...",
+    vi: "Cho tôi biết thời tiết, dị ứng, chế độ ăn..."
+  },
+  "Thinking of a drink for you...": {
+    es: "Pensando en una bebida para ti...",
+    fr: "Je réfléchis à une boisson pour vous...",
+    zh: "正在为您挑选饮品...",
+    ja: "ドリンクを考えています...",
+    ko: "음료를 생각 중이에요...",
+    vi: "Đang nghĩ đồ uống cho bạn..."
+  },
+  "Order submitted successfully": {
+    es: "Pedido enviado con éxito",
+    fr: "Commande envoyée avec succès",
+    zh: "订单提交成功",
+    ja: "注文が送信されました",
+    ko: "주문이 완료되었습니다",
+    vi: "Đơn hàng đã gửi thành công"
+  },
+  "Failed to submit order": {
+    es: "Error al enviar el pedido",
+    fr: "Échec de l'envoi de la commande",
+    zh: "订单提交失败",
+    ja: "注文の送信に失敗しました",
+    ko: "주문 전송 실패",
+    vi: "Gửi đơn hàng thất bại"
+  },
+  "Network error": {
+    es: "Error de red", fr: "Erreur réseau", zh: "网络错误",
+    ja: "ネットワークエラー", ko: "네트워크 오류", vi: "Lỗi mạng"
+  },
+  "Language": {
+    es: "Idioma", fr: "Langue", zh: "语言",
+    ja: "言語", ko: "언어", vi: "Ngôn ngữ"
+  },
+  "All": {
+    es: "Todos", fr: "Tout", zh: "全部",
+    ja: "すべて", ko: "전체", vi: "Tất cả"
+  },
+  "Coffee": {
+    es: "Café", fr: "Café", zh: "咖啡",
+    ja: "コーヒー", ko: "커피", vi: "Cà phê"
+  },
+  "Milk Tea": {
+    es: "Té con Leche", fr: "Thé au lait", zh: "奶茶",
+    ja: "ミルクティー", ko: "밀크티", vi: "Trà sữa"
+  },
+  "Seasonal": {
+    es: "De Temporada", fr: "Saisonnier", zh: "季节限定",
+    ja: "シーズン限定", ko: "시즌 한정", vi: "Theo mùa"
+  },
+  "Special Tea": {
+    es: "Té Especial", fr: "Thé spécial", zh: "特色茶",
+    ja: "スペシャルティー", ko: "스페셜 티", vi: "Trà đặc biệt"
+  },
+  "Category": {
+    es: "Categoría", fr: "Catégorie", zh: "类别",
+    ja: "カテゴリー", ko: "카테고리", vi: "Danh mục"
+  },
+  "Select category": {
+    es: "Seleccionar categoría", fr: "Sélectionner la catégorie", zh: "选择类别",
+    ja: "カテゴリーを選択", ko: "카테고리 선택", vi: "Chọn danh mục"
+  },
+  "Add": {
+    es: "Agregar", fr: "Ajouter", zh: "添加",
+    ja: "追加", ko: "추가", vi: "Thêm"
+  },
+  "to cart": {
+    es: "al carrito", fr: "au panier", zh: "到购物车",
+    ja: "をカートに", ko: "장바구니에", vi: "vào giỏ hàng"
+  },
+  "Duplicate": {
+    es: "Duplicar", fr: "Dupliquer", zh: "复制",
+    ja: "複製", ko: "복제", vi: "Nhân đôi"
+  },
+  "Remove": {
+    es: "Quitar", fr: "Retirer", zh: "移除",
+    ja: "削除", ko: "제거", vi: "Xóa"
+  },
+  "Sorry, I had trouble answering. Please try again.": {
+    es: "Lo siento, tuve problemas para responder. Inténtalo de nuevo.",
+    fr: "Désolé, j'ai eu du mal à répondre. Veuillez réessayer.",
+    zh: "抱歉，我无法回答，请再试一次。",
+    ja: "申し訳ありません、回答できませんでした。もう一度お試しください。",
+    ko: "죄송합니다. 답변에 어려움이 있었습니다. 다시 시도해주세요.",
+    vi: "Xin lỗi, tôi không thể trả lời. Vui lòng thử lại."
+  },
+  "Hi, I am Boba Buddy! Tell me the weather, any allergies or diet needs, and I will recommend a drink.": {
+    es: "¡Hola, soy Boba Buddy! Dime el clima, alergias o necesidades dietéticas y te recomendaré una bebida.",
+    fr: "Bonjour, je suis Boba Buddy ! Dites-moi la météo, vos allergies ou régimes, et je vous recommanderai une boisson.",
+    zh: "你好，我是 Boba Buddy！告诉我天气、过敏或饮食需求，我会推荐一款饮品。",
+    ja: "こんにちは、Boba Buddyです！天気、アレルギー、食事制限を教えてください。おすすめのドリンクを提案します。",
+    ko: "안녕하세요, 저는 Boba Buddy예요! 날씨, 알레르기, 식단을 알려주시면 음료를 추천해 드릴게요.",
+    vi: "Xin chào, tôi là Boba Buddy! Cho tôi biết thời tiết, dị ứng hoặc chế độ ăn, tôi sẽ giới thiệu đồ uống phù hợp."
+  },
+
+  // Drink names
+  "classic milk tea": {
+    es: "Té de leche clásico", fr: "Thé au lait classique", zh: "经典奶茶",
+    ja: "クラシックミルクティー", ko: "클래식 밀크티", vi: "Trà sữa cổ điển"
+  },
+  "thai milk tea": {
+    es: "Té de leche Thai", fr: "Thé au lait thaï", zh: "泰式奶茶",
+    ja: "タイミルクティー", ko: "타이 밀크티", vi: "Trà sữa Thái"
+  },
+  "taro milk tea": {
+    es: "Té de leche de taro", fr: "Thé au lait de taro", zh: "芋头奶茶",
+    ja: "タロイモミルクティー", ko: "타로 밀크티", vi: "Trà sữa khoai môn"
+  },
+  "matcha milk tea": {
+    es: "Té de leche de matcha", fr: "Thé au lait matcha", zh: "抹茶奶茶",
+    ja: "抹茶ミルクティー", ko: "말차 밀크티", vi: "Trà sữa matcha"
+  },
+  "okinawa brown sugar milk tea": {
+    es: "Té de leche con azúcar morena de Okinawa",
+    fr: "Thé au lait sucre brun d'Okinawa",
+    zh: "冲绳黑糖奶茶",
+    ja: "沖縄黒糖ミルクティー",
+    ko: "오키나와 흑당 밀크티",
+    vi: "Trà sữa đường nâu Okinawa"
+  },
+  "honey green milk tea": {
+    es: "Té verde con miel y leche",
+    fr: "Thé vert au miel et lait",
+    zh: "蜂蜜绿奶茶",
+    ja: "ハニーグリーンミルクティー",
+    ko: "허니 그린 밀크티",
+    vi: "Trà xanh mật ong sữa"
+  },
+  "wintermelon milk tea": {
+    es: "Té de leche de melón de invierno",
+    fr: "Thé au lait de melon d'hiver",
+    zh: "冬瓜奶茶",
+    ja: "冬瓜ミルクティー",
+    ko: "동과 밀크티",
+    vi: "Trà sữa bí đao"
+  },
+  "coffee milk tea": {
+    es: "Té de leche con café", fr: "Thé au lait au café", zh: "咖啡奶茶",
+    ja: "コーヒーミルクティー", ko: "커피 밀크티", vi: "Trà sữa cà phê"
+  },
+  "mango green tea": {
+    es: "Té verde de mango", fr: "Thé vert à la mangue", zh: "芒果绿茶",
+    ja: "マンゴーグリーンティー", ko: "망고 녹차", vi: "Trà xanh xoài"
+  },
+  "strawberry fruit tea": {
+    es: "Té de fruta de fresa", fr: "Thé aux fraises", zh: "草莓水果茶",
+    ja: "ストロベリーフルーツティー", ko: "딸기 과일차", vi: "Trà trái cây dâu"
+  },
+  "peach black tea": {
+    es: "Té negro de durazno", fr: "Thé noir à la pêche", zh: "蜜桃红茶",
+    ja: "ピーチブラックティー", ko: "복숭아 홍차", vi: "Trà đen đào"
+  },
+  "lychee oolong tea": {
+    es: "Té oolong de lichi", fr: "Thé oolong au litchi", zh: "荔枝乌龙茶",
+    ja: "ライチウーロン茶", ko: "리치 우롱차", vi: "Trà ô long vải"
+  },
+  "additional boba": {
+    es: "Boba adicional", fr: "Boba supplémentaire", zh: "额外珍珠",
+    ja: "追加タピオカ", ko: "추가 버블", vi: "Thêm trân châu"
+  },
+  "coffee fruit tea": {
+    es: "Té de fruta con café", fr: "Thé aux fruits et café", zh: "咖啡水果茶",
+    ja: "コーヒーフルーツティー", ko: "커피 과일차", vi: "Trà trái cây cà phê"
+  },
+  "mango milk tea": {
+    es: "Té de leche de mango", fr: "Thé au lait à la mangue", zh: "芒果奶茶",
+    ja: "マンゴーミルクティー", ko: "망고 밀크티", vi: "Trà sữa xoài"
+  },
+  "grapefruit coffee tea": {
+    es: "Té de café y pomelo", fr: "Thé café et pamplemousse", zh: "葡萄柚咖啡茶",
+    ja: "グレープフルーツコーヒーティー", ko: "자몽 커피차", vi: "Trà cà phê bưởi"
+  },
+  "grapefruit milk tea": {
+    es: "Té de leche de pomelo", fr: "Thé au lait au pamplemousse", zh: "葡萄柚奶茶",
+    ja: "グレープフルーツミルクティー", ko: "자몽 밀크티", vi: "Trà sữa bưởi"
+  },
+  "grapefruit green tea": {
+    es: "Té verde de pomelo", fr: "Thé vert au pamplemousse", zh: "葡萄柚绿茶",
+    ja: "グレープフルーツグリーンティー", ko: "자몽 녹차", vi: "Trà xanh bưởi"
+  },
+  "kiwi fruit tea": {
+    es: "Té de kiwi", fr: "Thé au kiwi", zh: "奇异果水果茶",
+    ja: "キウイフルーツティー", ko: "키위 과일차", vi: "Trà trái cây kiwi"
+  },
+  "passionfruit green tea": {
+    es: "Té verde de maracuyá", fr: "Thé vert aux fruits de la passion",
+    zh: "百香果绿茶", ja: "パッションフルーツグリーンティー",
+    ko: "패션프루트 녹차", vi: "Trà xanh chanh dây"
+  },
+  "pineapple green tea": {
+    es: "Té verde de piña", fr: "Thé vert à l'ananas", zh: "菠萝绿茶",
+    ja: "パイナップルグリーンティー", ko: "파인애플 녹차", vi: "Trà xanh dứa"
+  },
+
+  // Toppings
+  "boba": {
+    es: "Boba", fr: "Boba", zh: "珍珠",
+    ja: "タピオカ", ko: "버블", vi: "Trân châu"
+  },
+  "coffee jelly": {
+    es: "Jalea de café", fr: "Gelée de café", zh: "咖啡冻",
+    ja: "コーヒーゼリー", ko: "커피 젤리", vi: "Thạch cà phê"
+  },
+  "ice cream": {
+    es: "Helado", fr: "Crème glacée", zh: "冰淇淋",
+    ja: "アイスクリーム", ko: "아이스크림", vi: "Kem"
+  },
+  "taro balls": {
+    es: "Bolas de taro", fr: "Boules de taro", zh: "芋圆",
+    ja: "タロイモボール", ko: "타로 볼", vi: "Viên khoai môn"
+  },
+
+  // Descriptions
+  "Smooth black tea with creamy milk for a rich, classic boba taste.": {
+    es: "Té negro suave con leche cremosa para un sabor clásico.",
+    fr: "Thé noir onctueux avec du lait crémeux pour un goût boba classique.",
+    zh: "顺滑红茶配奶香十足的牛奶，经典浓郁的波霸口味。",
+    ja: "滑らかな紅茶にクリーミーなミルクが合わさったクラシックな味わい。",
+    ko: "부드러운 홍차와 크리미한 우유가 어우러진 클래식한 맛.",
+    vi: "Trà đen mượt với sữa béo tạo nên hương vị boba cổ điển."
+  },
+  "Bold Thai tea with sweet cream notes and a fragrant spiced finish.": {
+    es: "Té Thai intenso con notas dulces y un final especiado.",
+    fr: "Thé thaï intense aux notes crémeuses et épicées.",
+    zh: "浓郁泰式茶，香甜奶香与香料尾韵。",
+    ja: "濃厚なタイティーに甘いクリームとスパイシーな余韻。",
+    ko: "진한 타이티에 달콤한 크림과 향긋한 향신료 여운.",
+    vi: "Trà Thái đậm đà với vị kem ngọt và hậu vị thơm gia vị."
+  },
+  "Nutty taro flavor blended with milk for a sweet and velvety drink.": {
+    es: "Sabor a taro mezclado con leche para una bebida dulce y aterciopelada.",
+    fr: "Saveur de taro mélangée au lait pour une boisson douce et veloutée.",
+    zh: "芋香浓郁与牛奶融合，甜美柔滑。",
+    ja: "ナッツのようなタロイモとミルクが織りなす甘くてベルベットのような飲み物。",
+    ko: "고소한 타로와 우유가 어우러진 달콤하고 부드러운 음료.",
+    vi: "Vị khoai môn bùi béo kết hợp với sữa tạo nên thức uống ngọt mượt."
+  },
+  "Earthy matcha and creamy milk balanced into a refreshing green tea latte.": {
+    es: "Matcha terroso con leche cremosa en un refrescante latte de té verde.",
+    fr: "Matcha terreux et lait crémeux dans un latte de thé vert rafraîchissant.",
+    zh: "抹茶醇香与牛奶融合，清爽的绿茶拿铁。",
+    ja: "抹茶の風味とミルクのバランスが爽やかなグリーンティーラテ。",
+    ko: "구수한 말차와 크리미한 우유가 어우러진 상쾌한 녹차 라떼.",
+    vi: "Matcha đậm vị hòa quyện với sữa tạo nên latte trà xanh mát lạnh."
+  },
+  "Caramel-like brown sugar syrup mixed into creamy milk tea.": {
+    es: "Jarabe de azúcar morena con sabor a caramelo mezclado con té de leche.",
+    fr: "Sirop de sucre brun façon caramel mélangé au thé au lait crémeux.",
+    zh: "焦糖般的黑糖糖浆融入奶香浓郁的奶茶。",
+    ja: "キャラメルのような黒糖シロップをクリーミーなミルクティーに。",
+    ko: "캐러멜 같은 흑당 시럽이 크리미한 밀크티에 어우러짐.",
+    vi: "Siro đường nâu vị caramel hòa quyện trong trà sữa béo."
+  },
+  "Light green tea and milk with a mellow honey sweetness.": {
+    es: "Té verde ligero con leche y un toque suave de miel.",
+    fr: "Thé vert léger et lait avec une douceur de miel subtile.",
+    zh: "清爽绿茶搭配牛奶与柔和蜂蜜香。",
+    ja: "軽い緑茶とミルクに優しい蜂蜜の甘さ。",
+    ko: "가벼운 녹차와 우유에 은은한 꿀의 달콤함.",
+    vi: "Trà xanh thanh nhẹ với sữa và vị mật ong dịu ngọt."
+  },
+  "Traditional wintermelon syrup and milk tea with a smooth, toasty sweetness.": {
+    es: "Jarabe tradicional de melón de invierno con té de leche y dulzor tostado.",
+    fr: "Sirop traditionnel de melon d'hiver et thé au lait avec une douceur grillée.",
+    zh: "传统冬瓜糖浆与奶茶，带有烘烤甜香。",
+    ja: "伝統的な冬瓜シロップとミルクティーの香ばしい甘さ。",
+    ko: "전통 동과 시럽과 밀크티의 부드럽고 구수한 단맛.",
+    vi: "Siro bí đao truyền thống cùng trà sữa vị ngọt dịu."
+  },
+  "A coffee-forward milk tea with creamy body and a gentle caffeine kick.": {
+    es: "Té de leche con sabor a café, cuerpo cremoso y un toque de cafeína.",
+    fr: "Un thé au lait au goût de café, crémeux avec une touche de caféine.",
+    zh: "咖啡风味浓郁的奶茶，奶香醇厚带有温和咖啡因。",
+    ja: "コーヒー風味が際立つクリーミーなミルクティー。",
+    ko: "커피 향이 진한 크리미한 밀크티.",
+    vi: "Trà sữa vị cà phê đậm đà, béo ngậy với chút caffeine."
+  },
+  "Crisp green tea with juicy mango flavor for a bright tropical sip.": {
+    es: "Té verde refrescante con sabor a mango jugoso.",
+    fr: "Thé vert croquant avec une saveur juteuse de mangue tropicale.",
+    zh: "清爽绿茶搭配多汁芒果，热带风味十足。",
+    ja: "爽やかな緑茶とジューシーなマンゴーのトロピカルな一杯。",
+    ko: "상쾌한 녹차와 과즙 가득한 망고의 열대 풍미.",
+    vi: "Trà xanh thanh mát với vị xoài nhiệt đới ngọt ngào."
+  },
+  "Fruity strawberry tea that is sweet, vibrant, and refreshing.": {
+    es: "Té de fresa afrutado, dulce y refrescante.",
+    fr: "Thé à la fraise fruité, sucré et rafraîchissant.",
+    zh: "果香草莓茶，甜美鲜活又清爽。",
+    ja: "フルーティーで甘くて爽やかなストロベリーティー。",
+    ko: "과일향 가득한 달콤하고 상쾌한 딸기차.",
+    vi: "Trà dâu trái cây ngọt ngào và sảng khoái."
+  },
+  "Classic black tea infused with ripe peach flavor.": {
+    es: "Té negro clásico infusionado con sabor a durazno maduro.",
+    fr: "Thé noir classique infusé à la pêche mûre.",
+    zh: "经典红茶融入成熟蜜桃香。",
+    ja: "熟した桃の香りを加えたクラシックな紅茶。",
+    ko: "잘 익은 복숭아 향이 어우러진 클래식 홍차.",
+    vi: "Trà đen cổ điển với hương đào chín."
+  },
+  "Floral oolong tea paired with delicate lychee sweetness.": {
+    es: "Té oolong floral combinado con dulzor delicado de lichi.",
+    fr: "Thé oolong floral associé à la douceur délicate du litchi.",
+    zh: "花香乌龙茶配以细腻荔枝甜香。",
+    ja: "花の香りのウーロン茶と繊細なライチの甘さ。",
+    ko: "꽃향기 가득한 우롱차와 섬세한 리치의 달콤함.",
+    vi: "Trà ô long hương hoa với vị vải ngọt dịu."
+  }
+};
+
 function CustomerKiosk() {
+  const [language, setLanguage] = useState("en");
+  const [languageMenuOpen, setLanguageMenuOpen] = useState(false);
+  const languageMenuRef = useRef(null);
+
+  const t = (key) => {
+    if (language === "en") return key;
+    return TRANSLATIONS[key]?.[language] || key;
+  };
   const [menuItems, setMenuItems] = useState([]);
   const [categories, setCategories] = useState([]);
-  const [selectedCategory, setSelectedCategory] = useState('All');
+  const [selectedCategory, setSelectedCategory] = useState("All");
   const [cart, setCart] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [fontScale, setFontScale] = useState(1.2);
+  const [speakMode, setSpeakMode] = useState(false);
+  const [keyboardMode, setKeyboardMode] = useState(false);
+  const [focusIndex, setFocusIndex] = useState(0);
+
+  const [customModalOpen, setCustomModalOpen] = useState(false);
+  const [currentDrink, setCurrentDrink] = useState(null);
+  const [editingIndex, setEditingIndex] = useState(null);
+  const [selectedSize, setSelectedSize] = useState(null);
+  const [selectedIce, setSelectedIce] = useState(null);
+  const [selectedSugar, setSelectedSugar] = useState(null);
+  const [selectedToppings, setSelectedToppings] = useState([]);
+
+  const [chatOpen, setChatOpen] = useState(false);
+  const [chatMessages, setChatMessages] = useState([
+    {
+      role: "assistant",
+      content: t(
+        "Hi, I am Boba Buddy! Tell me the weather, any allergies or diet needs, and I will recommend a drink."
+      )
+    }
+  ]);
+  const [chatInput, setChatInput] = useState("");
+  const [chatLoading, setChatLoading] = useState(false);
+
+  const itemRefs = useRef([]);
+  const categoryRefs = useRef([]);
+  const synth = window.speechSynthesis;
+
+  const normalizeName = (value = "") =>
+    value.toLowerCase().trim().replace(/\s+/g, " ");
+
+  const localImageByName = {
+    "classic milk tea": "/images/menu/classic_milk_tea.png",
+    "thai milk tea": "/images/menu/thai_milk_tea.png",
+    "taro milk tea": "/images/menu/taro_milk_tea.png",
+    "matcha milk tea": "/images/menu/matcha_milk_tea.png",
+    "okinawa brown sugar milk tea": "/images/menu/okinawa_brown_sugar_milk_tea.png",
+    "honey green milk tea": "/images/menu/honey_green_milk_tea.png",
+    "wintermelon milk tea": "/images/menu/wintermelon_milk_tea.png",
+    "winter melon milk tea": "/images/menu/wintermelon_milk_tea.png",
+    "coffee milk tea": "/images/menu/coffee_milk_tea.png",
+    "mango green tea": "/images/menu/mango_green_tea.png",
+    "strawberry fruit tea": "/images/menu/strawberry_fruit_tea.png",
+    "peach black tea": "/images/menu/peach_black_tea.png",
+    "lychee oolong tea": "/images/menu/lychee_oolong_tea.png",
+    "additional boba": "/images/menu/additional_boba.png"
+  };
+
+  const generatedDescriptionByName = {
+    "classic milk tea":
+      "Smooth black tea with creamy milk for a rich, classic boba taste.",
+    "thai milk tea":
+      "Bold Thai tea with sweet cream notes and a fragrant spiced finish.",
+    "taro milk tea":
+      "Nutty taro flavor blended with milk for a sweet and velvety drink.",
+    "matcha milk tea":
+      "Earthy matcha and creamy milk balanced into a refreshing green tea latte.",
+    "okinawa brown sugar milk tea":
+      "Caramel-like brown sugar syrup mixed into creamy milk tea.",
+    "honey green milk tea":
+      "Light green tea and milk with a mellow honey sweetness.",
+    "wintermelon milk tea":
+      "Traditional wintermelon syrup and milk tea with a smooth, toasty sweetness.",
+    "winter melon milk tea":
+      "Traditional wintermelon syrup and milk tea with a smooth, toasty sweetness.",
+    "coffee milk tea":
+      "A coffee-forward milk tea with creamy body and a gentle caffeine kick.",
+    "mango green tea":
+      "Crisp green tea with juicy mango flavor for a bright tropical sip.",
+    "strawberry fruit tea":
+      "Fruity strawberry tea that is sweet, vibrant, and refreshing.",
+    "peach black tea":
+      "Classic black tea infused with ripe peach flavor.",
+    "lychee oolong tea":
+      "Floral oolong tea paired with delicate lychee sweetness.",
+    "additional boba":
+      "Chewy tapioca pearls to add extra texture to your drink."
+  };
+
+  const placeholderSvg =
+    "data:image/svg+xml;utf8," +
+    encodeURIComponent(
+      '<svg xmlns="http://www.w3.org/2000/svg" width="600" height="420"><rect width="100%" height="100%" fill="#f5c4a1"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#5c3d2e" font-size="28" font-family="Arial, sans-serif">Boba Bytes</text></svg>'
+    );
+
+  const getItemImageSrc = (item) => {
+    const normalized = normalizeName(item.item_name);
+    const localImage = localImageByName[normalized];
+    if (localImage) return localImage;
+    if (item.image) return item.image;
+    return placeholderSvg;
+  };
+
+  const getTranslatedDrinkName = (item) => {
+    const key = normalizeName(item.item_name);
+    if (language !== "en" && TRANSLATIONS[key]?.[language]) {
+      return TRANSLATIONS[key][language];
+    }
+    return item.item_name;
+  };
+
+  const translateItemName = (name) => {
+    if (!name) return name;
+    const key = normalizeName(name);
+    if (language !== "en" && TRANSLATIONS[key]?.[language]) {
+      return TRANSLATIONS[key][language];
+    }
+    return name;
+  };
+
+  const getItemDescription = (item) => {
+    const english = item.item_description?.trim()
+      ? item.item_description
+      : generatedDescriptionByName[normalizeName(item.item_name)];
+
+    if (language !== "en" && TRANSLATIONS[english]?.[language]) {
+      return TRANSLATIONS[english][language];
+    }
+    return english;
+  };
+  const speak = (text) => {
+    if (!speakMode) return;
+    synth.cancel();
+    synth.speak(new SpeechSynthesisUtterance(text));
+  };
+
+  const getToppingPriceByName = (name) => {
+    const t = TOPPINGS.find((x) => x.name === name);
+    return t ? t.price : 0;
+  };
 
   useEffect(() => {
     async function loadMenu() {
@@ -19,63 +574,161 @@ function CustomerKiosk() {
         let cats = await catsRes.json();
 
         if (!cats || cats.length === 0) {
-          cats = [...new Set(items.map(item => item.item_type).filter(Boolean))];
-
-
+          cats = [...new Set(items.map((item) => item.item_type).filter(Boolean))];
         }
 
         setMenuItems(items);
-        setCategories(['All', ...cats]);
+
+        setCategories(["All", ...cats.filter((c) => c !== "Toppings")]);
       } catch (error) {
-        console.error("Failed to load menu", error);
-        alert("Could not load menu. Is the backend running?");
+        alert(t("Network error"));
       } finally {
         setLoading(false);
       }
     }
-
     loadMenu();
   }, []);
 
-  const filteredItems = selectedCategory === 'All'
-    ? menuItems
-    : menuItems.filter(item => item.item_type === selectedCategory);
+  const browseableMenuItems = menuItems.filter((item) => item.item_type !== "Toppings");
 
+  const TOPPINGS = menuItems
+    .filter((item) => item.item_type === "Toppings")
+    .map((item) => ({
+      name: item.item_name,
+      price: Number(item.item_cost)
+    }));
 
-  const addToCart = (item) => {
-    setCart(prevCart => {
-      const existing = prevCart.find(cartItem => cartItem.menu_item_id === item.menu_item_id);
-      if (existing) {
-        return prevCart.map(cartItem =>
-          cartItem.menu_item_id === item.menu_item_id
-            ? { ...cartItem, quantity: cartItem.quantity + 1 }
-            : cartItem
-        );
-      }
-      return [...prevCart, { ...item, quantity: 1 }];
-    });
+  const filteredItems =
+    selectedCategory === "All"
+      ? browseableMenuItems
+      : browseableMenuItems.filter((item) => item.item_type === selectedCategory);
+
+  const drinksMatch = (a, b) => {
+    const aT = (a.toppings || [])
+      .map((t) => t.name)
+      .sort((x, y) => x.localeCompare(y));
+    const bT = (b.toppings || [])
+      .map((t) => t.name)
+      .sort((x, y) => x.localeCompare(y));
+
+    return (
+      a.menu_item_id === b.menu_item_id &&
+      a.size === b.size &&
+      a.ice === b.ice &&
+      a.sugar === b.sugar &&
+      JSON.stringify(aT) === JSON.stringify(bT)
+    );
   };
 
-  const removeFromCart = (id) => {
-    setCart(prevCart => prevCart.filter(item => item.menu_item_id !== id));
+  const openCustomization = (item, index = null) => {
+    setCurrentDrink(item);
+    setEditingIndex(index);
+
+    if (index !== null) {
+      const existing = cart[index];
+      setSelectedSize(existing.size);
+      setSelectedIce(existing.ice);
+      setSelectedSugar(existing.sugar);
+      setSelectedToppings(existing.toppings || []);
+    } else {
+      setSelectedSize(null);
+      setSelectedIce(null);
+      setSelectedSugar(null);
+      setSelectedToppings([]);
+    }
+
+    setCustomModalOpen(true);
+  };
+
+  const handleItemClick = (item) => {
+    openCustomization(item);
+  };
+
+  const computeToppingsCostPerDrink = (toppings) =>
+    (toppings || []).reduce((sum, t) => sum + Number(t.price), 0);
+
+  const saveDrink = () => {
+    const basePrice = Number(currentDrink.item_cost);
+    const toppingsCost = computeToppingsCostPerDrink(selectedToppings);
+
+    const drinkOrder = {
+      cart_item_id:
+        editingIndex !== null
+          ? cart[editingIndex].cart_item_id
+          : Math.random().toString(36).substring(2, 9),
+      menu_item_id: currentDrink.menu_item_id,
+      item_name: currentDrink.item_name,
+      item_type: currentDrink.item_type,
+      size: selectedSize || "Medium",
+      ice: selectedIce || "Regular Ice",
+      sugar: selectedSugar || "100%",
+      toppings: selectedToppings,
+      quantity: editingIndex !== null ? cart[editingIndex].quantity : 1,
+      base_cost: basePrice,
+      toppings_cost_per_drink: toppingsCost
+    };
+
+    if (editingIndex !== null) {
+      const updated = [...cart];
+      updated[editingIndex] = drinkOrder;
+      setCart(updated);
+    } else {
+      setCart((prev) => {
+        const existingIndex = prev.findIndex((c) => drinksMatch(c, drinkOrder));
+        if (existingIndex !== -1) {
+          const updated = [...prev];
+          updated[existingIndex] = {
+            ...updated[existingIndex],
+            quantity: updated[existingIndex].quantity + 1
+          };
+          return updated;
+        }
+        return [...prev, drinkOrder];
+      });
+    }
+
+    setCustomModalOpen(false);
+    setEditingIndex(null);
+  };
+
+  const removeFromCart = (cartItemId) => {
+    setCart((prev) =>
+      prev
+        .map((item) =>
+          item.cart_item_id === cartItemId
+            ? { ...item, quantity: item.quantity - 1 }
+            : item
+        )
+        .filter((item) => item.quantity > 0)
+    );
+  };
+
+  const duplicateDrink = (cartItemId) => {
+    setCart((prev) =>
+      prev.map((item) =>
+        item.cart_item_id === cartItemId
+          ? { ...item, quantity: item.quantity + 1 }
+          : item
+      )
+    );
   };
 
   const totalPrice = cart.reduce((total, item) => {
-    return total + item.item_cost * item.quantity;
+    const perDrink =
+      Number(item.base_cost) + computeToppingsCostPerDrink(item.toppings);
+    return total + perDrink * item.quantity;
   }, 0);
-
   const submitOrder = async () => {
-    if (cart.length === 0) {
-      alert("Your cart is empty!");
-      return;
-    }
+    if (cart.length === 0) return;
+    speak(t("Order submitted successfully"));
 
     try {
       const response = await fetch(`${API_BASE}/orders`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          items: cart.map(item => ({
+          payment_type: "kiosk",
+          items: cart.map((item) => ({
             menu_item_id: item.menu_item_id,
             quantity: item.quantity
           })),
@@ -84,91 +737,409 @@ function CustomerKiosk() {
       });
 
       if (response.ok) {
-        alert("Order submitted successfully! Thank you!");
-        setCart([]);        // Clear cart after success
+        alert(t("Order submitted successfully"));
+        setCart([]);
       } else {
-        alert("Failed to submit order");
+        alert(t("Failed to submit order"));
       }
     } catch (error) {
-      console.error(error);
-      alert("Network error. Please check if backend is running.");
+      alert(t("Network error"));
     }
   };
 
-  if (loading) {
-    return <div className="kiosk-loading">Loading menu… </div>;
-  }
+  useEffect(() => {
+    if (!keyboardMode) return;
+
+    const handleKey = (e) => {
+      const totalCategories = categories.length;
+      const totalItems = filteredItems.length;
+
+      const activeCategory = categoryRefs.current.findIndex(
+        (el) => el === document.activeElement
+      );
+
+      if (e.key === "ArrowDown") {
+        if (activeCategory !== -1) {
+          setFocusIndex(0);
+          itemRefs.current[0]?.focus();
+          return;
+        }
+        if (focusIndex < totalItems - 1) setFocusIndex(focusIndex + 1);
+      }
+
+      if (e.key === "ArrowUp") {
+        if (focusIndex > 0) setFocusIndex(focusIndex - 1);
+        else categoryRefs.current[0]?.focus();
+      }
+
+      if (e.key === "ArrowLeft") {
+        if (activeCategory > 0) categoryRefs.current[activeCategory - 1]?.focus();
+      }
+
+      if (e.key === "ArrowRight") {
+        if (activeCategory !== -1 && activeCategory < totalCategories - 1)
+          categoryRefs.current[activeCategory + 1]?.focus();
+      }
+
+      if (e.key === "Enter") {
+        if (activeCategory !== -1) {
+          const cat = categories[activeCategory];
+          setSelectedCategory(cat);
+          speak(`${t("Category")}: ${cat}`);
+          return;
+        }
+        const item = filteredItems[focusIndex];
+        handleItemClick(item);
+      }
+    };
+
+    window.addEventListener("keydown", handleKey);
+    return () => window.removeEventListener("keydown", handleKey);
+  }, [keyboardMode, filteredItems, focusIndex, categories, language]);
+
+  useEffect(() => {
+    if (!languageMenuOpen) return;
+    const handleClickOutside = (e) => {
+      if (languageMenuRef.current && !languageMenuRef.current.contains(e.target)) {
+        setLanguageMenuOpen(false);
+      }
+    };
+    const handleEsc = (e) => {
+      if (e.key === "Escape") setLanguageMenuOpen(false);
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("keydown", handleEsc);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleEsc);
+    };
+  }, [languageMenuOpen]);
+
+  useEffect(() => {
+    if (keyboardMode && itemRefs.current[focusIndex]) {
+      itemRefs.current[focusIndex].focus();
+      itemRefs.current[focusIndex].scrollIntoView({
+        behavior: "smooth",
+        block: "center"
+      });
+    }
+  }, [focusIndex, keyboardMode]);
+
+  const isToppingSelected = (name) =>
+    selectedToppings.some((t) => t.name === name);
+
+  const toggleTopping = (name) => {
+    setSelectedToppings((prev) => {
+      if (prev.some((t) => t.name === name)) {
+        return prev.filter((t) => t.name !== name);
+      }
+      const price = getToppingPriceByName(name);
+      return [...prev, { name, price }];
+    });
+  };
+
+  const sendChatMessage = async () => {
+    const trimmed = chatInput.trim();
+    if (!trimmed) return;
+
+    const newMessages = [...chatMessages, { role: "user", content: trimmed }];
+    setChatMessages(newMessages);
+    setChatInput("");
+    setChatLoading(true);
+
+    try {
+      const res = await fetch(`${API_BASE}/chatbot`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          messages: newMessages,
+          menu: menuItems
+        })
+      });
+
+      const data = await res.json();
+
+      if (data && data.reply) {
+        setChatMessages((prev) => [...prev, data.reply]);
+      }
+    } catch (e) {
+      setChatMessages((prev) => [
+        ...prev,
+        {
+          role: "assistant",
+          content: t("Sorry, I had trouble answering. Please try again.")
+        }
+      ]);
+    } finally {
+      setChatLoading(false);
+    }
+  };
+  if (loading) return <div className="kiosk-loading">Loading menu...</div>;
 
   return (
-    <div className="kiosk-container">
-      {/* Header */}
-      <header className="kiosk-header">
-        <h1>Boba Bytes</h1>
-        <p className="tagline">Build your perfect bubble tea!</p>
-      </header>
+    <div className="kiosk-container" style={{ "--scale": fontScale }}>
+      <header className="kiosk-top-header">
+        <div className="kiosk-header-small">
+          <img
+            src="/images/menu/logo.png"
+            alt="Boba Bytes Logo"
+            className="kiosk-logo"
+          />
+          <div className="kiosk-header-actions">
+            <div className="category-bar">
+              {categories.map((cat, index) => {
+                const label = t(cat);
+                return (
+                  <button
+                    key={cat ?? index}
+                    ref={(el) => (categoryRefs.current[index] = el)}
+                    tabIndex={keyboardMode ? 0 : -1}
+                    onClick={() => {
+                      setSelectedCategory(cat);
+                      speak(`${t("Category")}: ${label}`);
+                    }}
+                    className={`category-btn ${
+                      selectedCategory === cat ? "active" : ""
+                    }`}
+                    aria-label={`${t("Select category")} ${label}`}
+                  >
+                    {label}
+                  </button>
+                );
+              })}
+            </div>
 
-      <div className="category-bar">
-        {categories.map((cat, index) => (
-            <button
-                key={cat ?? index}
-                onClick={() => setSelectedCategory(cat)}
-                className={`category-btn ${selectedCategory === cat ? 'active' : ''}`}
-            >
-              {cat}
-            </button>
-        ))}
-      </div>
+            <div className="accessibility-bar">
+              <label>{t("Text Size")}:</label>
+
+              <button
+                className="size-btn"
+                onClick={() =>
+                  setFontScale((prev) => Math.max(0.6, prev - 0.1))
+                }
+                aria-label={t("Decrease text size")}
+              >
+                -
+              </button>
+
+              <button
+                className="size-btn"
+                onClick={() =>
+                  setFontScale((prev) => Math.min(1.6, prev + 0.1))
+                }
+                aria-label={t("Increase text size")}
+              >
+                +
+              </button>
+
+              <button
+                className={`access-btn ${speakMode ? "active" : ""}`}
+                onClick={() => {
+                  setSpeakMode(!speakMode);
+                  speak(
+                    !speakMode
+                      ? t("Speaker On")
+                      : t("Speaker Off")
+                  );
+                }}
+              >
+                {speakMode ? t("Speaker On") : t("Speaker Off")}
+              </button>
+
+              <button
+                className={`access-btn ${keyboardMode ? "active" : ""}`}
+                onClick={() => {
+                  setKeyboardMode(!keyboardMode);
+                  speak(
+                    !keyboardMode
+                      ? t("Keyboard On")
+                      : t("Keyboard Off")
+                  );
+                }}
+              >
+                {keyboardMode ? t("Keyboard On") : t("Keyboard Off")}
+              </button>
+
+              <label className="language-label">{t("Language")}:</label>
+              <div className="language-dropdown" ref={languageMenuRef}>
+                <button
+                  type="button"
+                  className="language-toggle"
+                  onClick={() => setLanguageMenuOpen((open) => !open)}
+                  aria-haspopup="listbox"
+                  aria-expanded={languageMenuOpen}
+                  aria-label={t("Language")}
+                >
+                  {(() => {
+                    const current =
+                      LANGUAGES.find((l) => l.code === language) || LANGUAGES[0];
+                    return (
+                      <>
+                        <img
+                          className="language-flag"
+                          src={`https://flagcdn.com/w40/${current.country}.png`}
+                          srcSet={`https://flagcdn.com/w80/${current.country}.png 2x`}
+                          alt=""
+                          aria-hidden="true"
+                        />
+                        <span className="language-current-label">
+                          {current.label}
+                        </span>
+                        <span
+                          className={`language-caret ${
+                            languageMenuOpen ? "open" : ""
+                          }`}
+                          aria-hidden="true"
+                        >
+                          ▾
+                        </span>
+                      </>
+                    );
+                  })()}
+                </button>
+
+                {languageMenuOpen && (
+                  <ul className="language-menu" role="listbox">
+                    {LANGUAGES.map((lang) => (
+                      <li
+                        key={lang.code}
+                        role="option"
+                        aria-selected={language === lang.code}
+                        tabIndex={0}
+                        className={`language-menu-item ${
+                          language === lang.code ? "active" : ""
+                        }`}
+                        onClick={() => {
+                          setLanguage(lang.code);
+                          setLanguageMenuOpen(false);
+                        }}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter" || e.key === " ") {
+                            e.preventDefault();
+                            setLanguage(lang.code);
+                            setLanguageMenuOpen(false);
+                          }
+                        }}
+                      >
+                        <img
+                          className="language-flag"
+                          src={`https://flagcdn.com/w40/${lang.country}.png`}
+                          srcSet={`https://flagcdn.com/w80/${lang.country}.png 2x`}
+                          alt=""
+                          aria-hidden="true"
+                        />
+                        <span>{lang.label}</span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      </header>
 
       <div className="main-content">
         <div className="menu-grid">
-          {filteredItems.map(item => (
+          {filteredItems.map((item, index) => (
             <div
               key={item.menu_item_id}
-              className="menu-card"
-              onClick={() => addToCart(item)}
+              ref={(el) => (itemRefs.current[index] = el)}
+              className={`menu-card ${
+                keyboardMode && focusIndex === index ? "focused" : ""
+              }`}
+              onClick={() => handleItemClick(item)}
+              role="button"
+              tabIndex={keyboardMode ? 0 : -1}
+              aria-label={`${t("Add")} ${getTranslatedDrinkName(item)} ${t("to cart")}`}
             >
-              {item.image && (
-                <img
-                  src={item.image}
-                  alt={item.name}
-                  className="item-image"
-                />
-              )}
+              <img
+                src={getItemImageSrc(item)}
+                alt={getTranslatedDrinkName(item)}
+                className="item-image"
+                onError={(e) => {
+                  e.currentTarget.onerror = null;
+                  e.currentTarget.src = placeholderSvg;
+                }}
+              />
+
               <div className="item-info">
-                <h3 className="font-bold text-2xl">{item.item_name}</h3>
+                <h3>{getTranslatedDrinkName(item)}</h3>
+                <p className="item-description">{getItemDescription(item)}</p>
                 <p className="price">${Number(item.item_cost).toFixed(2)}</p>
               </div>
             </div>
           ))}
         </div>
-
-        <div className="cart-sidebar">
-          <h2>Your Cart ({cart.length})</h2>
+        <div className="cart-sidebar" aria-live="polite">
+          <h2>
+            {t("Your Cart")} ({cart.length})
+          </h2>
 
           {cart.length === 0 ? (
-            <p className="empty-cart">Tap any drink to start your order!</p>
+            <p className="empty-cart">{t("Tap any drink to start your order")}</p>
           ) : (
-            cart.map(item => (
-              <div key={item.menu_item_id } className="cart-item">
-                <div>
-                  <span>{item.item_name}</span>
-                  <span className="qty"> × {item.quantity}</span>
-                </div>
-                <div className="cart-item-right">
-                  <span>${(item.item_cost * item.quantity).toFixed(2)}</span>
-                  <button
-                    onClick={() => removeFromCart(item.menu_item_id)}
-                    className="remove-btn"
+            cart.map((item, index) => {
+              const perDrink =
+                Number(item.base_cost) +
+                computeToppingsCostPerDrink(item.toppings);
+
+              return (
+                <div key={item.cart_item_id} className="cart-item">
+                  <div
+                    style={{ flex: 1 }}
+                    onClick={() => openCustomization(item, index)}
                   >
-                    ×
-                  </button>
+                    <div>
+                      <span>{getTranslatedDrinkName(item)}</span>
+                      <span className="qty"> x {item.quantity}</span>
+                    </div>
+
+                    <div className="topping-items">
+                      <div>
+                        {t("Size")}: {item.size}
+                      </div>
+                      <div>
+                        {t("Ice")}: {item.ice}
+                      </div>
+                      <div>
+                        {t("Sugar")}: {item.sugar}
+                      </div>
+
+                      {item.toppings &&
+                        item.toppings.length > 0 &&
+                        item.toppings.map((top, idx) => (
+                          <div key={idx}>+ {translateItemName(top.name)}</div>
+                        ))}
+                    </div>
+                  </div>
+
+                  <div className="cart-item-right">
+                    <span>${(perDrink * item.quantity).toFixed(2)}</span>
+
+                    <button
+                      onClick={() => duplicateDrink(item.cart_item_id)}
+                      className="remove-btn"
+                      aria-label={`${t("Duplicate")} ${getTranslatedDrinkName(item)}`}
+                    >
+                      +
+                    </button>
+
+                    <button
+                      onClick={() => removeFromCart(item.cart_item_id)}
+                      className="remove-btn"
+                      aria-label={`${t("Remove")} ${getTranslatedDrinkName(item)}`}
+                    >
+                      ×
+                    </button>
+                  </div>
                 </div>
-              </div>
-            ))
+              );
+            })
           )}
 
           <div className="cart-total">
-            <span>Total</span>
+            <span>{t("Total")}</span>
             <span>${totalPrice.toFixed(2)}</span>
           </div>
 
@@ -177,14 +1148,146 @@ function CustomerKiosk() {
             className="submit-order-btn"
             disabled={cart.length === 0}
           >
-            Place Order 🧋
+            {t("Place Order")}
           </button>
         </div>
       </div>
+      {customModalOpen && currentDrink && (
+        <div className="topping-modal-overlay">
+          <div className="topping-modal-content">
+            <h2>
+              {t("Customize")} {getTranslatedDrinkName(currentDrink)}
+            </h2>
 
-      <footer className="kiosk-footer">
-        Touchscreen Kiosk • Boba Bytes
-      </footer>
+            <div className="custom-section">
+              <label>{t("Size")}</label>
+              <div className="option-group">
+                {["Small", "Medium", "Large"].map((s) => (
+                  <button
+                    key={s}
+                    className={`option-btn ${selectedSize === s ? "active" : ""}`}
+                    onClick={() => setSelectedSize(s)}
+                  >
+                    {s}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="custom-section">
+              <label>{t("Ice")}</label>
+              <div className="option-group">
+                {["No Ice", "Less Ice", "Regular Ice", "Extra Ice"].map((i) => (
+                  <button
+                    key={i}
+                    className={`option-btn ${selectedIce === i ? "active" : ""}`}
+                    onClick={() => setSelectedIce(i)}
+                  >
+                    {i}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="custom-section">
+              <label>{t("Sugar")}</label>
+              <div className="option-group">
+                {["0%", "25%", "50%", "75%", "100%"].map((s) => (
+                  <button
+                    key={s}
+                    className={`option-btn ${selectedSugar === s ? "active" : ""}`}
+                    onClick={() => setSelectedSugar(s)}
+                  >
+                    {s}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="custom-section">
+              <label>{t("Toppings")}</label>
+              <div className="topping-checkbox-list">
+                {TOPPINGS.map((top) => (
+                  <button
+                    type="button"
+                    key={top.name}
+                    className={`topping-checkbox-row ${
+                      isToppingSelected(top.name) ? "selected" : ""
+                    }`}
+                    onClick={() => toggleTopping(top.name)}
+                  >
+                    <span>{translateItemName(top.name)}</span>
+                    <span className="topping-checkbox-price">
+                      +${top.price.toFixed(2)}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <button className="confirm-btn" onClick={saveDrink}>
+              {editingIndex !== null ? t("Save Changes") : t("Add to Cart")}
+            </button>
+
+            <button
+              className="cancel-btn"
+              onClick={() => {
+                setCustomModalOpen(false);
+                setEditingIndex(null);
+              }}
+            >
+              {t("Cancel")}
+            </button>
+          </div>
+        </div>
+      )}
+      <div
+        className="chatbot-button"
+        onClick={() => setChatOpen(true)}
+      >
+        <img src="/images/chatbot.png" alt="Chatbot" />
+      </div>
+
+      {chatOpen && (
+        <div className="chatbot-modal">
+          <div className="chatbot-header">
+            <span>Boba Buddy</span>
+            <button onClick={() => setChatOpen(false)}>×</button>
+          </div>
+
+          <div className="chatbot-messages">
+            {chatMessages.map((m, i) => (
+              <div
+                key={i}
+                className={m.role === "user" ? "msg-user" : "msg-bot"}
+              >
+                {m.content}
+              </div>
+            ))}
+
+            {chatLoading && (
+              <div className="msg-bot">
+                {t("Thinking of a drink for you...")}
+              </div>
+            )}
+          </div>
+
+          <div className="chatbot-input">
+            <input
+              value={chatInput}
+              onChange={(e) => setChatInput(e.target.value)}
+              placeholder={t("Tell me the weather, allergies, diet ...")}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") sendChatMessage();
+              }}
+            />
+
+            <button onClick={sendChatMessage}>
+              {t("Send")}
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

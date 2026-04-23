@@ -1,0 +1,16 @@
+// Backend/data/imageMap.js
+export const imageMap = {
+  "Classic Milk Tea": "/images/menu/classic_milk_tea.png",
+  "Thai Milk Tea": "/images/menu/thai_milk_tea.png",
+  "Taro Milk Tea": "/images/menu/taro_milk_tea.png",
+  "Matcha Milk Tea": "/images/menu/matcha_milk_tea.png",
+  "Okinawa Brown Sugar Milk Tea": "/images/menu/okinawa_brown_sugar_milk_tea.png",
+  "Honey Green Milk Tea": "/images/menu/honey_green_milk_tea.png",
+  "WinterMelon Milk Tea": "/images/menu/wintermelon_milk_tea.png",
+  "Coffee Milk Tea": "/images/menu/coffee_milk_tea.png",
+  "Mango Green Tea": "/images/menu/mango_green_tea.png",
+  "Strawberry Fruit Tea": "/images/menu/strawberry_fruit_tea.png",
+  "Peach Black Tea": "/images/menu/peach_black_tea.png",
+  "Lychee Oolong Tea": "/images/menu/lychee_oolong_tea.png",
+  "Additional Boba": "/images/menu/additional_boba.png",
+};

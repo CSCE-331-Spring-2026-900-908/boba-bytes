@@ -27,23 +27,24 @@ router.post("/", async (req, res) => {
   try {
     const countResult = await pool.query("SELECT MAX(employee_no) AS max_no FROM employees");
     const nextEmployeeNo = (countResult.rows[0].max_no || 0) + 1;
-    let hpassword = await bcrypt.hash(password, 10)
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
     const result = await pool.query(
       `INSERT INTO employees (employee_no, first_name, last_name, is_manager, email, password)
        VALUES ($1, $2, $3, $4, $5, $6)
        RETURNING *`,
-      [nextEmployeeNo, first_name, last_name, is_manager || false, email, hpassword]
+      [nextEmployeeNo, first_name, last_name, is_manager || false, email, hashedPassword]
     );
 
     res.json(result.rows[0]);
   } catch (err) {
-
-    // Handle specific database errors
     let errorMessage = "Server error: " + err.message;
-    if (err.code === '23505') { // Unique violation
+
+    if (err.code === "23505") {
       errorMessage = "Email already exists in the system";
     }
-    if (err.code === '23502') { // Not null violation
+    if (err.code === "23502") {
       errorMessage = "Missing required field: " + err.detail;
     }
 
@@ -51,12 +52,11 @@ router.post("/", async (req, res) => {
   }
 });
 
-//UPDATE
+// UPDATE
 router.put("/:employee_no", async (req, res) => {
   const { employee_no } = req.params;
   const { first_name, last_name, is_manager, email } = req.body;
 
-  // Validate required fields
   if (!first_name || !last_name || !email) {
     return res.status(400).json({ error: "Missing required fields: first_name, last_name, email" });
   }
@@ -75,7 +75,6 @@ router.put("/:employee_no", async (req, res) => {
     }
 
     res.json(result.rows[0]);
-    console.log(result.rows[0]);
   } catch (err) {
     console.error("Error updating employee:", err);
     res.status(500).json({ error: "Server error: " + err.message });
@@ -87,11 +86,7 @@ router.delete("/:employee_no", async (req, res) => {
   const { employee_no } = req.params;
 
   try {
-    await pool.query(
-      `DELETE FROM employees WHERE employee_no=$1`,
-      [employee_no]
-    );
-
+    await pool.query(`DELETE FROM employees WHERE employee_no=$1`, [employee_no]);
     res.json({ message: "Employee deleted" });
   } catch (err) {
     console.error("Error deleting employee:", err);
@@ -100,4 +95,3 @@ router.delete("/:employee_no", async (req, res) => {
 });
 
 export default router;
-

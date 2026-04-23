@@ -1,6 +1,7 @@
 import React, {useState} from "react";
 import {useLocation, Link, useNavigate} from "react-router-dom";
 import {API_BASE} from "../../config/api";
+import {account, OAuthProvider} from "../../lib/appwrite";
 
 export default function Login() {
     const navigate = useNavigate();
@@ -28,6 +29,27 @@ export default function Login() {
             alert(data.error || "Invalid email or password.");
         }
     }
+
+    const handleGoogleLogin = async () => {
+        // Preserve the selected role across the OAuth redirect round-trip.
+        sessionStorage.setItem("pendingRole", roleLabel || "");
+
+        // Clear any stale session first so createSession on the callback doesn't fail with
+        // "Creation of a session is prohibited when a session is active".
+        try {
+            await account.deleteSession("current");
+        } catch {
+            // No active session — that's fine.
+        }
+
+        // createOAuth2Token returns userId+secret as query params on the success URL.
+        // We then create the session client-side (avoids third-party cookie issues on localhost).
+        account.createOAuth2Token({
+            provider: OAuthProvider.Google,
+            success: `${window.location.origin}/oauth/success`,
+            failure: `${window.location.origin}/login`,
+        });
+    };
 
     return (
         <main className="min-h-screen bg-slate-950 px-4 flex items-center justify-center text-slate-100">
@@ -74,6 +96,23 @@ export default function Login() {
                         Sign in
                     </button>
                 </form>
+
+                <div className="my-5 flex items-center gap-3 text-xs uppercase tracking-widest text-slate-500">
+                    <span className="h-px flex-1 bg-slate-800" />
+                    or
+                    <span className="h-px flex-1 bg-slate-800" />
+                </div>
+
+                <button
+                    type="button"
+                    onClick={handleGoogleLogin}
+                    className="flex w-full items-center justify-center gap-3 rounded-lg border border-slate-700 bg-slate-950 px-4 py-3 font-medium text-slate-100 transition hover:bg-slate-800"
+                >
+                    <svg viewBox="0 0 24 24" className="h-5 w-5" aria-hidden="true">
+                        <path fill="#EA4335" d="M12 10.2v3.92h5.46c-.24 1.26-1.68 3.7-5.46 3.7-3.28 0-5.96-2.72-5.96-6.08S8.72 5.66 12 5.66c1.86 0 3.12.8 3.84 1.48l2.62-2.52C16.88 3.1 14.66 2.1 12 2.1 6.98 2.1 2.9 6.18 2.9 11.2S6.98 20.3 12 20.3c6.9 0 9.2-4.84 9.2-7.36 0-.5-.06-.88-.14-1.26H12z"/>
+                    </svg>
+                    Continue with Google
+                </button>
 
                 <div className="mt-5 text-center">
                     <Link to="/" className="text-sm text-slate-400 hover:text-emerald-400">

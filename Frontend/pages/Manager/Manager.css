@@ -132,7 +132,8 @@ table th, table td {
     color: #555;
 }
 
-.form-group input {
+.form-group input,
+.form-group textarea {
     padding: 8px 12px;
     border: 1px solid #ccc;
     border-radius: 6px;
@@ -149,7 +150,8 @@ table th, table td {
     background: white;
 }
 
-.form-group input:focus {
+.form-group input:focus,
+.form-group textarea:focus {
     outline: none;
     border-color: #2563eb;
     box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
