@@ -301,7 +301,10 @@ router.get("/categories", async (req, res) => {
 router.get("/toppings", async (req, res) => {
   try {
     const result = await pool.query(
-      "SELECT topping_id, topping_name, topping_cost FROM toppings ORDER BY topping_name ASC"
+       `SELECT menu_item_id, item_name, item_cost
+        FROM menu
+        WHERE item_type = 'toppings'
+        ORDER BY item_name ASC`
     );
     res.json(result.rows);
   } catch (err) {
