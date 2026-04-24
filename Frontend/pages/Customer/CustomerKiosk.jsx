@@ -488,7 +488,7 @@ const TRANSLATIONS = {
     zh: "抹茶醇香与牛奶融合，清爽的绿茶拿铁。",
     ja: "抹茶の風味とミルクのバランスが爽やかなグリーンティーラテ。",
     ko: "구수한 말차와 크리미한 우유가 어우러진 상쾌한 녹차 라떼.",
-    vi: "Matcha đậm vị hòa quyện với sữa tạo nên latte trà xanh mát lạnh."
+    vi: "Matcha đậm vị hòa quyện sữa tạo nên latte trà xanh mát lạnh."
   },
   "Caramel-like brown sugar syrup mixed into creamy milk tea.": {
     es: "Jarabe de azúcar morena con sabor a caramelo mezclado con té de leche.",
@@ -657,6 +657,14 @@ function CustomerKiosk() {
       "A coffee-forward milk tea with creamy body and a gentle caffeine kick.",
     "mango green tea":
       "Crisp green tea with juicy mango flavor for a bright tropical sip.",
+    "passionfruit green tea":
+      "Zesty passionfruit and green tea combine for a bright, tangy tropical sip.",
+    "kiwi fruit tea":
+      "Refreshing kiwi fruit tea with lively sweetness and a clean citrusy finish.",
+    "coffee fruit tea":
+      "Bold coffee notes meet fruit tea for a smooth, refreshing flavor contrast.",
+    "mango milk tea":
+      "Creamy milk tea blended with ripe mango for a rich tropical treat.",
     "strawberry fruit tea":
       "Fruity strawberry tea that is sweet, vibrant, and refreshing.",
     "peach black tea":
@@ -1272,9 +1280,9 @@ function CustomerKiosk() {
       <header className="kiosk-top-header">
         <div className="kiosk-header-small">
           <img
-            src="/images/menu/logo.png"
+            src="/images/logo.png"
             alt="Boba Bytes Logo"
-            className="kiosk-logo"
+            className="kiosk-logo ml-5 h-20 w-auto max-w-45 rounded-2xl border border-[#ecddd0] bg-white/90 p-1 shadow-md object-contain"
           />
           <div className="kiosk-header-actions">
             <div className="category-bar">
@@ -1758,3 +1766,4 @@ function CustomerKiosk() {
   );
 }
 export default CustomerKiosk;
+
