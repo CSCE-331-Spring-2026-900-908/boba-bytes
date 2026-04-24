@@ -25,5 +25,4 @@ This project has `tailwindcss@^4.2.2` in `Frontend/package.json`.
 - Configure Tailwind using the v4 approach (for example, import Tailwind in your CSS entry file).
 
 ## Backend
-
-Backend setup/run commands are not documented yet (runtime/entrypoint not verified from current project files). Add them once backend commands are confirmed.
+The backend is implemented in FastAPI and located in `FastAPI/`. To run the backend, follow the instructions in `FastAPI/README.md`.

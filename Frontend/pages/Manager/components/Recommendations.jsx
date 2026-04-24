@@ -1,4 +1,5 @@
 import { useState } from "react";
+import {API_BASE} from "../../../config/api";
 
 const AGENT_SYSTEM_PROMPT = `You are a business intelligence agent for a boba tea shop manager. 
 Your job is to research and provide actionable recommendations. 
@@ -208,21 +209,10 @@ function Recommendations() {
         }, 3500);
 
         try {
-            const response = await fetch("https://api.anthropic.com/v1/messages", {
+            const response = await fetch(`${API_BASE}/recommend`,{
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    model: "claude-sonnet-4-20250514",
-                    max_tokens: 1000,
-                    system: AGENT_SYSTEM_PROMPT,
-                    tools: [{ type: "web_search_20250305", name: "web_search" }],
-                    messages: [{
-                        role: "user",
-                        content: `Research boba/bubble tea market intelligence for a shop located in: ${location}. 
-Search for current boba shop prices in this area, trending drinks, and any relevant news or endorsements. 
-Then provide menu suggestions tailored to this market.`,
-                    }],
-                }),
+                body: JSON.stringify({ location: location.trim() })
             });
 
             clearInterval(stepInterval);
@@ -230,12 +220,16 @@ Then provide menu suggestions tailored to this market.`,
             if (!response.ok) throw new Error(`API error: ${response.status}`);
 
             const result = await response.json();
-            const textBlock = result.content?.find(b => b.type === "text");
-            if (!textBlock) throw new Error("No text response from agent");
 
-            const clean = textBlock.text.replace(/```json|```/g, "").trim();
-            const parsed = JSON.parse(clean);
-            setData(parsed);
+            // Supports both direct JSON from FastAPI and legacy text-block wrapper.
+            if (result?.content) {
+                const textBlock = result.content.find((b) => b.type === "text");
+                if (!textBlock) throw new Error("No text response from agent");
+                const clean = textBlock.text.replace(/```json|```/g, "").trim();
+                setData(JSON.parse(clean));
+            } else {
+                setData(result);
+            }
             setStatus("done");
         } catch (err) {
             clearInterval(stepInterval);

@@ -12,6 +12,7 @@ import kiosk_orders from "./routes/kiosk_orders.js";
 import orders from "./routes/orders.js";
 import login from "./routes/login.js";
 import chatbotRouter from './routes/chatbot.js';
+import recommend from './routes/recommend.js';
 
 const app = express();
 app.use(cors({
@@ -29,5 +30,6 @@ app.use("/api/kiosk_orders", kiosk_orders);
 app.use("/api/orders", orders);
 app.use("/api/login", login);
 app.use('/api/chatbot', chatbotRouter);
+app.use('/api/recommend', recommend);
 
 app.listen(3001, () => console.log("Backend running on port 3001"));

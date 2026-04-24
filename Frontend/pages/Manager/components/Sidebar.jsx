@@ -5,7 +5,7 @@ export default function Sidebar({ setTab }) {
             <button onClick={() => setTab("menu")}>Menu Items</button>
             <button onClick={() => setTab("inventory")}>Inventory</button>
             <button onClick={() => setTab("reports")}>Reports</button>
-            <button onClick={() => setTab("recommendations")}>Recommendations</button>
+            <button onClick={() => setTab("recommendations")}>⟡ Recommendations</button>
         </div>
     );
 }
