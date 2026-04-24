@@ -929,10 +929,21 @@ function CustomerKiosk() {
   };
 
   const computeToppingsCostPerDrink = (toppings) =>
-    (toppings || []).reduce((sum, t) => sum + Number(t.price), 0);
+    (toppings || []).reduce((sum, topping) => {
+      const toppingName = typeof topping === "string" ? topping : topping?.name;
+      const rawPrice =
+        typeof topping === "object" && topping !== null
+          ? topping.price ?? getToppingPriceByName(toppingName)
+          : getToppingPriceByName(toppingName);
+      const price = Number(rawPrice);
+      return sum + (Number.isFinite(price) ? price : 0);
+    }, 0);
 
   const saveDrink = () => {
-    const basePrice = Number(currentDrink.item_cost);
+    const rawBasePrice = currentDrink?.base_cost ?? currentDrink?.item_cost;
+    const basePrice = Number.isFinite(Number(rawBasePrice))
+      ? Number(rawBasePrice)
+      : 0;
     const toppingsCost = computeToppingsCostPerDrink(selectedToppings);
 
     const drinkOrder = {
@@ -1336,9 +1347,11 @@ function CustomerKiosk() {
                   speakMode ? "active" : ""
                 }`}
                 onClick={() => {
-                  setSpeakMode(!speakMode);
+                  const nextSpeakMode = !speakMode;
+                  setSpeakMode(nextSpeakMode);
                   speak(
-                    !speakMode ? t("Speaker On") : t("Speaker Off")
+                    nextSpeakMode ? t("Speaker On") : t("Speaker Off"),
+                    true
                   );
                 }}
               >
@@ -1506,7 +1519,9 @@ function CustomerKiosk() {
               return (
                 <div
                   key={item.cart_item_id}
-                  className="cart-item"
+                  className={`cart-item ${
+                    editingIndex === index ? "editing" : ""
+                  }`}
                 >
                   <div
                     style={{ flex: 1 }}
@@ -1530,7 +1545,7 @@ function CustomerKiosk() {
                         {t("Sugar")}: {item.sugar}
                       </div>
                       {item.toppings &&
-                        item.toppings.length > 0 &&
+                        item.toppings.length >  0 &&
                         item.toppings.map((top, idx) => (
                           <div key={idx}>
                             +{translateItemName(top.name)}
@@ -1595,7 +1610,11 @@ function CustomerKiosk() {
 
       {customModalOpen && currentDrink && (
         <div className="topping-modal-overlay">
-          <div className="topping-modal-content">
+          <div
+            className={`topping-modal-content ${
+              editingIndex !== null ? "editing-mode" : ""
+            }`}
+          >
             <h2>
               {t("Customize")} {getTranslatedDrinkName(currentDrink)}
             </h2>

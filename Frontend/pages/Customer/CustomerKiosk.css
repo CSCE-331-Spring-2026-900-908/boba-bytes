@@ -48,9 +48,9 @@
 .weather-banner {
   background: var(--yellow-pastel);
   color: var(--brown);
-  padding: 12px 18px;
+  padding: 16px 24px;
   margin: 10px 20px;
-  border-radius: 12px;
+  border-radius: 20px;
   font-size: 1.3rem;
   font-weight: 700;
   text-align: center;
@@ -376,6 +376,29 @@
   padding: calc(15px * var(--scale)) 0;
   border-bottom: calc(1px * var(--scale)) solid var(--border);
   align-items: center;
+  transition: transform 0.22s ease, background-color 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+  will-change: transform;
+  font-size: calc(1.15rem * var(--scale));
+}
+
+.cart-item.editing {
+  background: linear-gradient(90deg, rgba(255, 244, 184, 0.45), rgba(245, 196, 161, 0.18));
+  border-radius: calc(14px * var(--scale));
+  padding-left: calc(12px * var(--scale));
+  padding-right: calc(12px * var(--scale));
+  animation: cartEditPulse 1.8s ease-in-out infinite;
+}
+
+.cart-item:not(.editing):hover,
+.cart-item:not(.editing):focus-within {
+  background: rgba(255, 244, 184, 0.22);
+  border-radius: calc(14px * var(--scale));
+  padding-left: calc(12px * var(--scale));
+  padding-right: calc(12px * var(--scale));
+  box-shadow: 0 calc(8px * var(--scale)) calc(18px * var(--scale)) rgba(92, 61, 46, 0.12),
+    inset 0 0 0 1px rgba(232, 133, 106, 0.12);
+  border-bottom-color: rgba(232, 133, 106, 0.18);
+  transform: translateY(calc(-4px * var(--scale)));
 }
 
 .cart-item-right {
@@ -472,6 +495,12 @@
   display: flex;
   flex-direction: column;
   gap: calc(20px * var(--scale));
+}
+
+.topping-modal-content.editing-mode {
+  animation: editingModeFloat 1.4s ease-in-out infinite alternate;
+  box-shadow: 0 calc(8px * var(--scale)) calc(28px * var(--scale)) rgba(92, 61, 46, 0.16),
+    0 0 0 calc(3px * var(--scale)) rgba(232, 133, 106, 0.16);
 }
 
 .custom-section label {
@@ -834,3 +863,47 @@
 .size-btn:active {
   transform: scale(0.95);
 }
+
+@keyframes cartEditPulse {
+  0% {
+    transform: translateY(0) scale(1);
+    box-shadow: none;
+  }
+  100% {
+    transform: translateY(calc(-2px * var(--scale))) scale(1.01);
+    box-shadow: 0 calc(6px * var(--scale)) calc(16px * var(--scale)) rgba(232, 133, 106, 0.16);
+  }
+}
+
+@keyframes editingModeFloat {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(calc(-3px * var(--scale)));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cart-item.editing,
+  .topping-modal-content.editing-mode,
+  .access-btn,
+  .language-toggle,
+  .language-menu-item,
+  .category-btn,
+  .menu-card,
+  .option-btn,
+  .drink-list-btn,
+  .cancel-modal-btn,
+  .size-btn {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .cart-item:not(.editing):hover,
+  .cart-item:not(.editing):focus-within {
+    transform: none;
+    box-shadow: inset 0 0 0 1px rgba(232, 133, 106, 0.12);
+  }
+}
+
