@@ -45,17 +45,6 @@
   line-height: 1;
   flex-wrap: nowrap;
 }
-.weather-banner {
-  background: var(--yellow-pastel);
-  color: var(--brown);
-  padding: 16px 24px;
-  margin: 10px 20px;
-  border-radius: 20px;
-  font-size: 1.3rem;
-  font-weight: 700;
-  text-align: center;
-  box-shadow: var(--shadow);
-}
 
 .kiosk-header-small h1 {
   margin: 0;
@@ -719,27 +708,6 @@
   color: var(--brown);
   font-weight: 600;
   opacity: 0.8;
-}
-.chatbot-button {
-  position: fixed;
-  bottom: 30px;
-  right: 30px;
-  background: var(--yellow-pastel, #ffe9a9);
-  border-radius: 50%;
-  width: 80px;
-  height: 80px;
-  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.18);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 50;
-}
-
-.chatbot-button img {
-  width: 60%;
-  height: 60%;
-  object-fit: contain;
 }
 
 .chatbot-modal {

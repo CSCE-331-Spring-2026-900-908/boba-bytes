@@ -1229,6 +1229,37 @@ function CustomerKiosk() {
     return "Weather looks nice today! Pick anything you like.";
   };
 
+  const getWeatherIcon = (condition = "") => {
+    const normalized = String(condition).toLowerCase();
+    if (normalized.includes("rain") || normalized.includes("drizzle")) return "🌧️";
+    if (normalized.includes("snow")) return "❄️";
+    if (normalized.includes("storm") || normalized.includes("thunder")) return "⛈️";
+    if (normalized.includes("cloud")) return "☁️";
+    if (normalized.includes("clear") || normalized.includes("sun")) return "☀️";
+    return "🌤️";
+  };
+
+  const weatherCondition = weather?.condition || "Unknown";
+  const weatherTemp = Number.isFinite(Number(weather?.temp))
+    ? `${Math.round(Number(weather.temp))}F`
+    : "--F";
+  const weatherFeelsLike = Number.isFinite(Number(weather?.raw?.main?.feels_like))
+    ? `${Math.round(Number(weather.raw.main.feels_like))}F`
+    : "--";
+  const weatherHumidity = Number.isFinite(Number(weather?.raw?.main?.humidity))
+    ? `${Math.round(Number(weather.raw.main.humidity))}%`
+    : "--";
+  const weatherWind = Number.isFinite(Number(weather?.raw?.wind?.speed))
+    ? `${Number(weather.raw.wind.speed).toFixed(1)} mph`
+    : "--";
+  const weatherDescription =
+    weather?.raw?.weather?.[0]?.description || weatherCondition;
+  const weatherLocation = [weather?.raw?.name, weather?.raw?.sys?.country]
+    .filter(Boolean)
+    .join(", ");
+  const weatherMessage =
+    getWeatherRecommendation() || "Checking today's weather...";
+
   const sendChatMessage = async () => {
     const trimmed = chatInput.trim();
     if (!trimmed) return;
@@ -1458,12 +1489,48 @@ function CustomerKiosk() {
         </div>
       </header>
 
-      {/* WEATHER BANNER */}
-      {weather && (
-        <div className="weather-banner">
-          {getWeatherRecommendation()}
+      <div className="mx-5 mt-3 rounded-2xl border border-[#ecddd0] bg-[#fff4b8]/95 px-4 py-3 shadow-md">
+        <div className="flex flex-col gap-4 xl:flex-row xl:items-center">
+          <p className="flex-1 text-sm font-semibold leading-snug text-[#5c3d2e] md:text-xl lg:text-2xl">
+            {weatherMessage}
+          </p>
+
+          <div className="flex items-center justify-end gap-8 self-end xl:self-auto xl:gap-20">
+            <div className="flex h-24 w-md shrink-0 items-center gap-4 rounded-2xl border border-[#ecddd0] bg-white/90 px-4 py-3 text-[#5c3d2e] shadow-sm">
+              <div className="flex h-16 w-16 items-center justify-center rounded-xl bg-blue-200 text-3xl shadow-inner">
+                {getWeatherIcon(weatherCondition)}
+              </div>
+
+              <div className="min-w-0 flex-1">
+                <div className="text-xs font-semibold uppercase tracking-wide text-[#8a5e4b]">
+                  {weatherLocation || "College Station"}
+                </div>
+                <div className="text-sm font-bold leading-tight lg:text-base">
+                  {weatherDescription}
+                </div>
+                <div className="text-2xl font-extrabold leading-none text-[#5c3d2e] lg:text-3xl">
+                  {weatherTemp}
+                </div>
+              </div>
+
+              <div className="flex flex-col items-end gap-1 text-right text-[0.65rem] font-semibold text-[#6f4a3a] lg:text-xs">
+                <div>Feels {weatherFeelsLike}</div>
+                <div>Humidity {weatherHumidity}</div>
+                <div>Wind {weatherWind}</div>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => setChatOpen(true)}
+              className="ml-2 h-16 w-16 shrink-0 overflow-hidden rounded-full border border-[#ecddd0] bg-white/90 p-0 shadow-md transition-transform duration-200 hover:scale-105"
+              aria-label="Open chatbot"
+            >
+              <img src="/images/chatbot.png" alt="Chatbot" className="h-full w-full rounded-full object-cover" />
+            </button>
+          </div>
         </div>
-      )}
+      </div>
 
       <div className="main-content">
         <div className="menu-grid" ref={menuGridRef}>
@@ -1736,13 +1803,6 @@ function CustomerKiosk() {
           </div>
         </div>
       )}
-
-      <div
-        className="chatbot-button"
-        onClick={() => setChatOpen(true)}
-      >
-        <img src="/images/chatbot.png" alt="Chatbot" />
-      </div>
 
       {chatOpen && (
         <div className="chatbot-modal">

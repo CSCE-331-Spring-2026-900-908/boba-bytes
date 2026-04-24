@@ -34,5 +34,5 @@ app.use("/api/orders", orders);
 app.use("/api/login", login);
 app.use('/api/chatbot', chatbotRouter);
 app.use('/api/recommend', recommend);
-app.use("/weather", weatherRoute);
+app.use("/api/weather", weatherRoute);
 app.listen(3001, () => console.log("Backend running on port 3001"));
