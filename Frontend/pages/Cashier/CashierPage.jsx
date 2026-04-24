@@ -8,7 +8,6 @@ const SUGAR_OPTIONS = ["0%", "25%", "50%", "75%", "100%"];
 export default function CashierPage() {
   const [items, setItems] = useState([]);
   const [categories, setCategories] = useState([]);
-  const [toppings, setToppings] = useState([]);
 
   const [activeCategory, setActiveCategory] = useState("All");
   const [order, setOrder] = useState([]);
@@ -27,26 +26,24 @@ export default function CashierPage() {
   const searchInputRef = useRef(null);
 
   const toppingItems = useMemo(
-    () => items.filter(i => i.item_type === "Toppings"),
-    [items]
+      () => items.filter(i => i.item_type === "Toppings"),
+      [items]
   );
 
-
-
+  // Load menu + categories
   useEffect(() => {
     Promise.all([
       fetch(`${API_BASE}/menu/items`).then(r => r.json()),
-      fetch(`${API_BASE}/menu/categories`).then(r => r.json()),
-      fetch(`${API_BASE}/menu/toppings`).then(r => r.json())
+      fetch(`${API_BASE}/menu/categories`).then(r => r.json())
     ])
-      .then(([itemData, catData, toppingData]) => {
-        setItems(itemData);
-        setCategories(["All", "Favorites", ...catData.filter(cat => cat !== "Toppings")]);
-      })
-      .catch(err => console.error(err));
+        .then(([itemData, catData]) => {
+          setItems(itemData);
+          setCategories(["All", "Favorites", ...catData.filter(cat => cat !== "Toppings")]);
+        })
+        .catch(err => console.error(err));
   }, []);
 
-
+  // Compute favorites (top 8 + seasonal)
   useEffect(() => {
     const counts = new Map();
     order.forEach(o => {
@@ -54,18 +51,18 @@ export default function CashierPage() {
     });
 
     const topUsed = [...counts.entries()]
-      .sort((a, b) => b[1] - a[1])
-      .slice(0, 8)
-      .map(([id]) => id);
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 8)
+        .map(([id]) => id);
 
     const seasonal = items
-      .filter(i => i.item_type.toLowerCase().includes("season"))
-      .map(i => i.menu_item_id);
+        .filter(i => i.item_type.toLowerCase().includes("season"))
+        .map(i => i.menu_item_id);
 
     setFavoriteIds([...new Set([...topUsed, ...seasonal])]);
   }, [order, items]);
 
-
+  // Filter items by category
   const filteredItems = useMemo(() => {
     let list = items.filter(i => i.item_type !== "Toppings");
 
@@ -75,13 +72,13 @@ export default function CashierPage() {
       list = list.filter(i => i.item_type === activeCategory);
     }
 
-    if (activeCategory === "Toppings") {
-      return toppings;
+    if (searchTerm.trim()) {
+      const q = searchTerm.toLowerCase();
+      list = list.filter(i => i.item_name.toLowerCase().includes(q));
     }
 
-    return items.filter(i => i.item_type === activeCategory);
-  }, [items, toppings, activeCategory, favoriteIds]);
-
+    return list;
+  }, [items, activeCategory, favoriteIds, searchTerm]);
 
   useEffect(() => {
     const onKeyDown = (e) => {
@@ -117,17 +114,17 @@ export default function CashierPage() {
 
   const sameDrinkConfig = (a, b) => {
     const toppingsA = [...(a.toppings || [])]
-      .map(t => ({ id: t.menu_item_id }))
-      .sort((x, y) => x.id - y.id);
+        .map(t => ({ id: t.menu_item_id }))
+        .sort((x, y) => x.id - y.id);
     const toppingsB = [...(b.toppings || [])]
-      .map(t => ({ id: t.menu_item_id }))
-      .sort((x, y) => x.id - y.id);
+        .map(t => ({ id: t.menu_item_id }))
+        .sort((x, y) => x.id - y.id);
 
     return (
-      a.menu_item_id === b.menu_item_id &&
-      a.ice === b.ice &&
-      a.sugar === b.sugar &&
-      JSON.stringify(toppingsA) === JSON.stringify(toppingsB)
+        a.menu_item_id === b.menu_item_id &&
+        a.ice === b.ice &&
+        a.sugar === b.sugar &&
+        JSON.stringify(toppingsA) === JSON.stringify(toppingsB)
     );
   };
 
@@ -203,14 +200,16 @@ export default function CashierPage() {
     });
   }
 
+  // Change qty
   function changeQty(index, delta) {
     setOrder(prev =>
-      prev
-        .map((o, i) => (i === index ? { ...o, qty: o.qty + delta } : o))
-        .filter(o => o.qty > 0)
+        prev
+            .map((o, i) => (i === index ? { ...o, qty: o.qty + delta } : o))
+            .filter(o => o.qty > 0)
     );
   }
 
+  // Remove drink (and its toppings)
   function removeItem(index) {
     setOrder(prev => prev.filter((_, i) => i !== index));
   }
@@ -219,8 +218,8 @@ export default function CashierPage() {
     return order.reduce((sum, o) => {
       const base = o.item_cost * o.qty;
       const toppingTotal = o.toppings.reduce(
-        (s, t) => s + Number(t.item_cost) * o.qty,
-        0
+          (s, t) => s + Number(t.item_cost) * o.qty,
+          0
       );
       return sum + base + toppingTotal;
     }, 0);
@@ -243,7 +242,7 @@ export default function CashierPage() {
             ice_level: o.ice,
             sugar_level: o.sugar,
             toppings: o.toppings.map(t => ({
-              topping_id: t.topping_id,
+              topping_id: t.menu_item_id,
               quantity: 1
             }))
           })),
@@ -262,199 +261,198 @@ export default function CashierPage() {
     }
   }
 
- 
-
   return (
-    <div className="cashier-container">
-      
-      <div className="cashier-sidebar">
-        <div className="cashier-sidebar-title">Quick Categories</div>
-        {categories.map(cat => (
-          <button
-            key={cat}
-            className={activeCategory === cat ? "active" : ""}
-            onClick={() => setActiveCategory(cat)}
-          >
-            {cat}
-          </button>
-        ))}
-      </div>
+      <div className="cashier-container">
+        {/* Sidebar */}
+        <div className="cashier-sidebar">
+          <div className="cashier-sidebar-title">Quick Categories</div>
+          {categories.map(cat => (
+              <button
+                  key={cat}
+                  className={activeCategory === cat ? "active" : ""}
+                  onClick={() => setActiveCategory(cat)}
+              >
+                {cat}
+              </button>
+          ))}
+        </div>
 
-  
-      <div className="cashier-content">
-        <div className="cashier-toolbar">
-          <input
-            ref={searchInputRef}
-            className="cashier-search"
-            placeholder="Search menu items...  / or Ctrl+K"
-            value={searchTerm}
-            onChange={e => setSearchTerm(e.target.value)}
-          />
-          <div className="cashier-hints">
-            <span>Enter: add first match</span>
-            <span>Ctrl+Enter: place order</span>
-            <span>Esc: clear search</span>
+        {/* Menu */}
+        <div className="cashier-content">
+          <div className="cashier-toolbar">
+            <input
+                ref={searchInputRef}
+                className="cashier-search"
+                placeholder="Search menu items...  / or Ctrl+K"
+                value={searchTerm}
+                onChange={e => setSearchTerm(e.target.value)}
+            />
+            <div className="cashier-hints">
+              <span>Enter: add first match</span>
+              <span>Ctrl+Enter: place order</span>
+              <span>Esc: clear search</span>
+            </div>
+          </div>
+
+          <div className="cashier-results-meta">
+            <span>{filteredItems.length} item{filteredItems.length !== 1 ? "s" : ""} visible</span>
+          </div>
+
+          <div className="cashier-menu-grid">
+            {filteredItems.map(item => (
+                <button
+                    key={item.menu_item_id}
+                    onClick={() => handleAdd(item)}
+                >
+                  <div className="cashier-item-name">{item.item_name}</div>
+                  <div className="cashier-item-price">
+                    ${Number(item.item_cost).toFixed(2)}
+                  </div>
+                </button>
+            ))}
           </div>
         </div>
 
-        <div className="cashier-results-meta">
-          <span>{filteredItems.length} item{filteredItems.length !== 1 ? "s" : ""} visible</span>
-        </div>
+        {/* Order Panel */}
+        <div className="order-panel">
+          <div className="order-header">Current Order</div>
+          <div className="order-subheader">Ctrl+Enter to send fast</div>
 
-        <div className="cashier-menu-grid">
-          {filteredItems.map(item => (
+          <div className="order-items">
+            {order.length === 0 && <div className="order-empty">No items added yet.</div>}
+            {order.map((o, index) => (
+                <div key={index} className="order-row">
+                  <div className="order-item-info">
+                    <div className="order-item-name" onClick={() => openCustomization(o, index)}>
+                      {o.item_name}
+                    </div>
+                    <div className="order-customization-line">
+                      Ice: {o.ice || "Regular Ice"} • Sugar: {o.sugar || "100%"}
+                    </div>
+
+                    {o.toppings.length > 0 && (
+                        <div className="order-toppings">
+                          {o.toppings.map((t, i) => (
+                              <div key={i} className="topping-line">
+                                + {t.item_name}
+                                (${Number(t.item_cost).toFixed(2)})
+                              </div>
+                          ))}
+                        </div>
+                    )}
+
+                    <div className="order-item-price">
+                      ${(o.item_cost * o.qty +
+                        o.toppings.reduce(
+                            (s, t) => s + Number(t.item_cost) * o.qty,
+                            0
+                        )).toFixed(2)}
+                    </div>
+                  </div>
+
+                  <div className="order-item-controls">
+                    <button onClick={() => changeQty(index, -1)}>-</button>
+                    <span className="qty">{o.qty}</span>
+                    <button onClick={() => changeQty(index, +1)}>+</button>
+                    <button onClick={() => removeItem(index)}>×</button>
+                  </div>
+                </div>
+            ))}
+          </div>
+
+          <div className="order-footer">
+            <div className="order-total">
+              <span>Total</span>
+              <span className="total-amount">${orderTotal.toFixed(2)}</span>
+            </div>
+
             <button
-              key={item.menu_item_id || item.topping_id}
-              onClick={() => handleAdd(item)}
+                className="place-btn"
+                disabled={placing || order.length === 0}
+                onClick={placeOrder}
             >
-              <div className="cashier-item-name">{item.item_name}</div>
-              <div className="cashier-item-price">
-                ${Number(item.item_cost).toFixed(2)}
-              </div>
+              {placing ? "Placing..." : "Place Order"}
             </button>
-          ))}
+
+            <button className="clear-btn" onClick={() => setOrder([])}>
+              Clear
+            </button>
+          </div>
         </div>
-      </div>
 
-      <div className="order-panel">
-        <div className="order-header">Current Order</div>
-        <div className="order-subheader">Ctrl+Enter to send fast</div>
+        {customModalOpen && currentDrink && (
+            <div className="cashier-modal-overlay" onClick={() => setCustomModalOpen(false)}>
+              <div className="cashier-modal-content" onClick={e => e.stopPropagation()}>
+                <h2>Customize {currentDrink.item_name}</h2>
 
-        <div className="order-items">
-          {order.length === 0 && <div className="order-empty">No items added yet.</div>}
-          {order.map((o, index) => (
-            <div key={index} className="order-row">
-              <div className="order-item-info">
-                <div className="order-item-name" onClick={() => openCustomization(o, index)}>
-                  {o.item_name}
-                </div>
-                <div className="order-customization-line">
-                  Ice: {o.ice || "Regular Ice"} • Sugar: {o.sugar || "100%"}
-                </div>
-
-                {o.toppings.length > 0 && (
-                  <div className="order-toppings">
-                    {o.toppings.map((t, i) => (
-                      <div key={i} className="topping-line">
-                        + {t.item_name}
-                        (${Number(t.item_cost).toFixed(2)})
-                      </div>
+                <div className="cashier-custom-section">
+                  <label>Ice Level</label>
+                  <div className="cashier-option-group">
+                    {ICE_OPTIONS.map(option => (
+                        <button
+                            key={option}
+                            className={`cashier-option-btn ${selectedIce === option ? "active" : ""}`}
+                            onClick={() => setSelectedIce(option)}
+                        >
+                          {option}
+                        </button>
                     ))}
                   </div>
-                )}
+                </div>
 
-                <div className="order-item-price">
-                  ${(o.item_cost * o.qty +
-                    o.toppings.reduce(
-                      (s, t) => s + Number(t.item_cost) * o.qty,
-                      0
-                    )).toFixed(2)}
+                <div className="cashier-custom-section">
+                  <label>Sugar Level</label>
+                  <div className="cashier-option-group">
+                    {SUGAR_OPTIONS.map(option => (
+                        <button
+                            key={option}
+                            className={`cashier-option-btn ${selectedSugar === option ? "active" : ""}`}
+                            onClick={() => setSelectedSugar(option)}
+                        >
+                          {option}
+                        </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="cashier-custom-section">
+                  <label>Toppings</label>
+                  <div className="cashier-topping-list">
+                    {toppingItems.map(t => (
+                        <button
+                            type="button"
+                            key={t.menu_item_id}
+                            className={`cashier-topping-row ${isSelectedTopping(t.menu_item_id) ? "selected" : ""}`}
+                            onClick={() => toggleSelectedTopping(t)}
+                        >
+                          <span className="cashier-topping-name">{t.item_name}</span>
+                          <span className="cashier-topping-price">+${Number(t.item_cost).toFixed(2)}</span>
+                        </button>
+                    ))}
+                    {toppingItems.length === 0 && (
+                        <div className="cashier-empty-toppings">No topping items found in menu.</div>
+                    )}
+                  </div>
+                </div>
+
+                <div className="cashier-modal-actions">
+                  <button className="cashier-confirm-btn" onClick={saveDrinkCustomization}>
+                    {editingIndex !== null ? "Save Changes" : "Add Drink"}
+                  </button>
+                  <button
+                      className="cashier-cancel-btn"
+                      onClick={() => {
+                        setCustomModalOpen(false);
+                        setCurrentDrink(null);
+                        setEditingIndex(null);
+                      }}
+                  >
+                    Cancel
+                  </button>
                 </div>
               </div>
-
-              <div className="order-item-controls">
-                <button onClick={() => changeQty(index, -1)}>-</button>
-                <span className="qty">{o.qty}</span>
-                <button onClick={() => changeQty(index, +1)}>+</button>
-                <button onClick={() => removeItem(index)}>×</button>
-              </div>
             </div>
-          ))}
-        </div>
-
-        <div className="order-footer">
-          <div className="order-total">
-            <span>Total</span>
-            <span className="total-amount">${orderTotal.toFixed(2)}</span>
-          </div>
-
-          <button
-            className="place-btn"
-            disabled={placing || order.length === 0}
-            onClick={placeOrder}
-          >
-            {placing ? "Placing..." : "Place Order"}
-          </button>
-
-          <button className="clear-btn" onClick={() => setOrder([])}>
-            Clear
-          </button>
-        </div>
+        )}
       </div>
-
-      {customModalOpen && currentDrink && (
-        <div className="cashier-modal-overlay" onClick={() => setCustomModalOpen(false)}>
-          <div className="cashier-modal-content" onClick={e => e.stopPropagation()}>
-            <h2>Customize {currentDrink.item_name}</h2>
-
-            <div className="cashier-custom-section">
-              <label>Ice Level</label>
-              <div className="cashier-option-group">
-                {ICE_OPTIONS.map(option => (
-                  <button
-                    key={option}
-                    className={`cashier-option-btn ${selectedIce === option ? "active" : ""}`}
-                    onClick={() => setSelectedIce(option)}
-                  >
-                    {option}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div className="cashier-custom-section">
-              <label>Sugar Level</label>
-              <div className="cashier-option-group">
-                {SUGAR_OPTIONS.map(option => (
-                  <button
-                    key={option}
-                    className={`cashier-option-btn ${selectedSugar === option ? "active" : ""}`}
-                    onClick={() => setSelectedSugar(option)}
-                  >
-                    {option}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div className="cashier-custom-section">
-              <label>Toppings</label>
-              <div className="cashier-topping-list">
-                {toppingItems.map(t => (
-                  <button
-                    type="button"
-                    key={t.menu_item_id}
-                    className={`cashier-topping-row ${isSelectedTopping(t.menu_item_id) ? "selected" : ""}`}
-                    onClick={() => toggleSelectedTopping(t)}
-                  >
-                    <span className="cashier-topping-name">{t.item_name}</span>
-                    <span className="cashier-topping-price">+${Number(t.item_cost).toFixed(2)}</span>
-                  </button>
-                ))}
-                {toppingItems.length === 0 && (
-                  <div className="cashier-empty-toppings">No topping items found in menu.</div>
-                )}
-              </div>
-            </div>
-
-            <div className="cashier-modal-actions">
-              <button className="cashier-confirm-btn" onClick={saveDrinkCustomization}>
-                {editingIndex !== null ? "Save Changes" : "Add Drink"}
-              </button>
-              <button
-                className="cashier-cancel-btn"
-                onClick={() => {
-                  setCustomModalOpen(false);
-                  setCurrentDrink(null);
-                  setEditingIndex(null);
-                }}
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
   );
 }
