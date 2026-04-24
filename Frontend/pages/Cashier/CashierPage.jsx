@@ -8,6 +8,7 @@ const SUGAR_OPTIONS = ["0%", "25%", "50%", "75%", "100%"];
 export default function CashierPage() {
   const [items, setItems] = useState([]);
   const [categories, setCategories] = useState([]);
+  const [toppings, setToppings] = useState([]);
 
   const [activeCategory, setActiveCategory] = useState("All");
   const [order, setOrder] = useState([]);
@@ -30,20 +31,22 @@ export default function CashierPage() {
     [items]
   );
 
-  // Load menu + categories
+
+
   useEffect(() => {
     Promise.all([
       fetch(`${API_BASE}/menu/items`).then(r => r.json()),
-      fetch(`${API_BASE}/menu/categories`).then(r => r.json())
+      fetch(`${API_BASE}/menu/categories`).then(r => r.json()),
+      fetch(`${API_BASE}/menu/toppings`).then(r => r.json())
     ])
-      .then(([itemData, catData]) => {
+      .then(([itemData, catData, toppingData]) => {
         setItems(itemData);
         setCategories(["All", "Favorites", ...catData.filter(cat => cat !== "Toppings")]);
       })
       .catch(err => console.error(err));
   }, []);
 
-  // Compute favorites (top 8 + seasonal)
+
   useEffect(() => {
     const counts = new Map();
     order.forEach(o => {
@@ -62,7 +65,7 @@ export default function CashierPage() {
     setFavoriteIds([...new Set([...topUsed, ...seasonal])]);
   }, [order, items]);
 
-  // Filter items by category
+
   const filteredItems = useMemo(() => {
     let list = items.filter(i => i.item_type !== "Toppings");
 
@@ -72,13 +75,13 @@ export default function CashierPage() {
       list = list.filter(i => i.item_type === activeCategory);
     }
 
-    if (searchTerm.trim()) {
-      const q = searchTerm.toLowerCase();
-      list = list.filter(i => i.item_name.toLowerCase().includes(q));
+    if (activeCategory === "Toppings") {
+      return toppings;
     }
 
-    return list;
-  }, [items, activeCategory, favoriteIds, searchTerm]);
+    return items.filter(i => i.item_type === activeCategory);
+  }, [items, toppings, activeCategory, favoriteIds]);
+
 
   useEffect(() => {
     const onKeyDown = (e) => {
@@ -200,7 +203,6 @@ export default function CashierPage() {
     });
   }
 
-  // Change qty
   function changeQty(index, delta) {
     setOrder(prev =>
       prev
@@ -209,7 +211,6 @@ export default function CashierPage() {
     );
   }
 
-  // Remove drink (and its toppings)
   function removeItem(index) {
     setOrder(prev => prev.filter((_, i) => i !== index));
   }
@@ -242,7 +243,7 @@ export default function CashierPage() {
             ice_level: o.ice,
             sugar_level: o.sugar,
             toppings: o.toppings.map(t => ({
-              topping_id: t.menu_item_id,
+              topping_id: t.topping_id,
               quantity: 1
             }))
           })),
@@ -261,9 +262,11 @@ export default function CashierPage() {
     }
   }
 
+ 
+
   return (
     <div className="cashier-container">
-      {/* Sidebar */}
+      
       <div className="cashier-sidebar">
         <div className="cashier-sidebar-title">Quick Categories</div>
         {categories.map(cat => (
@@ -277,7 +280,7 @@ export default function CashierPage() {
         ))}
       </div>
 
-      {/* Menu */}
+  
       <div className="cashier-content">
         <div className="cashier-toolbar">
           <input
@@ -301,7 +304,7 @@ export default function CashierPage() {
         <div className="cashier-menu-grid">
           {filteredItems.map(item => (
             <button
-              key={item.menu_item_id}
+              key={item.menu_item_id || item.topping_id}
               onClick={() => handleAdd(item)}
             >
               <div className="cashier-item-name">{item.item_name}</div>
@@ -313,7 +316,6 @@ export default function CashierPage() {
         </div>
       </div>
 
-      {/* Order Panel */}
       <div className="order-panel">
         <div className="order-header">Current Order</div>
         <div className="order-subheader">Ctrl+Enter to send fast</div>

@@ -275,18 +275,6 @@ const TRANSLATIONS = {
     es: "Té de leche de mango", fr: "Thé au lait à la mangue", zh: "芒果奶茶",
     ja: "マンゴーミルクティー", ko: "망고 밀크티", vi: "Trà sữa xoài"
   },
-  "grapefruit coffee tea": {
-    es: "Té de café y pomelo", fr: "Thé café et pamplemousse", zh: "葡萄柚咖啡茶",
-    ja: "グレープフルーツコーヒーティー", ko: "자몽 커피차", vi: "Trà cà phê bưởi"
-  },
-  "grapefruit milk tea": {
-    es: "Té de leche de pomelo", fr: "Thé au lait au pamplemousse", zh: "葡萄柚奶茶",
-    ja: "グレープフルーツミルクティー", ko: "자몽 밀크티", vi: "Trà sữa bưởi"
-  },
-  "grapefruit green tea": {
-    es: "Té verde de pomelo", fr: "Thé vert au pamplemousse", zh: "葡萄柚绿茶",
-    ja: "グレープフルーツグリーンティー", ko: "자몽 녹차", vi: "Trà xanh bưởi"
-  },
   "kiwi fruit tea": {
     es: "Té de kiwi", fr: "Thé au kiwi", zh: "奇异果水果茶",
     ja: "キウイフルーツティー", ko: "키위 과일차", vi: "Trà trái cây kiwi"
@@ -295,10 +283,6 @@ const TRANSLATIONS = {
     es: "Té verde de maracuyá", fr: "Thé vert aux fruits de la passion",
     zh: "百香果绿茶", ja: "パッションフルーツグリーンティー",
     ko: "패션프루트 녹차", vi: "Trà xanh chanh dây"
-  },
-  "pineapple green tea": {
-    es: "Té verde de piña", fr: "Thé vert à l'ananas", zh: "菠萝绿茶",
-    ja: "パイナップルグリーンティー", ko: "파인애플 녹차", vi: "Trà xanh dứa"
   },
 
   // Toppings
@@ -318,6 +302,160 @@ const TRANSLATIONS = {
     es: "Bolas de taro", fr: "Boules de taro", zh: "芋圆",
     ja: "タロイモボール", ko: "타로 볼", vi: "Viên khoai môn"
   },
+  "rainbow jelly": {
+    es: "Gelatina arcoíris", fr: "Gelée arc-en-ciel", zh: "彩虹椰果",
+    ja: "レインボーゼリー", ko: "레인보우 젤리", vi: "Thạch cầu vồng"
+  },
+  "red bean": {
+    es: "Frijol rojo", fr: "Haricot rouge", zh: "红豆",
+    ja: "あずき", ko: "팥", vi: "Đậu đỏ"
+  },
+
+  // New drinks (ticket SCRUM-63)
+  "caramel macchiato": {
+    es: "Caramel Macchiato", fr: "Caramel Macchiato", zh: "焦糖玛奇朵",
+    ja: "キャラメルマキアート", ko: "카라멜 마키아토", vi: "Caramel Macchiato"
+  },
+  "hazelnut latte": {
+    es: "Latte de avellana", fr: "Latte noisette", zh: "榛果拿铁",
+    ja: "ヘーゼルナッツラテ", ko: "헤이즐넛 라떼", vi: "Latte hạt dẻ"
+  },
+  "vietnamese iced coffee": {
+    es: "Café helado vietnamita", fr: "Café glacé vietnamien", zh: "越南冰咖啡",
+    ja: "ベトナムアイスコーヒー", ko: "베트남식 아이스커피", vi: "Cà phê sữa đá"
+  },
+  "roasted oolong milk tea": {
+    es: "Té de leche de oolong tostado", fr: "Thé au lait oolong torréfié",
+    zh: "烘焙乌龙奶茶", ja: "焙煎ウーロンミルクティー",
+    ko: "로스팅 우롱 밀크티", vi: "Trà sữa ô long rang"
+  },
+  "vanilla milk tea": {
+    es: "Té de leche de vainilla", fr: "Thé au lait vanille", zh: "香草奶茶",
+    ja: "バニラミルクティー", ko: "바닐라 밀크티", vi: "Trà sữa vani"
+  },
+  "chocolate milk tea": {
+    es: "Té de leche de chocolate", fr: "Thé au lait au chocolat",
+    zh: "巧克力奶茶", ja: "チョコレートミルクティー",
+    ko: "초콜릿 밀크티", vi: "Trà sữa socola"
+  },
+  "pumpkin spice milk tea": {
+    es: "Té de leche de especias de calabaza",
+    fr: "Thé au lait aux épices de citrouille",
+    zh: "南瓜香料奶茶", ja: "パンプキンスパイスミルクティー",
+    ko: "펌킨 스파이스 밀크티", vi: "Trà sữa bí ngô gia vị"
+  },
+  "cherry blossom tea": {
+    es: "Té de flor de cerezo", fr: "Thé à la fleur de cerisier",
+    zh: "樱花茶", ja: "桜茶",
+    ko: "벚꽃차", vi: "Trà hoa anh đào"
+  },
+  "brown sugar oolong tea": {
+    es: "Té oolong con azúcar morena", fr: "Thé oolong au sucre brun",
+    zh: "黑糖乌龙茶", ja: "黒糖ウーロン茶",
+    ko: "흑당 우롱차", vi: "Trà ô long đường nâu"
+  },
+  "jasmine green tea": {
+    es: "Té verde de jazmín", fr: "Thé vert au jasmin", zh: "茉莉绿茶",
+    ja: "ジャスミングリーンティー", ko: "재스민 녹차", vi: "Trà xanh hoa nhài"
+  },
+
+  // New descriptions (ticket SCRUM-63)
+  "Rich espresso layered with silky vanilla milk and buttery caramel drizzle.": {
+    es: "Espresso intenso sobre leche de vainilla sedosa con un toque de caramelo mantecoso.",
+    fr: "Expresso riche en couches avec un lait vanillé soyeux et un filet de caramel beurré.",
+    zh: "浓郁浓缩咖啡配丝滑香草牛奶和奶油焦糖酱。",
+    ja: "濃厚なエスプレッソに滑らかなバニラミルクとバターキャラメル。",
+    ko: "진한 에스프레소에 부드러운 바닐라 우유와 버터 캐러멜 드리즐.",
+    vi: "Espresso đậm đà xếp lớp với sữa vani mượt và siro caramel bơ."
+  },
+  "Smooth espresso with nutty hazelnut syrup and creamy steamed milk.": {
+    es: "Espresso suave con jarabe de avellanas y leche vaporizada cremosa.",
+    fr: "Expresso onctueux avec sirop noisette et lait vapeur crémeux.",
+    zh: "丝滑浓缩咖啡搭配榛果糖浆与浓郁蒸奶。",
+    ja: "滑らかなエスプレッソにヘーゼルナッツシロップとクリーミーなスチームミルク。",
+    ko: "부드러운 에스프레소에 고소한 헤이즐넛 시럽과 크리미한 스팀 밀크.",
+    vi: "Espresso mượt với siro hạt dẻ thơm và sữa hấp béo."
+  },
+  "Strong dark roast poured over sweet condensed milk, chilled over ice.": {
+    es: "Café oscuro fuerte vertido sobre leche condensada dulce, con hielo.",
+    fr: "Café torréfié fort versé sur du lait concentré sucré, glacé.",
+    zh: "浓郁深焙咖啡倒入甜炼乳中，冰镇享用。",
+    ja: "濃いダークローストを甘い練乳にのせ、氷で冷やしたコーヒー。",
+    ko: "진한 다크 로스트를 달콤한 연유 위에 부어 얼음과 함께 차갑게.",
+    vi: "Cà phê rang đậm rót lên sữa đặc ngọt, uống lạnh với đá."
+  },
+  "Toasty roasted oolong balanced with creamy milk for a nutty finish.": {
+    es: "Oolong tostado equilibrado con leche cremosa y un final de sabor a nuez.",
+    fr: "Oolong torréfié équilibré avec du lait crémeux, finale noisetée.",
+    zh: "烘焙乌龙香气与奶香平衡，带有坚果尾韵。",
+    ja: "香ばしい焙煎ウーロンにクリーミーなミルクでナッツの余韻。",
+    ko: "고소한 로스팅 우롱에 크리미한 우유, 견과류 여운.",
+    vi: "Ô long rang thơm hòa quyện sữa béo, hậu vị bùi hạt."
+  },
+  "Classic black milk tea infused with sweet Madagascar vanilla.": {
+    es: "Té negro clásico con leche infusionado con dulce vainilla de Madagascar.",
+    fr: "Thé noir au lait classique infusé à la vanille douce de Madagascar.",
+    zh: "经典黑奶茶融入甘甜的马达加斯加香草。",
+    ja: "クラシックなブラックミルクティーに甘いマダガスカルバニラ。",
+    ko: "클래식 블랙 밀크티에 달콤한 마다가스카르 바닐라.",
+    vi: "Trà đen sữa cổ điển hòa quyện vani Madagascar ngọt ngào."
+  },
+  "Rich cocoa blended with creamy milk tea for a dessert-like sip.": {
+    es: "Cacao intenso mezclado con té de leche cremoso, como un postre.",
+    fr: "Cacao riche mélangé au thé au lait crémeux, comme un dessert.",
+    zh: "浓郁可可与奶茶融合，宛如甜点一般。",
+    ja: "濃厚なココアとクリーミーなミルクティーがデザート感覚。",
+    ko: "진한 코코아와 크리미한 밀크티가 디저트 같은 한 모금.",
+    vi: "Ca cao đậm đà quyện trà sữa béo, ngọt như món tráng miệng."
+  },
+  "Warm pumpkin, cinnamon and nutmeg swirled into cozy milk tea.": {
+    es: "Calabaza, canela y nuez moscada en un té de leche reconfortante.",
+    fr: "Potiron, cannelle et muscade fondus dans un thé au lait réconfortant.",
+    zh: "温暖南瓜、肉桂与肉豆蔻融入温馨奶茶。",
+    ja: "かぼちゃ、シナモン、ナツメグを温かいミルクティーに。",
+    ko: "따뜻한 호박, 계피, 넛맥이 아늑한 밀크티에 어우러짐.",
+    vi: "Bí ngô ấm, quế và nhục đậu khấu hòa trong trà sữa ấm áp."
+  },
+  "Delicate sakura and white tea for a lightly floral spring sip.": {
+    es: "Sakura delicada y té blanco para un sorbo floral de primavera.",
+    fr: "Sakura délicat et thé blanc pour une gorgée florale de printemps.",
+    zh: "细腻樱花与白茶，轻盈花香的春日一饮。",
+    ja: "繊細な桜とホワイトティーで春の花の香り。",
+    ko: "섬세한 벚꽃과 백차로 가벼운 봄 꽃 한 모금.",
+    vi: "Hoa anh đào tinh tế và trà trắng, hương hoa xuân nhẹ nhàng."
+  },
+  "Caramelized brown sugar drizzled over fragrant roasted oolong.": {
+    es: "Azúcar morena caramelizada sobre oolong tostado y fragante.",
+    fr: "Sucre brun caramélisé sur un oolong torréfié parfumé.",
+    zh: "焦糖黑糖淋在香气四溢的烘焙乌龙上。",
+    ja: "キャラメライズした黒糖を香ばしい焙煎ウーロンに。",
+    ko: "캐러멜라이즈드 흑당이 향긋한 로스팅 우롱에.",
+    vi: "Đường nâu caramen rưới lên ô long rang thơm nức."
+  },
+  "Fragrant jasmine petals steeped with fresh green tea leaves.": {
+    es: "Pétalos de jazmín fragantes infusionados con hojas de té verde.",
+    fr: "Pétales de jasmin parfumés infusés avec des feuilles de thé vert frais.",
+    zh: "芬芳茉莉花瓣与新鲜绿茶叶一同冲泡。",
+    ja: "香り高いジャスミンの花と新鮮な緑茶葉を一緒に。",
+    ko: "향긋한 재스민 꽃잎과 신선한 녹차 잎을 함께.",
+    vi: "Hoa nhài thơm ngát ủ cùng lá trà xanh tươi."
+  },
+  "Chewy fruit-flavored jellies that add a burst of color and taste.": {
+    es: "Gelatinas masticables con sabor a frutas que añaden color y sabor.",
+    fr: "Gelées fruitées moelleuses qui apportent couleur et saveur.",
+    zh: "嚼劲十足的水果味果冻，带来色彩与风味。",
+    ja: "フルーツ味のもちもちゼリーで色と味が弾ける。",
+    ko: "쫀득한 과일 맛 젤리로 색과 맛이 팡!",
+    vi: "Thạch trái cây dai đầy màu sắc và hương vị."
+  },
+  "Sweet simmered azuki red beans with a soft, creamy bite.": {
+    es: "Frijoles azuki dulces cocidos, suaves y cremosos.",
+    fr: "Haricots rouges azuki sucrés mijotés, tendres et crémeux.",
+    zh: "甜煮红豆，口感柔软绵密。",
+    ja: "甘く煮たあずきの柔らかくクリーミーな食感。",
+    ko: "달콤하게 졸인 팥, 부드럽고 크리미한 식감.",
+    vi: "Đậu đỏ azuki ninh ngọt mềm mịn."
+  },
 
   // Descriptions
   "Smooth black tea with creamy milk for a rich, classic boba taste.": {
@@ -332,7 +470,7 @@ const TRANSLATIONS = {
     es: "Té Thai intenso con notas dulces y un final especiado.",
     fr: "Thé thaï intense aux notes crémeuses et épicées.",
     zh: "浓郁泰式茶，香甜奶香与香料尾韵。",
-    ja: "濃厚なタイティーに甘いクリームとスパイシーな余韵。",
+    ja: "濃厚なタイティーに甘いクリームとスパイシーな余韻。",
     ko: "진한 타이티에 달콤한 크림과 향긋한 향신료 여운.",
     vi: "Trà Thái đậm đà với vị kem ngọt và hậu vị thơm gia vị."
   },
@@ -427,6 +565,7 @@ function CustomerKiosk() {
     if (language === "en") return key;
     return TRANSLATIONS[key]?.[language] || key;
   };
+
   const [menuItems, setMenuItems] = useState([]);
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("All");
@@ -451,13 +590,14 @@ function CustomerKiosk() {
       role: "assistant",
       content: t(
         "Hi, I am Boba Buddy! Tell me the weather, any allergies or diet needs, and I will recommend a drink."
-      )
-    }
+      ),
+    },
   ]);
   const [chatInput, setChatInput] = useState("");
   const [chatLoading, setChatLoading] = useState(false);
 
   const itemRefs = useRef([]);
+  const menuGridRef = useRef(null);
   const categoryRefs = useRef([]);
   const synth = window.speechSynthesis;
 
@@ -469,7 +609,8 @@ function CustomerKiosk() {
     "thai milk tea": "/images/menu/thai_milk_tea.png",
     "taro milk tea": "/images/menu/taro_milk_tea.png",
     "matcha milk tea": "/images/menu/matcha_milk_tea.png",
-    "okinawa brown sugar milk tea": "/images/menu/okinawa_brown_sugar_milk_tea.png",
+    "okinawa brown sugar milk tea":
+      "/images/menu/okinawa_brown_sugar_milk_tea.png",
     "honey green milk tea": "/images/menu/honey_green_milk_tea.png",
     "wintermelon milk tea": "/images/menu/wintermelon_milk_tea.png",
     "winter melon milk tea": "/images/menu/wintermelon_milk_tea.png",
@@ -478,7 +619,21 @@ function CustomerKiosk() {
     "strawberry fruit tea": "/images/menu/strawberry_fruit_tea.png",
     "peach black tea": "/images/menu/peach_black_tea.png",
     "lychee oolong tea": "/images/menu/lychee_oolong_tea.png",
-    "additional boba": "/images/menu/additional_boba.png"
+    "additional boba": "/images/menu/additional_boba.png",
+    "caramel macchiato": "/images/menu/caramel_macchiato.png",
+    "hazelnut latte": "/images/menu/hazelnut_latte.png",
+    "vietnamese iced coffee": "/images/menu/vietnamese_iced_coffee.png",
+    "roasted oolong milk tea": "/images/menu/roasted_oolong_milk_tea.png",
+    "vanilla milk tea": "/images/menu/vanilla_milk_tea.png",
+    "chocolate milk tea": "/images/menu/chocolate_milk_tea.png",
+    "pumpkin spice milk tea": "/images/menu/pumpkin_spice_milk_tea.png",
+    "cherry blossom tea": "/images/menu/cherry_blossom_tea.png",
+    "brown sugar oolong tea": "/images/menu/brown_sugar_oolong_tea.png",
+    "jasmine green tea": "/images/menu/jasmine_green_tea.png",
+    "passionfruit green tea": "/images/menu/passionfruit_green_tea.png",
+    "kiwi fruit tea": "/images/menu/kiwi_fruit_tea.png",
+    "mango milk tea": "/images/menu/mango_milk_tea.png",
+    "coffee fruit tea": "/images/menu/coffee_fruit_tea.png",
   };
 
   const generatedDescriptionByName = {
@@ -509,7 +664,31 @@ function CustomerKiosk() {
     "lychee oolong tea":
       "Floral oolong tea paired with delicate lychee sweetness.",
     "additional boba":
-      "Chewy tapioca pearls to add extra texture to your drink."
+      "Chewy tapioca pearls to add extra texture to your drink.",
+    "caramel macchiato":
+      "Rich espresso layered with silky vanilla milk and buttery caramel drizzle.",
+    "hazelnut latte":
+      "Smooth espresso with nutty hazelnut syrup and creamy steamed milk.",
+    "vietnamese iced coffee":
+      "Strong dark roast poured over sweet condensed milk, chilled over ice.",
+    "roasted oolong milk tea":
+      "Toasty roasted oolong balanced with creamy milk for a nutty finish.",
+    "vanilla milk tea":
+      "Classic black milk tea infused with sweet Madagascar vanilla.",
+    "chocolate milk tea":
+      "Rich cocoa blended with creamy milk tea for a dessert-like sip.",
+    "pumpkin spice milk tea":
+      "Warm pumpkin, cinnamon and nutmeg swirled into cozy milk tea.",
+    "cherry blossom tea":
+      "Delicate sakura and white tea for a lightly floral spring sip.",
+    "brown sugar oolong tea":
+      "Caramelized brown sugar drizzled over fragrant roasted oolong.",
+    "jasmine green tea":
+      "Fragrant jasmine petals steeped with fresh green tea leaves.",
+    "rainbow jelly":
+      "Chewy fruit-flavored jellies that add a burst of color and taste.",
+    "red bean":
+      "Sweet simmered azuki red beans with a soft, creamy bite.",
   };
 
   const placeholderSvg =
@@ -547,33 +726,60 @@ function CustomerKiosk() {
     const english = item.item_description?.trim()
       ? item.item_description
       : generatedDescriptionByName[normalizeName(item.item_name)];
-
     if (language !== "en" && TRANSLATIONS[english]?.[language]) {
       return TRANSLATIONS[english][language];
     }
     return english;
   };
+
   const speak = (text) => {
-    if (!speakMode) return;
+    if (!speakMode || !text) return;
     synth.cancel();
-    synth.speak(new SpeechSynthesisUtterance(text));
+    const utterance = new SpeechSynthesisUtterance(text);
+    const langMap = {
+      en: "en-US",
+      es: "es-ES",
+      fr: "fr-FR",
+      zh: "zh-CN",
+      ja: "ja-JP",
+      ko: "ko-KR",
+      vi: "vi-VN",
+    };
+    utterance.lang = langMap[language] || "en-US";
+    synth.speak(utterance);
   };
 
+  const speakKey = (key) => {
+    speak(t(key));
+  };
+
+  const speakDrinkName = (item) => {
+    speak(getTranslatedDrinkName(item));
+  };
+
+  const getToppingPriceByName = (name) => {
+    const t = TOPPINGS.find((x) => x.name === name);
+    return t ? t.price : 0;
+  };
+
+  // Load menu
   useEffect(() => {
     async function loadMenu() {
       try {
         const itemsRes = await fetch(`${API_BASE}/menu/items`);
         const items = await itemsRes.json();
-
         const catsRes = await fetch(`${API_BASE}/menu/categories`);
         let cats = await catsRes.json();
 
         if (!cats || cats.length === 0) {
-          cats = [...new Set(items.map((item) => item.item_type).filter(Boolean))];
+          cats = [
+            ...new Set(
+              items.map((item) => item.item_type).filter(Boolean)
+            ),
+          ];
         }
 
         setMenuItems(items);
-
         setCategories(["All", ...cats.filter((c) => c !== "Toppings")]);
       } catch (error) {
         alert(t("Network error"));
@@ -584,28 +790,101 @@ function CustomerKiosk() {
     loadMenu();
   }, []);
 
-  const browseableMenuItems = menuItems.filter((item) => item.item_type !== "Toppings");
+  const browseableMenuItems = menuItems.filter(
+    (item) => item.item_type !== "Toppings"
+  );
 
   const TOPPINGS = menuItems
     .filter((item) => item.item_type === "Toppings")
     .map((item) => ({
-      menu_item_id: Number(item.menu_item_id),
       name: item.item_name,
-      price: Number(item.item_cost)
+      price: Number(item.item_cost),
     }));
 
   const filteredItems =
     selectedCategory === "All"
       ? browseableMenuItems
-      : browseableMenuItems.filter((item) => item.item_type === selectedCategory);
+      : browseableMenuItems.filter(
+          (item) => item.item_type === selectedCategory
+        );
+
+  // Touch navigation
+  useEffect(() => {
+    if (!menuGridRef.current) return;
+
+    let startX = 0;
+    let startY = 0;
+    let holdTimer = null;
+
+    const handleTouchStart = (e) => {
+      const touch = e.touches[0];
+      startX = touch.clientX;
+      startY = touch.clientY;
+
+      holdTimer = setTimeout(() => {
+        const item = filteredItems[focusIndex];
+        if (item) {
+          speakDrinkName(item);
+          openCustomization(item);
+        }
+      }, 600);
+    };
+
+    const handleTouchEnd = (e) => {
+      clearTimeout(holdTimer);
+      const touch = e.changedTouches[0];
+      const dx = touch.clientX - startX;
+      const dy = touch.clientY - startY;
+
+      const absX = Math.abs(dx);
+      const absY = Math.abs(dy);
+
+      if (absX < 30 && absY < 30) return;
+
+      if (absX > absY) {
+        if (dx > 0 && focusIndex > 0) {
+          const prev = focusIndex - 1;
+          setFocusIndex(prev);
+          itemRefs.current[prev]?.focus();
+          speakDrinkName(filteredItems[prev]);
+        } else if (dx < 0 && focusIndex < filteredItems.length - 1) {
+          const next = focusIndex + 1;
+          setFocusIndex(next);
+          itemRefs.current[next]?.focus();
+          speakDrinkName(filteredItems[next]);
+        }
+      } else {
+        if (dy > 0 && focusIndex < filteredItems.length - 1) {
+          const next = focusIndex + 1;
+          setFocusIndex(next);
+          itemRefs.current[next]?.focus();
+          speakDrinkName(filteredItems[next]);
+        } else if (dy < 0 && focusIndex > 0) {
+          const prev = focusIndex - 1;
+          setFocusIndex(prev);
+          itemRefs.current[prev]?.focus();
+          speakDrinkName(filteredItems[prev]);
+        }
+      }
+    };
+
+    const grid = menuGridRef.current;
+    grid.addEventListener("touchstart", handleTouchStart, { passive: true });
+    grid.addEventListener("touchend", handleTouchEnd);
+
+    return () => {
+      grid.removeEventListener("touchstart", handleTouchStart);
+      grid.removeEventListener("touchend", handleTouchEnd);
+    };
+  }, [filteredItems, focusIndex, language, speakMode]);
 
   const drinksMatch = (a, b) => {
     const aT = (a.toppings || [])
-      .map((t) => Number(t.menu_item_id))
-      .sort((x, y) => x - y);
+      .map((t) => t.name)
+      .sort((x, y) => x.localeCompare(y));
     const bT = (b.toppings || [])
-      .map((t) => Number(t.menu_item_id))
-      .sort((x, y) => x - y);
+      .map((t) => t.name)
+      .sort((x, y) => x.localeCompare(y));
 
     return (
       a.menu_item_id === b.menu_item_id &&
@@ -638,6 +917,7 @@ function CustomerKiosk() {
 
   const handleItemClick = (item) => {
     openCustomization(item);
+    speakDrinkName(item);
   };
 
   const computeToppingsCostPerDrink = (toppings) =>
@@ -661,7 +941,7 @@ function CustomerKiosk() {
       toppings: selectedToppings,
       quantity: editingIndex !== null ? cart[editingIndex].quantity : 1,
       base_cost: basePrice,
-      toppings_cost_per_drink: toppingsCost
+      toppings_cost_per_drink: toppingsCost,
     };
 
     if (editingIndex !== null) {
@@ -670,12 +950,14 @@ function CustomerKiosk() {
       setCart(updated);
     } else {
       setCart((prev) => {
-        const existingIndex = prev.findIndex((c) => drinksMatch(c, drinkOrder));
+        const existingIndex = prev.findIndex((c) =>
+          drinksMatch(c, drinkOrder)
+        );
         if (existingIndex !== -1) {
           const updated = [...prev];
           updated[existingIndex] = {
             ...updated[existingIndex],
-            quantity: updated[existingIndex].quantity + 1
+            quantity: updated[existingIndex].quantity + 1,
           };
           return updated;
         }
@@ -714,6 +996,7 @@ function CustomerKiosk() {
       Number(item.base_cost) + computeToppingsCostPerDrink(item.toppings);
     return total + perDrink * item.quantity;
   }, 0);
+
   const submitOrder = async () => {
     if (cart.length === 0) return;
     speak(t("Order submitted successfully"));
@@ -727,15 +1010,9 @@ function CustomerKiosk() {
           items: cart.map((item) => ({
             menu_item_id: item.menu_item_id,
             quantity: item.quantity,
-            ice_level: item.ice,
-            sugar_level: item.sugar,
-            toppings: (item.toppings || []).map((top) => ({
-              topping_id: top.menu_item_id,
-              quantity: 1
-            }))
           })),
-          total: totalPrice
-        })
+          total: totalPrice,
+        }),
       });
 
       if (response.ok) {
@@ -749,6 +1026,7 @@ function CustomerKiosk() {
     }
   };
 
+  // Keyboard navigation
   useEffect(() => {
     if (!keyboardMode) return;
 
@@ -759,39 +1037,89 @@ function CustomerKiosk() {
       const activeCategory = categoryRefs.current.findIndex(
         (el) => el === document.activeElement
       );
+      const activeItem = itemRefs.current.findIndex(
+        (el) => el === document.activeElement
+      );
 
       if (e.key === "ArrowDown") {
+        e.preventDefault();
         if (activeCategory !== -1) {
           setFocusIndex(0);
           itemRefs.current[0]?.focus();
+          speakDrinkName(filteredItems[0]);
           return;
         }
-        if (focusIndex < totalItems - 1) setFocusIndex(focusIndex + 1);
+        if (focusIndex < totalItems - 1) {
+          const next = focusIndex + 1;
+          setFocusIndex(next);
+          itemRefs.current[next]?.focus();
+          speakDrinkName(filteredItems[next]);
+        }
       }
 
       if (e.key === "ArrowUp") {
-        if (focusIndex > 0) setFocusIndex(focusIndex - 1);
-        else categoryRefs.current[0]?.focus();
+        e.preventDefault();
+        if (focusIndex > 0) {
+          const prev = focusIndex - 1;
+          setFocusIndex(prev);
+          itemRefs.current[prev]?.focus();
+          speakDrinkName(filteredItems[prev]);
+        } else {
+          categoryRefs.current[0]?.focus();
+          speakKey("Category");
+        }
       }
 
       if (e.key === "ArrowLeft") {
-        if (activeCategory > 0) categoryRefs.current[activeCategory - 1]?.focus();
+        e.preventDefault();
+        if (activeCategory > 0) {
+          const prevCat = activeCategory - 1;
+          categoryRefs.current[prevCat]?.focus();
+          const cat = categories[prevCat];
+          speak(`${t("Category")}: ${t(cat)}`);
+          return;
+        }
+        if (activeItem > 0) {
+          const prev = activeItem - 1;
+          setFocusIndex(prev);
+          itemRefs.current[prev]?.focus();
+          speakDrinkName(filteredItems[prev]);
+        }
       }
 
       if (e.key === "ArrowRight") {
-        if (activeCategory !== -1 && activeCategory < totalCategories - 1)
-          categoryRefs.current[activeCategory + 1]?.focus();
+        e.preventDefault();
+        if (
+          activeCategory !== -1 &&
+          activeCategory < totalCategories - 1
+        ) {
+          const nextCat = activeCategory + 1;
+          categoryRefs.current[nextCat]?.focus();
+          const cat = categories[nextCat];
+          speak(`${t("Category")}: ${t(cat)}`);
+          return;
+        }
+        if (activeItem !== -1 && activeItem < totalItems - 1) {
+          const next = activeItem + 1;
+          setFocusIndex(next);
+          itemRefs.current[next]?.focus();
+          speakDrinkName(filteredItems[next]);
+        }
       }
 
       if (e.key === "Enter") {
+        e.preventDefault();
         if (activeCategory !== -1) {
           const cat = categories[activeCategory];
           setSelectedCategory(cat);
-          speak(`${t("Category")}: ${cat}`);
+          speak(`${t("Category")}: ${t(cat)}`);
           return;
         }
         const item = filteredItems[focusIndex];
-        handleItemClick(item);
+        if (item) {
+          speakDrinkName(item);
+          handleItemClick(item);
+        }
       }
     };
 
@@ -799,16 +1127,23 @@ function CustomerKiosk() {
     return () => window.removeEventListener("keydown", handleKey);
   }, [keyboardMode, filteredItems, focusIndex, categories, language]);
 
+  // Language menu close
   useEffect(() => {
     if (!languageMenuOpen) return;
+
     const handleClickOutside = (e) => {
-      if (languageMenuRef.current && !languageMenuRef.current.contains(e.target)) {
+      if (
+        languageMenuRef.current &&
+        !languageMenuRef.current.contains(e.target)
+      ) {
         setLanguageMenuOpen(false);
       }
     };
+
     const handleEsc = (e) => {
       if (e.key === "Escape") setLanguageMenuOpen(false);
     };
+
     document.addEventListener("mousedown", handleClickOutside);
     document.addEventListener("keydown", handleEsc);
     return () => {
@@ -817,43 +1152,86 @@ function CustomerKiosk() {
     };
   }, [languageMenuOpen]);
 
+  // Focus scroll
   useEffect(() => {
     if (keyboardMode && itemRefs.current[focusIndex]) {
       itemRefs.current[focusIndex].focus();
       itemRefs.current[focusIndex].scrollIntoView({
         behavior: "smooth",
-        block: "center"
+        block: "center",
       });
     }
   }, [focusIndex, keyboardMode]);
 
-  const isToppingSelected = (toppingId) =>
-    selectedToppings.some((t) => Number(t.menu_item_id) === Number(toppingId));
+  const isToppingSelected = (name) =>
+    selectedToppings.some((t) => t.name === name);
 
-  const toggleTopping = (topping) => {
+  const toggleTopping = (name) => {
     setSelectedToppings((prev) => {
-      if (prev.some((t) => Number(t.menu_item_id) === Number(topping.menu_item_id))) {
-        return prev.filter((t) => Number(t.menu_item_id) !== Number(topping.menu_item_id));
+      if (prev.some((t) => t.name === name)) {
+        return prev.filter((t) => t.name !== name);
       }
-      return [
-        ...prev,
-        {
-          menu_item_id: Number(topping.menu_item_id),
-          name: topping.name,
-          price: Number(topping.price)
-        }
-      ];
+      const price = getToppingPriceByName(name);
+      return [...prev, { name, price }];
     });
+  };
+
+  // WEATHER STATE + LOGIC
+  const [weather, setWeather] = useState(null);
+
+  useEffect(() => {
+    async function loadWeather() {
+      try {
+        const res = await fetch(`${API_BASE}/weather`);
+        const data = await res.json();
+        setWeather(data);
+      } catch (err) {
+        console.log("Weather error", err);
+      }
+    }
+    loadWeather();
+  }, []);
+
+  const getWeatherRecommendation = () => {
+    if (!weather) return null;
+
+    if (weather.temp >= 85) {
+      return "It's hot today! Try a refreshing fruit tea like Mango Green Tea or Lychee Oolong.";
+    }
+
+    if (weather.temp <= 50) {
+      return "It's chilly outside. A warm drink like Thai Milk Tea or Roasted Oolong Milk Tea would be perfect.";
+    }
+
+    if (weather.condition === "Rain") {
+      return "Rainy weather calls for something cozy — maybe a Classic Milk Tea.";
+    }
+
+    return "Weather looks nice today! Pick anything you like.";
   };
 
   const sendChatMessage = async () => {
     const trimmed = chatInput.trim();
     if (!trimmed) return;
 
-    const newMessages = [...chatMessages, { role: "user", content: trimmed }];
+    const newMessages = [
+      ...chatMessages,
+      { role: "user", content: trimmed },
+    ];
     setChatMessages(newMessages);
     setChatInput("");
     setChatLoading(true);
+
+    // If user mentions weather, answer immediately with weather-based suggestion
+    if (trimmed.toLowerCase().includes("weather")) {
+      const rec = getWeatherRecommendation();
+      if (rec) {
+        setChatMessages((prev) => [
+          ...prev,
+          { role: "assistant", content: rec },
+        ]);
+      }
+    }
 
     try {
       const res = await fetch(`${API_BASE}/chatbot`, {
@@ -861,8 +1239,8 @@ function CustomerKiosk() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           messages: newMessages,
-          menu: menuItems
-        })
+          menu: menuItems,
+        }),
       });
 
       const data = await res.json();
@@ -875,14 +1253,19 @@ function CustomerKiosk() {
         ...prev,
         {
           role: "assistant",
-          content: t("Sorry, I had trouble answering. Please try again.")
-        }
+          content: t(
+            "Sorry, I had trouble answering. Please try again."
+          ),
+        },
       ]);
     } finally {
       setChatLoading(false);
     }
   };
-  if (loading) return <div className="kiosk-loading">Loading menu...</div>;
+
+  if (loading) {
+    return <div className="kiosk-loading">Loading menu...</div>;
+  }
 
   return (
     <div className="kiosk-container" style={{ "--scale": fontScale }}>
@@ -941,13 +1324,13 @@ function CustomerKiosk() {
               </button>
 
               <button
-                className={`access-btn ${speakMode ? "active" : ""}`}
+                className={`access-btn ${
+                  speakMode ? "active" : ""
+                }`}
                 onClick={() => {
                   setSpeakMode(!speakMode);
                   speak(
-                    !speakMode
-                      ? t("Speaker On")
-                      : t("Speaker Off")
+                    !speakMode ? t("Speaker On") : t("Speaker Off")
                   );
                 }}
               >
@@ -955,32 +1338,40 @@ function CustomerKiosk() {
               </button>
 
               <button
-                className={`access-btn ${keyboardMode ? "active" : ""}`}
+                className={`access-btn ${
+                  keyboardMode ? "active" : ""
+                }`}
                 onClick={() => {
                   setKeyboardMode(!keyboardMode);
                   speak(
-                    !keyboardMode
-                      ? t("Keyboard On")
-                      : t("Keyboard Off")
+                    !keyboardMode ? t("Keyboard On") : t("Keyboard Off")
                   );
                 }}
               >
                 {keyboardMode ? t("Keyboard On") : t("Keyboard Off")}
               </button>
 
-              <label className="language-label">{t("Language")}:</label>
-              <div className="language-dropdown" ref={languageMenuRef}>
+              <label className="language-label">
+                {t("Language")}:
+              </label>
+              <div
+                className="language-dropdown"
+                ref={languageMenuRef}
+              >
                 <button
                   type="button"
                   className="language-toggle"
-                  onClick={() => setLanguageMenuOpen((open) => !open)}
+                  onClick={() =>
+                    setLanguageMenuOpen((open) => !open)
+                  }
                   aria-haspopup="listbox"
                   aria-expanded={languageMenuOpen}
                   aria-label={t("Language")}
                 >
                   {(() => {
                     const current =
-                      LANGUAGES.find((l) => l.code === language) || LANGUAGES[0];
+                      LANGUAGES.find((l) => l.code === language) ||
+                      LANGUAGES[0];
                     return (
                       <>
                         <img
@@ -1005,7 +1396,6 @@ function CustomerKiosk() {
                     );
                   })()}
                 </button>
-
                 {languageMenuOpen && (
                   <ul className="language-menu" role="listbox">
                     {LANGUAGES.map((lang) => (
@@ -1047,8 +1437,15 @@ function CustomerKiosk() {
         </div>
       </header>
 
+      {/* WEATHER BANNER */}
+      {weather && (
+        <div className="weather-banner">
+          {getWeatherRecommendation()}
+        </div>
+      )}
+
       <div className="main-content">
-        <div className="menu-grid">
+        <div className="menu-grid" ref={menuGridRef}>
           {filteredItems.map((item, index) => (
             <div
               key={item.menu_item_id}
@@ -1059,7 +1456,9 @@ function CustomerKiosk() {
               onClick={() => handleItemClick(item)}
               role="button"
               tabIndex={keyboardMode ? 0 : -1}
-              aria-label={`${t("Add")} ${getTranslatedDrinkName(item)} ${t("to cart")}`}
+              aria-label={`${t("Add")} ${getTranslatedDrinkName(
+                item
+              )} ${t("to cart")}`}
             >
               <img
                 src={getItemImageSrc(item)}
@@ -1070,39 +1469,48 @@ function CustomerKiosk() {
                   e.currentTarget.src = placeholderSvg;
                 }}
               />
-
               <div className="item-info">
                 <h3>{getTranslatedDrinkName(item)}</h3>
-                <p className="item-description">{getItemDescription(item)}</p>
-                <p className="price">${Number(item.item_cost).toFixed(2)}</p>
+                <p className="item-description">
+                  {getItemDescription(item)}
+                </p>
+                <p className="price">
+                  ${Number(item.item_cost).toFixed(2)}
+                </p>
               </div>
             </div>
           ))}
         </div>
+
         <div className="cart-sidebar" aria-live="polite">
           <h2>
             {t("Your Cart")} ({cart.length})
           </h2>
-
           {cart.length === 0 ? (
-            <p className="empty-cart">{t("Tap any drink to start your order")}</p>
+            <p className="empty-cart">
+              {t("Tap any drink to start your order")}
+            </p>
           ) : (
             cart.map((item, index) => {
               const perDrink =
                 Number(item.base_cost) +
                 computeToppingsCostPerDrink(item.toppings);
-
               return (
-                <div key={item.cart_item_id} className="cart-item">
+                <div
+                  key={item.cart_item_id}
+                  className="cart-item"
+                >
                   <div
                     style={{ flex: 1 }}
                     onClick={() => openCustomization(item, index)}
                   >
                     <div>
                       <span>{getTranslatedDrinkName(item)}</span>
-                      <span className="qty"> x {item.quantity}</span>
+                      <span className="qty">
+                        {" "}
+                        x {item.quantity}
+                      </span>
                     </div>
-
                     <div className="topping-items">
                       <div>
                         {t("Size")}: {item.size}
@@ -1113,30 +1521,48 @@ function CustomerKiosk() {
                       <div>
                         {t("Sugar")}: {item.sugar}
                       </div>
-
                       {item.toppings &&
                         item.toppings.length > 0 &&
                         item.toppings.map((top, idx) => (
-                          <div key={idx}>+ {translateItemName(top.name)}</div>
+                          <div key={idx}>
+                            +{translateItemName(top.name)}
+                          </div>
                         ))}
                     </div>
                   </div>
-
                   <div className="cart-item-right">
-                    <span>${(perDrink * item.quantity).toFixed(2)}</span>
-
+                    <span>
+                      ${(perDrink * item.quantity).toFixed(2)}
+                    </span>
                     <button
-                      onClick={() => duplicateDrink(item.cart_item_id)}
+                      onClick={() => {
+                        duplicateDrink(item.cart_item_id);
+                        speak(
+                          `${t("Duplicate")} ${getTranslatedDrinkName(
+                            item
+                          )}`
+                        );
+                      }}
                       className="remove-btn"
-                      aria-label={`${t("Duplicate")} ${getTranslatedDrinkName(item)}`}
+                      aria-label={`${t("Duplicate")} ${getTranslatedDrinkName(
+                        item
+                      )}`}
                     >
                       +
                     </button>
-
                     <button
-                      onClick={() => removeFromCart(item.cart_item_id)}
+                      onClick={() => {
+                        removeFromCart(item.cart_item_id);
+                        speak(
+                          `${t("Remove")} ${getTranslatedDrinkName(
+                            item
+                          )}`
+                        );
+                      }}
                       className="remove-btn"
-                      aria-label={`${t("Remove")} ${getTranslatedDrinkName(item)}`}
+                      aria-label={`${t("Remove")} ${getTranslatedDrinkName(
+                        item
+                      )}`}
                     >
                       ×
                     </button>
@@ -1145,12 +1571,10 @@ function CustomerKiosk() {
               );
             })
           )}
-
           <div className="cart-total">
             <span>{t("Total")}</span>
             <span>${totalPrice.toFixed(2)}</span>
           </div>
-
           <button
             onClick={submitOrder}
             className="submit-order-btn"
@@ -1160,6 +1584,7 @@ function CustomerKiosk() {
           </button>
         </div>
       </div>
+
       {customModalOpen && currentDrink && (
         <div className="topping-modal-overlay">
           <div className="topping-modal-content">
@@ -1173,8 +1598,14 @@ function CustomerKiosk() {
                 {["Small", "Medium", "Large"].map((s) => (
                   <button
                     key={s}
-                    className={`option-btn ${selectedSize === s ? "active" : ""}`}
-                    onClick={() => setSelectedSize(s)}
+                    className={`option-btn ${
+                      selectedSize === s ? "active" : ""
+                    }`}
+                    onClick={() => {
+                      setSelectedSize(s);
+                      speak(`${t("Size")}: ${s}`);
+                    }}
+                    aria-label={`${t("Size")}: ${s}`}
                   >
                     {s}
                   </button>
@@ -1185,11 +1616,22 @@ function CustomerKiosk() {
             <div className="custom-section">
               <label>{t("Ice")}</label>
               <div className="option-group">
-                {["No Ice", "Less Ice", "Regular Ice", "Extra Ice"].map((i) => (
+                {[
+                  "No Ice",
+                  "Less Ice",
+                  "Regular Ice",
+                  "Extra Ice",
+                ].map((i) => (
                   <button
                     key={i}
-                    className={`option-btn ${selectedIce === i ? "active" : ""}`}
-                    onClick={() => setSelectedIce(i)}
+                    className={`option-btn ${
+                      selectedIce === i ? "active" : ""
+                    }`}
+                    onClick={() => {
+                      setSelectedIce(i);
+                      speak(`${t("Ice")}: ${i}`);
+                    }}
+                    aria-label={`${t("Ice")}: ${i}`}
                   >
                     {i}
                   </button>
@@ -1203,8 +1645,14 @@ function CustomerKiosk() {
                 {["0%", "25%", "50%", "75%", "100%"].map((s) => (
                   <button
                     key={s}
-                    className={`option-btn ${selectedSugar === s ? "active" : ""}`}
-                    onClick={() => setSelectedSugar(s)}
+                    className={`option-btn ${
+                      selectedSugar === s ? "active" : ""
+                    }`}
+                    onClick={() => {
+                      setSelectedSugar(s);
+                      speak(`${t("Sugar")}: ${s}`);
+                    }}
+                    aria-label={`${t("Sugar")}: ${s}`}
                   >
                     {s}
                   </button>
@@ -1215,26 +1663,38 @@ function CustomerKiosk() {
             <div className="custom-section">
               <label>{t("Toppings")}</label>
               <div className="topping-checkbox-list">
-                {TOPPINGS.map((top) => (
-                  <button
-                    type="button"
-                    key={top.name}
-                    className={`topping-checkbox-row ${
-                      isToppingSelected(top.menu_item_id) ? "selected" : ""
-                    }`}
-                    onClick={() => toggleTopping(top)}
-                  >
-                    <span>{translateItemName(top.name)}</span>
-                    <span className="topping-checkbox-price">
-                      +${top.price.toFixed(2)}
-                    </span>
-                  </button>
-                ))}
+                {TOPPINGS.map((top) => {
+                  const translated = translateItemName(top.name);
+                  const selected = isToppingSelected(top.name);
+                  return (
+                    <button
+                      type="button"
+                      key={top.name}
+                      className={`topping-checkbox-row ${
+                        selected ? "selected" : ""
+                      }`}
+                      onClick={() => {
+                        toggleTopping(top.name);
+                        speak(
+                          `${selected ? t("Remove") : t("Add")} ${translated}`
+                        );
+                      }}
+                      aria-label={`${selected ? t("Remove") : t("Add")} ${translated}`}
+                    >
+                      <span>{translated}</span>
+                      <span className="topping-checkbox-price">
+                        +${top.price.toFixed(2)}
+                      </span>
+                    </button>
+                  );
+                })}
               </div>
             </div>
 
             <button className="confirm-btn" onClick={saveDrink}>
-              {editingIndex !== null ? t("Save Changes") : t("Add to Cart")}
+              {editingIndex !== null
+                ? t("Save Changes")
+                : t("Add to Cart")}
             </button>
 
             <button
@@ -1249,6 +1709,7 @@ function CustomerKiosk() {
           </div>
         </div>
       )}
+
       <div
         className="chatbot-button"
         onClick={() => setChatOpen(true)}
@@ -1260,44 +1721,40 @@ function CustomerKiosk() {
         <div className="chatbot-modal">
           <div className="chatbot-header">
             <span>Boba Buddy</span>
-            <button onClick={() => setChatOpen(false)}>×</button>
+            <button onClick={() => setChatOpen(false)}>x</button>
           </div>
-
           <div className="chatbot-messages">
-            {chatMessages.map((m, i) => (
+            {chatMessages.map((m, idx) => (
               <div
-                key={i}
-                className={m.role === "user" ? "msg-user" : "msg-bot"}
+                key={idx}
+                className={`chat-message chat-${m.role}`}
               >
                 {m.content}
               </div>
             ))}
-
             {chatLoading && (
-              <div className="msg-bot">
+              <div className="chat-message chat-assistant">
                 {t("Thinking of a drink for you...")}
               </div>
             )}
           </div>
-
           <div className="chatbot-input">
             <input
+              type="text"
               value={chatInput}
               onChange={(e) => setChatInput(e.target.value)}
-              placeholder={t("Tell me the weather, allergies, diet ...")}
+              placeholder={t(
+                "Tell me the weather, allergies, diet ..."
+              )}
               onKeyDown={(e) => {
                 if (e.key === "Enter") sendChatMessage();
               }}
             />
-
-            <button onClick={sendChatMessage}>
-              {t("Send")}
-            </button>
+            <button onClick={sendChatMessage}>{t("Send")}</button>
           </div>
         </div>
       )}
     </div>
   );
 }
-
 export default CustomerKiosk;
