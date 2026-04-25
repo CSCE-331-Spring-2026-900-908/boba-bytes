@@ -4,17 +4,26 @@ import OpenAI from 'openai';
 const router = express.Router();
 
 const client = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY
+  apiKey: process.env.TAMU_API_KEY,
+  baseURL: "https://chat-api.tamu.ai/openai"
 });
+
 async function getWeather() {
   try {
     const apiKey = process.env.WEATHER_API_KEY;
-    const city = "Bryan,TX,US";
+    const lat = 30.627977;
+    const lon = -96.334406;
 
-    const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=imperial`;
+    const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=imperial&appid=${apiKey}`;
+
 
     const res = await fetch(url);
+    if (!res.ok) return null;
     const data = await res.json();
+
+    if (!data?.main || !Array.isArray(data.weather) || !data.weather[0]) {
+      return null;
+    }
 
     return {
       temp: data.main.temp,
@@ -30,6 +39,7 @@ async function getWeather() {
 router.post('/', async (req, res) => {
   try {
     const { messages, menu } = req.body;
+    const weather = await getWeather();
 
     const systemPrompt = `
 You are Boba Buddy, a friendly drink recommendation assistant for a boba shop kiosk called Boba Bytes.
@@ -57,7 +67,6 @@ Weather and season:
 - Cold weather: suggest creamy, warm, or richer milk teas.
 - Summer: fruity, citrus, tropical flavors.
 - Winter: brown sugar, taro, matcha, classic milk teas.
-- If no weather is provided, you may ask: "Is it hot or cold where you are today?"
 
 Menu JSON will be provided in a separate message. Use it to reference drink names and types.
 Never invent drinks that are not on the menu.
@@ -68,17 +77,35 @@ Never invent drinks that are not on the menu.
       content: `Here is the menu JSON:\n${JSON.stringify(menu)}`
     };
 
-    const completion = await client.chat.completions.create({
-      model: 'gpt-4o-mini',
-      messages: [
-        { role: 'system', content: systemPrompt },
-        menuMessage,
-        ...messages
-      ],
-      temperature: 0.7,
-      max_tokens: 300
-    });
+    const weatherMessage = {
+      role: 'system',
+      content: weather
+        ? `Current local weather at the kiosk: ${Math.round(weather.temp)}F, feels like ${Math.round(weather.feels_like)}F, condition: ${weather.description}. Use this as a strong signal when selecting drink styles.`
+        : 'Current local weather is unavailable. Do not assume specific weather conditions; ask the user whether it is hot or cold if needed.'
+    };
 
+    const tamuResponse = await fetch(
+        `${process.env.TAMUS_AI_CHAT_API_ENDPOINT}/api/chat/completions`,
+        {
+          method: "POST",
+          headers: {
+            "Authorization": `Bearer ${process.env.TAMU_API_KEY}`,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            model: "protected.gemini-2.0-flash-lite",   // or any model from /api/models
+            stream: false,
+            messages: [
+              { role: "system", content: systemPrompt },
+              menuMessage,
+              weatherMessage,
+              ...messages
+            ]
+          })
+        }
+    );
+
+    const completion = await tamuResponse.json();
     const replyText = completion.choices[0].message.content;
     res.json({
       reply: {
