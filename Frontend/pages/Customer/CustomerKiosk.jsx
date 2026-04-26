@@ -1805,90 +1805,103 @@ function CustomerKiosk() {
       )}
 
       {chatOpen && (
-        <div className="chatbot-modal">
-          <div className="chatbot-header">
-            <span>Boba Buddy</span>
-            <button onClick={() => setChatOpen(false)}>x</button>
-          </div>
-          <div className="chatbot-messages">
-            {chatMessages.map((m, idx) => (
-              <div
-                key={idx}
-                className={`flex w-full ${
-                  m.role === "user" ? "justify-end" : "justify-start"
-                }`}
-              >
+        <div className="chatbot-overlay">
+          <div className="chatbot-window">
+
+            {/* CLOSE BUTTON */}
+            <button
+              className="chatbot-close-btn"
+              onClick={() => setChatOpen(false)}
+              aria-label="Close chatbot"
+            >
+              ✕
+            </button>
+
+            {/* MESSAGES */}
+            <div className="chatbot-messages">
+              {chatMessages.map((m, idx) => (
                 <div
-                  className={`flex max-w-[92%] items-end gap-2 ${
-                    m.role === "user" ? "flex-row-reverse" : "flex-row"
+                  key={idx}
+                  className={`flex w-full ${
+                    m.role === "user" ? "justify-end" : "justify-start"
                   }`}
                 >
                   <div
-                    className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs font-bold ${
-                      m.role === "user"
-                        ? "bg-[#f9d98a] text-[#5c3d2e]"
-                        : "bg-[#f2e2d3] text-[#5c3d2e]"
+                    className={`flex max-w-[92%] items-end gap-2 ${
+                      m.role === "user" ? "flex-row-reverse" : "flex-row"
                     }`}
-                    aria-hidden="true"
                   >
-                    {m.role === "user" ? "U" : "BB"}
-                  </div>
-
-                  <div className={`flex flex-col ${m.role === "user" ? "items-end" : "items-start"}`}>
-                    <span className="mb-1 text-xs font-semibold uppercase tracking-wide text-[#7b6b62]">
-                      {m.role === "user" ? "You" : "Boba Buddy"}
-                    </span>
                     <div
-                      className={`max-w-[82%] rounded-2xl px-3 py-2 text-sm leading-relaxed shadow-sm ${
+                      className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs font-bold ${
                         m.role === "user"
-                          ? "rounded-br-md bg-[#fff0ae] text-[#5c3d2e]"
-                          : "rounded-bl-md border border-[#f0dfcf] bg-white text-[#4e3a2f]"
+                          ? "bg-[#f9d98a] text-[#5c3d2e]"
+                          : "bg-[#f2e2d3] text-[#5c3d2e]"
                       }`}
                     >
-                      {m.content}
+                      {m.role === "user" ? "U" : "BB"}
                     </div>
-                  </div>
-                </div>
-              </div>
-            ))}
-            {chatLoading && (
-              <div className="flex w-full justify-start">
-                <div className="flex max-w-[92%] items-end gap-2">
-                  <div
-                    className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#f2e2d3] text-xs font-bold text-[#5c3d2e]"
-                    aria-hidden="true"
-                  >
-                    BB
-                  </div>
 
-                  <div className="flex flex-col items-start">
-                    <span className="mb-1 text-xs font-semibold uppercase tracking-wide text-[#7b6b62]">
-                      Boba Buddy
-                    </span>
-                    <div className="max-w-[82%] rounded-2xl rounded-bl-md border border-[#f0dfcf] bg-white px-3 py-2 text-sm leading-relaxed text-[#4e3a2f] shadow-sm">
-                      {t("Thinking of a drink for you...")}
+                    <div
+                      className={`flex flex-col ${
+                        m.role === "user" ? "items-end" : "items-start"
+                      }`}
+                    >
+                      <span className="mb-1 text-xs font-semibold uppercase tracking-wide text-[#7b6b62]">
+                        {m.role === "user" ? "You" : "Boba Buddy"}
+                      </span>
+
+                      <div
+                        className={`max-w-[82%] rounded-2xl px-3 py-2 text-sm leading-relaxed shadow-sm ${
+                          m.role === "user"
+                            ? "rounded-br-md bg-[#fff0ae] text-[#5c3d2e]"
+                            : "rounded-bl-md border border-[#f0dfcf] bg-white text-[#4e3a2f]"
+                        }`}
+                      >
+                        {m.content}
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            )}
-          </div>
-          <div className="chatbot-input">
-            <input
-              type="text"
-              value={chatInput}
-              onChange={(e) => setChatInput(e.target.value)}
-              placeholder={t(
-                "Tell me the weather, allergies, diet ..."
+              ))}
+
+              {chatLoading && (
+                <div className="flex w-full justify-start">
+                  <div className="flex max-w-[92%] items-end gap-2">
+                    <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#f2e2d3] text-xs font-bold text-[#5c3d2e]">
+                      BB
+                    </div>
+
+                    <div className="flex flex-col items-start">
+                      <span className="mb-1 text-xs font-semibold uppercase tracking-wide text-[#7b6b62]">
+                        Boba Buddy
+                      </span>
+                      <div className="max-w-[82%] rounded-2xl rounded-bl-md border border-[#f0dfcf] bg-white px-3 py-2 text-sm leading-relaxed text-[#4e3a2f] shadow-sm">
+                        {t("Thinking of a drink for you...")}
+                      </div>
+                    </div>
+                  </div>
+                </div>
               )}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") sendChatMessage();
-              }}
-            />
-            <button onClick={sendChatMessage}>{t("Send")}</button>
+            </div>
+
+            {/* INPUT BAR */}
+            <div className="chatbot-input-bar">
+              <input
+                type="text"
+                value={chatInput}
+                onChange={(e) => setChatInput(e.target.value)}
+                placeholder={t("Tell me the weather, allergies, diet ...")}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") sendChatMessage();
+                }}
+              />
+              <button onClick={sendChatMessage}>{t("Send")}</button>
+            </div>
+
           </div>
         </div>
       )}
+
     </div>
   );
 }
