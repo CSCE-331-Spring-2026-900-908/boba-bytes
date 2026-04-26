@@ -1303,7 +1303,7 @@ function CustomerKiosk() {
     .filter(Boolean)
     .join(", ");
   const weatherMessage =
-    getWeatherRecommendation() || "Checking today's weather...";
+    t(getWeatherRecommendation() || "Checking today's weather...");
 
   const sendChatMessage = async () => {
     const trimmed = chatInput.trim();
