@@ -1,4 +1,16 @@
+# existing
 fastapi==0.115.12
 uvicorn==0.34.2
 pydantic==2.11.4
+python-dotenv==1.0.1
+
+# LangGraph + LangChain core
+langgraph==0.3.25
+langchain-openai==0.3.14
+
+# Web search (pick one)
+tavily-python==0.5.0          # Tavily client itself
+
+# HTTP (needed by langchain internals, likely already transitive)
+httpx==0.28.1
 

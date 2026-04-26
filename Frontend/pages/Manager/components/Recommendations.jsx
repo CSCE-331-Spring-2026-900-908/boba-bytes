@@ -1,5 +1,8 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {API_BASE} from "../../../config/api";
+
+const RECOMMENDATIONS_STORAGE_KEY = "manager_recommendations_v1";
+const RECOMMENDATIONS_TTL_MS = 24 * 60 * 60 * 1000;
 
 const AGENT_SYSTEM_PROMPT = `You are a business intelligence agent for a boba tea shop manager. 
 Your job is to research and provide actionable recommendations. 
@@ -105,7 +108,7 @@ function LoadingDots() {
 function PricingSection({ data }) {
     return (
         <Card>
-            <SectionHeader icon="💰" title="Local Pricing Intelligence" subtitle={data.summary} />
+            <SectionHeader icon="" title="Local Pricing Intelligence" subtitle={data.summary} />
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 12 }}>
                 <div style={{ background: "#F1EFE8", borderRadius: 8, padding: "10px 14px" }}>
                     <div style={{ fontSize: 12, color: "#5F5E5A", marginBottom: 2 }}>Area avg. price</div>
@@ -131,7 +134,7 @@ function PricingSection({ data }) {
 function TrendsSection({ data }) {
     return (
         <Card>
-            <SectionHeader icon="📈" title="Trends & Buzz" subtitle={data.summary} />
+            <SectionHeader icon="" title="Trends & Buzz" subtitle={data.summary} />
             <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                 {data.items.map((item, i) => (
                     <div key={i} style={{
@@ -154,7 +157,7 @@ function TrendsSection({ data }) {
 function MenuSuggestionsSection({ data }) {
     return (
         <Card>
-            <SectionHeader icon="✨" title="Menu Suggestions" subtitle="AI-generated ideas based on current trends" />
+            <SectionHeader icon="" title="Menu Suggestions" subtitle="AI-generated ideas based on current trends" />
             <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
                 {data.map((item, i) => (
                     <div key={i} style={{
@@ -187,12 +190,36 @@ function Recommendations() {
     const [statusMsg, setStatusMsg] = useState("");
     const [data, setData] = useState(null);
     const [error, setError] = useState("");
+    const [isRestored, setIsRestored] = useState(false);
+
+    useEffect(() => {
+        const persisted = loadPersistedRecommendations();
+        if (!persisted) return;
+
+        setLocation(persisted.location || "");
+        setData(persisted.data || null);
+        setIsRestored(true);
+
+        if (persisted.status === "loading") {
+            setStatus("idle");
+            setError("Previous run was interrupted. Please run the agent again.");
+            return;
+        }
+
+        setStatus(persisted.status || "idle");
+        setError(persisted.error || "");
+    }, []);
+
+    useEffect(() => {
+        persistRecommendations({ location, status, data, error, savedAt: new Date().toISOString() });
+    }, [location, status, data, error]);
 
     const runAgent = async () => {
         if (!location.trim()) return;
         setStatus("loading");
         setError("");
         setData(null);
+        setIsRestored(false);
 
         const steps = [
             "Searching for local boba shops and prices...",
@@ -226,9 +253,9 @@ function Recommendations() {
                 const textBlock = result.content.find((b) => b.type === "text");
                 if (!textBlock) throw new Error("No text response from agent");
                 const clean = textBlock.text.replace(/```json|```/g, "").trim();
-                setData(JSON.parse(clean));
+                setData(normalizeRecommendationData(JSON.parse(clean)));
             } else {
-                setData(result);
+                setData(normalizeRecommendationData(result));
             }
             setStatus("done");
         } catch (err) {
@@ -321,6 +348,20 @@ function Recommendations() {
 
             {status === "done" && data && (
                 <>
+                    {isRestored && (
+                        <div style={{
+                            display: "inline-block",
+                            fontSize: 11,
+                            color: "#666",
+                            background: "#f5f5f5",
+                            border: "0.5px solid #e5e5e5",
+                            borderRadius: 999,
+                            padding: "3px 10px",
+                            marginBottom: 10,
+                        }}>
+                            Restored from previous session
+                        </div>
+                    )}
                     <div style={{ fontSize: 12, color: "#999", marginBottom: 14, textAlign: "right" }}>
                         Last updated: {new Date(data.lastUpdated).toLocaleString()}
                     </div>
@@ -331,7 +372,7 @@ function Recommendations() {
                     </div>
                     <div style={{ marginTop: 16, textAlign: "right" }}>
                         <button
-                            onClick={() => { setStatus("idle"); setData(null); }}
+                            onClick={() => { setStatus("idle"); setData(null); setError(""); setIsRestored(false); }}
                             style={{
                                 background: "none", border: "none", cursor: "pointer",
                                 fontSize: 13, color: "#999", padding: 0,
@@ -361,4 +402,63 @@ function Recommendations() {
     );
 }
 
+function loadPersistedRecommendations() {
+    try {
+        const raw = localStorage.getItem(RECOMMENDATIONS_STORAGE_KEY);
+        if (!raw) return null;
+
+        const parsed = JSON.parse(raw);
+        const savedAt = new Date(parsed?.savedAt || 0).getTime();
+
+        if (!savedAt || Date.now() - savedAt > RECOMMENDATIONS_TTL_MS) {
+            localStorage.removeItem(RECOMMENDATIONS_STORAGE_KEY);
+            return null;
+        }
+
+        return parsed;
+    } catch {
+        localStorage.removeItem(RECOMMENDATIONS_STORAGE_KEY);
+        return null;
+    }
+}
+
+function persistRecommendations(payload) {
+    try {
+        localStorage.setItem(RECOMMENDATIONS_STORAGE_KEY, JSON.stringify(payload));
+    } catch {
+        // Ignore storage failures so the UI still works.
+    }
+}
+
+function normalizeRecommendationData(raw) {
+    if (!raw || typeof raw !== "object") return raw;
+
+    const normalized = {
+        ...raw,
+        pricing: raw.pricing ? { ...raw.pricing } : raw.pricing,
+        menuSuggestions: Array.isArray(raw.menuSuggestions)
+            ? raw.menuSuggestions.map((item) => ({ ...item }))
+            : raw.menuSuggestions,
+    };
+
+    const cleanPrice = (value) => {
+        if (typeof value !== "string") return value;
+        return value.replace(/<\s*(\$[\d.,]+)\s*>/g, "$1").trim();
+    };
+
+    if (normalized.pricing?.avgPrice) {
+        normalized.pricing.avgPrice = cleanPrice(normalized.pricing.avgPrice);
+    }
+
+    if (Array.isArray(normalized.menuSuggestions)) {
+        normalized.menuSuggestions = normalized.menuSuggestions.map((item) => ({
+            ...item,
+            suggestedPrice: cleanPrice(item?.suggestedPrice),
+        }));
+    }
+
+    return normalized;
+}
+
 export default Recommendations;
+

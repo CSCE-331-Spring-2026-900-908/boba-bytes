@@ -3,11 +3,6 @@ import OpenAI from 'openai';
 
 const router = express.Router();
 
-const client = new OpenAI({
-  apiKey: process.env.TAMU_API_KEY,
-  baseURL: "https://chat-api.tamu.ai/openai"
-});
-
 async function getWeather() {
   try {
     const apiKey = process.env.WEATHER_API_KEY;
