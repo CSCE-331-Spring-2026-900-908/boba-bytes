@@ -13,9 +13,41 @@ const LANGUAGES = [
 ];
 
 const TRANSLATIONS = {
+  "All": {
+    es: "Todo", fr: "Tous", zh: "全部",
+    ja: "すべて", ko: "전체", vi: "Tất cả"
+  },
+  "Coffee": {
+    es: "Café", fr: "Café", zh: "咖啡",
+    ja: "コーヒー", ko: "커피", vi: "Cà phê"
+  },
+  "Seasonal":{
+    es:"Estacional",fr: "Saisonnier", zh: "季节性的",
+    ja: "季節の", ko: "계절의", vi: "Theo mùa"
+  },
+  "Special Tea":{
+    es:"Té especial",fr: "Thé spécial", zh: "特制茶",
+    ja: "特選茶", ko: "특별 차", vi: "Trà đặc biệt"
+  },
+  "Milk Tea": {
+    es: "Té con leche", fr: "Thé au lait", zh: "奶茶",
+    ja: "ミルクティー", ko: "밀크티", vi: "Trà sữa"
+  },
+  "Fruit Tea": {
+    es: "Té de fruta", fr: "Thé aux fruits", zh: "水果茶",
+    ja: "フルーツティー", ko: "과일차", vi: "Trà trái cây"
+  },
   "Boba Bytes": {
     es: "Boba Bytes", fr: "Boba Bytes", zh: "Boba Bytes",
     ja: "Boba Bytes", ko: "Boba Bytes", vi: "Boba Bytes"
+  },
+  "Boba Buddy": {
+    es: "Boba Buddy", fr: "Boba Buddy", zh: "Boba Buddy",
+    ja: "Boba Buddy", ko: "Boba Buddy", vi: "Boba Buddy"
+  },
+  "You": {
+    es: "Tú", fr: "Vous", zh: "你",
+    ja: "あなた", ko: "당신", vi: "Bạn"
   },
   "Text Size": {
     es: "Tamaño de Texto", fr: "Taille du texte", zh: "文字大小",
@@ -97,6 +129,10 @@ const TRANSLATIONS = {
     es: "Cancelar", fr: "Annuler", zh: "取消",
     ja: "キャンセル", ko: "취소", vi: "Hủy"
   },
+  "Language": {
+    es: "Idioma", fr: "Langue", zh: "语言",
+    ja: "言語", ko: "언어", vi: "Ngôn ngữ"
+  },
   "Send": {
     es: "Enviar", fr: "Envoyer", zh: "发送",
     ja: "送信", ko: "보내기", vi: "Gửi"
@@ -117,89 +153,78 @@ const TRANSLATIONS = {
     ko: "음료를 생각 중이에요...",
     vi: "Đang nghĩ đồ uống cho bạn..."
   },
-  "Order submitted successfully": {
-    es: "Pedido enviado con éxito",
-    fr: "Commande envoyée avec succès",
-    zh: "订单提交成功",
-    ja: "注文が送信されました",
-    ko: "주문이 완료되었습니다",
-    vi: "Đơn hàng đã gửi thành công"
+  "Checking today's weather...": {
+    es: "Comprobando el clima de hoy...",
+    fr: "Vérification de la météo d'aujourd'hui...",
+    zh: "正在查看今天的天气...",
+    ja: "今日の天気を確認しています...",
+    ko: "오늘 날씨를 확인 중입니다...",
+    vi: "Đang kiểm tra thời tiết hôm nay..."
   },
-  "Failed to submit order": {
-    es: "Error al enviar el pedido",
-    fr: "Échec de l'envoi de la commande",
-    zh: "订单提交失败",
-    ja: "注文の送信に失敗しました",
-    ko: "주문 전송 실패",
-    vi: "Gửi đơn hàng thất bại"
+  "It's hot today! Try a refreshing fruit tea like Mango Green Tea or Lychee Oolong.": {
+    es: "¡Hace calor hoy! Prueba un té de fruta refrescante como el té verde de mango o el oolong de lichi.",
+    fr: "Il fait chaud aujourd'hui ! Essayez un thé aux fruits rafraîchissant comme le thé vert à la mangue ou l'oolong au litchi.",
+    zh: "今天很热！试试清爽的水果茶，比如芒果绿茶或荔枝乌龙。",
+    ja: "今日は暑いですね！マンゴーグリーンティーやライチウーロンのような爽やかなフルーツティーがおすすめです。",
+    ko: "오늘은 덥네요! 망고 그린티나 리치 우롱 같은 시원한 과일차를 드셔보세요.",
+    vi: "Hôm nay trời nóng! Hãy thử trà trái cây mát lạnh như Trà xanh xoài hoặc Trà ô long vải."
   },
-  "Network error": {
-    es: "Error de red", fr: "Erreur réseau", zh: "网络错误",
-    ja: "ネットワークエラー", ko: "네트워크 오류", vi: "Lỗi mạng"
+  "It's chilly outside. A warm drink like Thai Milk Tea or Roasted Oolong Milk Tea would be perfect.": {
+    es: "Hace frío afuera. Una bebida caliente como el té tailandés con leche o el té oolong tostado con leche sería perfecta.",
+    fr: "Il fait frais dehors. Une boisson chaude comme le thé thaï au lait ou le thé au lait oolong torréfié serait parfaite.",
+    zh: "外面有点冷。泰式奶茶或烘焙乌龙奶茶这样的热饮会很合适。",
+    ja: "外は少し肌寒いです。タイミルクティーや焙煎ウーロンミルクティーのような温かい飲み物がぴったりです。",
+    ko: "밖이 쌀쌀하네요. 타이 밀크티나 로스팅 우롱 밀크티 같은 따뜻한 음료가 좋습니다.",
+    vi: "Bên ngoài hơi lạnh. Một thức uống ấm như Trà sữa Thái hoặc Trà sữa ô long rang sẽ rất hợp."
   },
-  "Language": {
-    es: "Idioma", fr: "Langue", zh: "语言",
-    ja: "言語", ko: "언어", vi: "Ngôn ngữ"
+  "Rainy weather calls for something cozy - maybe a Classic Milk Tea.": {
+    es: "El clima lluvioso pide algo reconfortante: quizá un té de leche clásico.",
+    fr: "Le temps pluvieux appelle quelque chose de réconfortant — peut-être un thé au lait classique.",
+    zh: "下雨天适合来点温暖舒适的饮品——也许是一杯经典奶茶。",
+    ja: "雨の日はほっとするものがいいですね。クラシックミルクティーはいかがでしょう。",
+    ko: "비 오는 날엔 포근한 음료가 좋죠 — 클래식 밀크티가 어울립니다.",
+    vi: "Trời mưa hợp với một món ấm cúng — có lẽ là Trà sữa cổ điển."
   },
-  "All": {
-    es: "Todos", fr: "Tout", zh: "全部",
-    ja: "すべて", ko: "전체", vi: "Tất cả"
+  "Weather looks nice today! Pick anything you like.": {
+    es: "¡El clima está agradable hoy! Elige lo que quieras.",
+    fr: "La météo est agréable aujourd'hui ! Choisissez ce que vous voulez.",
+    zh: "今天天气很好！随你喜欢点吧。",
+    ja: "今日はいい天気ですね！お好きなものをどうぞ。",
+    ko: "오늘 날씨가 좋네요! 원하는 걸 골라보세요.",
+    vi: "Hôm nay thời tiết đẹp! Hãy chọn món bạn thích."
   },
-  "Coffee": {
-    es: "Café", fr: "Café", zh: "咖啡",
-    ja: "コーヒー", ko: "커피", vi: "Cà phê"
+
+  "Unknown": {
+    es: "Desconocido", fr: "Inconnu", zh: "未知",
+    ja: "不明", ko: "알 수 없음", vi: "Không rõ"
   },
-  "Milk Tea": {
-    es: "Té con Leche", fr: "Thé au lait", zh: "奶茶",
-    ja: "ミルクティー", ko: "밀크티", vi: "Trà sữa"
+  "College Station, Texas": {
+    es: "College Station, Texas", fr: "College Station, Texas", zh: "德克萨斯州大学城",
+    ja: "テキサス州カレッジステーション", ko: "텍사스주 칼리지스테이션", vi: "College Station, Texas"
   },
-  "Seasonal": {
-    es: "De Temporada", fr: "Saisonnier", zh: "季节限定",
-    ja: "シーズン限定", ko: "시즌 한정", vi: "Theo mùa"
+  "College Station Texas": {
+    es: "College Station, Texas", fr: "College Station, Texas", zh: "德克萨斯州大学城",
+    ja: "テキサス州カレッジステーション", ko: "텍사스주 칼리지스테이션", vi: "College Station, Texas"
   },
-  "Special Tea": {
-    es: "Té Especial", fr: "Thé spécial", zh: "特色茶",
-    ja: "スペシャルティー", ko: "스페셜 티", vi: "Trà đặc biệt"
+  "College, Station Texas": {
+    es: "College Station, Texas", fr: "College Station, Texas", zh: "德克萨斯州大学城",
+    ja: "テキサス州カレッジステーション", ko: "텍사스주 칼리지스테이션", vi: "College Station, Texas"
   },
-  "Category": {
-    es: "Categoría", fr: "Catégorie", zh: "类别",
-    ja: "カテゴリー", ko: "카테고리", vi: "Danh mục"
+  "College Station": {
+    es: "College Station", fr: "College Station", zh: "College Station",
+    ja: "College Station", ko: "College Station", vi: "College Station"
   },
-  "Select category": {
-    es: "Seleccionar categoría", fr: "Sélectionner la catégorie", zh: "选择类别",
-    ja: "カテゴリーを選択", ko: "카테고리 선택", vi: "Chọn danh mục"
+  "Feels": {
+    es: "Sensación", fr: "Ressenti", zh: "体感",
+    ja: "体感", ko: "체감", vi: "Cảm giác"
   },
-  "Add": {
-    es: "Agregar", fr: "Ajouter", zh: "添加",
-    ja: "追加", ko: "추가", vi: "Thêm"
+  "Humidity": {
+    es: "Humedad", fr: "Humidité", zh: "湿度",
+    ja: "湿度", ko: "습도", vi: "Độ ẩm"
   },
-  "to cart": {
-    es: "al carrito", fr: "au panier", zh: "到购物车",
-    ja: "をカートに", ko: "장바구니에", vi: "vào giỏ hàng"
-  },
-  "Duplicate": {
-    es: "Duplicar", fr: "Dupliquer", zh: "复制",
-    ja: "複製", ko: "복제", vi: "Nhân đôi"
-  },
-  "Remove": {
-    es: "Quitar", fr: "Retirer", zh: "移除",
-    ja: "削除", ko: "제거", vi: "Xóa"
-  },
-  "Sorry, I had trouble answering. Please try again.": {
-    es: "Lo siento, tuve problemas para responder. Inténtalo de nuevo.",
-    fr: "Désolé, j'ai eu du mal à répondre. Veuillez réessayer.",
-    zh: "抱歉，我无法回答，请再试一次。",
-    ja: "申し訳ありません、回答できませんでした。もう一度お試しください。",
-    ko: "죄송합니다. 답변에 어려움이 있었습니다. 다시 시도해주세요.",
-    vi: "Xin lỗi, tôi không thể trả lời. Vui lòng thử lại."
-  },
-  "Hi, I am Boba Buddy! Tell me the weather, any allergies or diet needs, and I will recommend a drink.": {
-    es: "¡Hola, soy Boba Buddy! Dime el clima, alergias o necesidades dietéticas y te recomendaré una bebida.",
-    fr: "Bonjour, je suis Boba Buddy ! Dites-moi la météo, vos allergies ou régimes, et je vous recommanderai une boisson.",
-    zh: "你好，我是 Boba Buddy！告诉我天气、过敏或饮食需求，我会推荐一款饮品。",
-    ja: "こんにちは、Boba Buddyです！天気、アレルギー、食事制限を教えてください。おすすめのドリンクを提案します。",
-    ko: "안녕하세요, 저는 Boba Buddy예요! 날씨, 알레르기, 식단을 알려주시면 음료를 추천해 드릴게요.",
-    vi: "Xin chào, tôi là Boba Buddy! Cho tôi biết thời tiết, dị ứng hoặc chế độ ăn, tôi sẽ giới thiệu đồ uống phù hợp."
+  "Wind": {
+    es: "Viento", fr: "Vent", zh: "风速",
+    ja: "風", ko: "바람", vi: "Gió"
   },
 
   // Drink names
@@ -566,6 +591,8 @@ function CustomerKiosk() {
     return TRANSLATIONS[key]?.[language] || key;
   };
 
+  const translateText = (value) => (typeof value === "string" ? t(value) : value);
+
   const [menuItems, setMenuItems] = useState([]);
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("All");
@@ -787,8 +814,26 @@ function CustomerKiosk() {
           ];
         }
 
+        const CATEGORY_LABELS = {
+          all: "All",
+          coffee: "Coffee",
+          "milk tea": "Milk Tea",
+          "fruit tea": "Fruit Tea",
+          seasonal: "Seasonal",
+          "seasonal tea": "Seasonal Tea",
+          "special tea": "Special Tea",
+          special: "Special Tea",
+          toppings: "Toppings",
+        };
+
+        const normalizedCategories = ["All", ...cats.filter((c) => c !== "Toppings")];
         setMenuItems(items);
-        setCategories(["All", ...cats.filter((c) => c !== "Toppings")]);
+        setCategories(
+          normalizedCategories.map((cat) => {
+            const key = String(cat).trim().toLowerCase();
+            return CATEGORY_LABELS[key] || cat;
+          })
+        );
       } catch (error) {
         alert(t("Network error"));
       } finally {
@@ -1223,7 +1268,7 @@ function CustomerKiosk() {
     }
 
     if (weather.condition === "Rain") {
-      return "Rainy weather calls for something cozy — maybe a Classic Milk Tea.";
+      return "Rainy weather calls for something cozy - maybe a Classic Milk Tea.";
     }
 
     return "Weather looks nice today! Pick anything you like.";
@@ -1239,7 +1284,7 @@ function CustomerKiosk() {
     return "🌤️";
   };
 
-  const weatherCondition = weather?.condition || "Unknown";
+  const weatherCondition = weather?.condition || t("Unknown");
   const weatherTemp = Number.isFinite(Number(weather?.temp))
     ? `${Math.round(Number(weather.temp))}F`
     : "--F";
@@ -1252,13 +1297,17 @@ function CustomerKiosk() {
   const weatherWind = Number.isFinite(Number(weather?.raw?.wind?.speed))
     ? `${Number(weather.raw.wind.speed).toFixed(1)} mph`
     : "--";
-  const weatherDescription =
-    weather?.raw?.weather?.[0]?.description || weatherCondition;
-  const weatherLocation = [weather?.raw?.name, weather?.raw?.sys?.country]
+  const weatherLocationRaw = [weather?.raw?.name, weather?.raw?.sys?.country]
     .filter(Boolean)
     .join(", ");
+  const weatherLocationKey = String(weatherLocationRaw || "College Station, Texas")
+    .replace(/\s+/g, " ")
+    .replace(/\s*,\s*/g, ", ")
+    .replace(/\bCollege\s*,\s*Station\b/i, "College Station")
+    .trim();
+  const weatherLocation = weatherLocationKey || "College Station, Texas";
   const weatherMessage =
-    getWeatherRecommendation() || "Checking today's weather...";
+    translateText(getWeatherRecommendation() || "Checking today's weather...");
 
   const sendChatMessage = async () => {
     const trimmed = chatInput.trim();
@@ -1278,7 +1327,7 @@ function CustomerKiosk() {
       if (rec) {
         setChatMessages((prev) => [
           ...prev,
-          { role: "assistant", content: rec },
+          { role: "assistant", content: translateText(rec) },
         ]);
       }
     }
@@ -1296,7 +1345,14 @@ function CustomerKiosk() {
       const data = await res.json();
 
       if (data && data.reply) {
-        setChatMessages((prev) => [...prev, data.reply]);
+        const replyText =
+          typeof data.reply === "string" ? data.reply : data.reply.content;
+        setChatMessages((prev) => [
+          ...prev,
+          typeof data.reply === "string"
+            ? { role: "assistant", content: translateText(data.reply) }
+            : { ...data.reply, content: translateText(replyText) },
+        ]);
       }
     } catch (e) {
       setChatMessages((prev) => [
@@ -1503,10 +1559,7 @@ function CustomerKiosk() {
 
               <div className="min-w-0 flex-1">
                 <div className="text-xs font-semibold uppercase tracking-wide text-[#8a5e4b]">
-                  {weatherLocation || "College Station"}
-                </div>
-                <div className="text-sm font-bold leading-tight lg:text-base">
-                  {weatherDescription}
+                  {t(weatherLocation)}
                 </div>
                 <div className="text-2xl font-extrabold leading-none text-[#5c3d2e] lg:text-3xl">
                   {weatherTemp}
@@ -1514,9 +1567,9 @@ function CustomerKiosk() {
               </div>
 
               <div className="flex flex-col items-end gap-1 text-right text-[0.65rem] font-semibold text-[#6f4a3a] lg:text-xs">
-                <div>Feels {weatherFeelsLike}</div>
-                <div>Humidity {weatherHumidity}</div>
-                <div>Wind {weatherWind}</div>
+                <div>{t("Feels")} {weatherFeelsLike}</div>
+                <div>{t("Humidity")} {weatherHumidity}</div>
+                <div>{t("Wind")} {weatherWind}</div>
               </div>
             </div>
 
@@ -1807,7 +1860,7 @@ function CustomerKiosk() {
       {chatOpen && (
         <div className="chatbot-modal">
           <div className="chatbot-header">
-            <span>Boba Buddy</span>
+            <span>{t("Boba Buddy")}</span>
             <button onClick={() => setChatOpen(false)}>x</button>
           </div>
           <div className="chatbot-messages">
@@ -1836,7 +1889,7 @@ function CustomerKiosk() {
 
                   <div className={`flex flex-col ${m.role === "user" ? "items-end" : "items-start"}`}>
                     <span className="mb-1 text-xs font-semibold uppercase tracking-wide text-[#7b6b62]">
-                      {m.role === "user" ? "You" : "Boba Buddy"}
+                      {m.role === "user" ? t("You") : t("Boba Buddy")}
                     </span>
                     <div
                       className={`max-w-[82%] rounded-2xl px-3 py-2 text-sm leading-relaxed shadow-sm ${
@@ -1845,7 +1898,7 @@ function CustomerKiosk() {
                           : "rounded-bl-md border border-[#f0dfcf] bg-white text-[#4e3a2f]"
                       }`}
                     >
-                      {m.content}
+                      {m.role === "user" ? m.content : translateText(m.content)}
                     </div>
                   </div>
                 </div>
