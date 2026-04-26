@@ -1,7 +1,7 @@
 import express from 'express';
 
 const router = express.Router();
-const FASTAPI_BASE_URL = ("stellar-commitment-production-af7c.up.railway.app");
+const FASTAPI_BASE_URL = ("https://stellar-commitment-production-af7c.up.railway.app/recommend");
 const FASTAPI_TIMEOUT_MS = Number.parseInt(process.env.FASTAPI_TIMEOUT_MS || "25000", 10);
 
 router.post("/", async (req, res) => {
