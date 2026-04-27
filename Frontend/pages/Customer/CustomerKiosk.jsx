@@ -105,6 +105,22 @@ const TRANSLATIONS = {
     es: "Tamaño", fr: "Taille", zh: "尺寸",
     ja: "サイズ", ko: "크기", vi: "Cỡ"
   },
+  "Temperature": {
+    es: "Temperatura", fr: "Température", zh: "温度",
+    ja: "温度", ko: "온도", vi: "Nhiệt độ"
+  },
+  "Hot": {
+    es: "Caliente", fr: "Chaud", zh: "热",
+    ja: "ホット", ko: "핫", vi: "Nóng"
+  },
+  "Cold": {
+    es: "Frío", fr: "Froid", zh: "冷",
+    ja: "コールド", ko: "차가움", vi: "Lạnh"
+  },
+  "Edit": {
+    es: "Editar", fr: "Modifier", zh: "编辑",
+    ja: "編集", ko: "수정", vi: "Sửa"
+  },
   "Ice": {
     es: "Hielo", fr: "Glace", zh: "冰量",
     ja: "氷", ko: "얼음", vi: "Đá"
@@ -607,6 +623,7 @@ function CustomerKiosk() {
   const [currentDrink, setCurrentDrink] = useState(null);
   const [editingIndex, setEditingIndex] = useState(null);
   const [selectedSize, setSelectedSize] = useState(null);
+  const [selectedHotness, setSelectedHotness] = useState(null);
   const [selectedIce, setSelectedIce] = useState(null);
   const [selectedSugar, setSelectedSugar] = useState(null);
   const [selectedToppings, setSelectedToppings] = useState([]);
@@ -942,6 +959,7 @@ function CustomerKiosk() {
     return (
       a.menu_item_id === b.menu_item_id &&
       a.size === b.size &&
+      a.hotness === b.hotness &&
       a.ice === b.ice &&
       a.sugar === b.sugar &&
       JSON.stringify(aT) === JSON.stringify(bT)
@@ -955,11 +973,13 @@ function CustomerKiosk() {
     if (index !== null) {
       const existing = cart[index];
       setSelectedSize(existing.size);
+      setSelectedHotness(existing.hotness || "Cold");
       setSelectedIce(existing.ice);
       setSelectedSugar(existing.sugar);
       setSelectedToppings(existing.toppings || []);
     } else {
       setSelectedSize(null);
+      setSelectedHotness("Cold");
       setSelectedIce(null);
       setSelectedSugar(null);
       setSelectedToppings([]);
@@ -1000,7 +1020,11 @@ function CustomerKiosk() {
       item_name: currentDrink.item_name,
       item_type: currentDrink.item_type,
       size: selectedSize || "Medium",
-      ice: selectedIce || "Regular Ice",
+      hotness: selectedHotness || "Cold",
+      ice:
+        (selectedHotness || "Cold") === "Hot"
+          ? "No Ice"
+          : selectedIce || "Regular Ice",
       sugar: selectedSugar || "100%",
       toppings: selectedToppings,
       quantity: editingIndex !== null ? cart[editingIndex].quantity : 1,
@@ -1612,7 +1636,10 @@ function CustomerKiosk() {
           ))}
         </div>
 
-        <div className="cart-sidebar" aria-live="polite">
+        <div
+          className={`cart-sidebar ${cart.length === 0 ? "is-empty" : ""}`}
+          aria-live="polite"
+        >
           <h2>
             {t("Your Cart")} ({cart.length})
           </h2>
@@ -1632,10 +1659,7 @@ function CustomerKiosk() {
                     editingIndex === index ? "editing" : ""
                   }`}
                 >
-                  <div
-                    style={{ flex: 1 }}
-                    onClick={() => openCustomization(item, index)}
-                  >
+                  <div style={{ flex: 1 }}>
                     <div>
                       <span>{getTranslatedDrinkName(item)}</span>
                       <span className="qty">
@@ -1648,8 +1672,13 @@ function CustomerKiosk() {
                         {t("Size")}: {item.size}
                       </div>
                       <div>
-                        {t("Ice")}: {item.ice}
+                        {t("Temperature")}: {t(item.hotness || "Cold")}
                       </div>
+                      {(item.hotness || "Cold") !== "Hot" && (
+                        <div>
+                          {t("Ice")}: {item.ice}
+                        </div>
+                      )}
                       <div>
                         {t("Sugar")}: {item.sugar}
                       </div>
@@ -1663,41 +1692,53 @@ function CustomerKiosk() {
                     </div>
                   </div>
                   <div className="cart-item-right">
-                    <span>
+                    <span className="cart-item-price">
                       ${(perDrink * item.quantity).toFixed(2)}
                     </span>
-                    <button
-                      onClick={() => {
-                        duplicateDrink(item.cart_item_id);
-                        speak(
-                          `${t("Duplicate")} ${getTranslatedDrinkName(
-                            item
-                          )}`
-                        );
-                      }}
-                      className="remove-btn"
-                      aria-label={`${t("Duplicate")} ${getTranslatedDrinkName(
-                        item
-                      )}`}
-                    >
-                      +
-                    </button>
-                    <button
-                      onClick={() => {
-                        removeFromCart(item.cart_item_id);
-                        speak(
-                          `${t("Remove")} ${getTranslatedDrinkName(
-                            item
-                          )}`
-                        );
-                      }}
-                      className="remove-btn"
-                      aria-label={`${t("Remove")} ${getTranslatedDrinkName(
-                        item
-                      )}`}
-                    >
-                      ×
-                    </button>
+                    <div className="cart-item-actions">
+                      <button
+                        onClick={() => {
+                          openCustomization(item, index);
+                          speak(`${t("Edit")} ${getTranslatedDrinkName(item)}`);
+                        }}
+                        className="edit-btn"
+                        aria-label={`${t("Edit")} ${getTranslatedDrinkName(item)}`}
+                      >
+                        {t("Edit")}
+                      </button>
+                      <button
+                        onClick={() => {
+                          duplicateDrink(item.cart_item_id);
+                          speak(
+                            `${t("Duplicate")} ${getTranslatedDrinkName(
+                              item
+                            )}`
+                          );
+                        }}
+                        className="remove-btn"
+                        aria-label={`${t("Duplicate")} ${getTranslatedDrinkName(
+                          item
+                        )}`}
+                      >
+                        +
+                      </button>
+                      <button
+                        onClick={() => {
+                          removeFromCart(item.cart_item_id);
+                          speak(
+                            `${t("Remove")} ${getTranslatedDrinkName(
+                              item
+                            )}`
+                          );
+                        }}
+                        className="remove-btn"
+                        aria-label={`${t("Remove")} ${getTranslatedDrinkName(
+                          item
+                        )}`}
+                      >
+                        ×
+                      </button>
+                    </div>
                   </div>
                 </div>
               );
@@ -1750,35 +1791,59 @@ function CustomerKiosk() {
             </div>
 
             <div className="custom-section">
-              <label>{t("Ice")}</label>
+              <label>{t("Temperature")}</label>
               <div className="option-group">
-                {[
-                  "No Ice",
-                  "Less Ice",
-                  "Regular Ice",
-                  "Extra Ice",
-                ].map((i) => (
+                {["Cold", "Hot"].map((temp) => (
                   <button
-                    key={i}
+                    key={temp}
                     className={`option-btn ${
-                      selectedIce === i ? "active" : ""
+                      selectedHotness === temp ? "active" : ""
                     }`}
                     onClick={() => {
-                      setSelectedIce(i);
-                      speak(`${t("Ice")}: ${i}`);
+                      setSelectedHotness(temp);
+                      if (temp === "Hot") setSelectedIce("No Ice");
+                      speak(`${t("Temperature")}: ${t(temp)}`);
                     }}
-                    aria-label={`${t("Ice")}: ${i}`}
+                    aria-label={`${t("Temperature")}: ${t(temp)}`}
                   >
-                    {i}
+                    {t(temp)}
                   </button>
                 ))}
               </div>
             </div>
 
+            {selectedHotness !== "Hot" && (
+              <div className="custom-section">
+                <label>{t("Ice")}</label>
+                <div className="option-group">
+                  {[
+                    "No Ice",
+                    "Less Ice",
+                    "Regular Ice",
+                    "Extra Ice",
+                  ].map((i) => (
+                    <button
+                      key={i}
+                      className={`option-btn ${
+                        selectedIce === i ? "active" : ""
+                      }`}
+                      onClick={() => {
+                        setSelectedIce(i);
+                        speak(`${t("Ice")}: ${i}`);
+                      }}
+                      aria-label={`${t("Ice")}: ${i}`}
+                    >
+                      {i}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
             <div className="custom-section">
               <label>{t("Sugar")}</label>
               <div className="option-group">
-                {["0%", "25%", "50%", "75%", "100%"].map((s) => (
+                {["0%", "25%", "50%", "75%", "100%", "125%", "150%"].map((s) => (
                   <button
                     key={s}
                     className={`option-btn ${
