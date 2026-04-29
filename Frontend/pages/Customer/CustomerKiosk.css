@@ -856,6 +856,65 @@
 .size-btn:active {
   transform: scale(0.95);
 }
+/* Visually hidden but accessible to screen readers */
+.sr-only {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+/* Make focusable regions show a visible focus ring for keyboard users */
+.category-bar:focus,
+.menu-grid:focus,
+.cart-sidebar:focus,
+.top-banner:focus {
+  outline: 3px solid #2563eb; /* blue focus ring; adjust to match your design */
+  outline-offset: 2px;
+}
+
+/* Basic layout helpers (adjust to your design system) */
+.customer-kiosk-root {
+  display: grid;
+  grid-template-columns: 1fr 320px; /* main + cart sidebar */
+  gap: 16px;
+  align-items: start;
+  padding: 16px;
+}
+
+.menu-grid {
+  max-height: 60vh;
+  overflow-y: auto;
+  padding: 8px;
+}
+
+.category-bar {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 8px 0;
+}
+
+.cart-sidebar {
+  background: #fff;
+  border-radius: 12px;
+  padding: 12px;
+  border: 1px solid #ececec;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+button:focus,
+a:focus {
+  outline: 3px solid #2563eb;
+  outline-offset: 2px;
+}
+
 
 @keyframes cartEditPulse {
   0% {

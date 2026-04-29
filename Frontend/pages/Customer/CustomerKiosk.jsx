@@ -597,6 +597,7 @@ const TRANSLATIONS = {
   }
 };
 
+
 function CustomerKiosk() {
   const [language, setLanguage] = useState("en");
   const [languageMenuOpen, setLanguageMenuOpen] = useState(false);
@@ -604,10 +605,11 @@ function CustomerKiosk() {
 
   const t = (key) => {
     if (language === "en") return key;
-    return TRANSLATIONS[key]?.[language] || key;
+    return (TRANSLATIONS[key] && TRANSLATIONS[key][language]) || key;
   };
 
-  const translateText = (value) => (typeof value === "string" ? t(value) : value);
+  const translateText = (value) =>
+    typeof value === "string" ? t(value) : value;
 
   const [menuItems, setMenuItems] = useState([]);
   const [categories, setCategories] = useState([]);
@@ -810,8 +812,8 @@ function CustomerKiosk() {
   };
 
   const getToppingPriceByName = (name) => {
-    const t = TOPPINGS.find((x) => x.name === name);
-    return t ? t.price : 0;
+    const tTop = TOPPINGS.find((x) => x.name === name);
+    return tTop ? tTop.price : 0;
   };
 
   // Load menu
@@ -826,7 +828,7 @@ function CustomerKiosk() {
         if (!cats || cats.length === 0) {
           cats = [
             ...new Set(
-              items.map((item) => item.item_type).filter(Boolean)
+              items.map((item) => item.item_type).filter((x) => !!x)
             ),
           ];
         }
@@ -843,7 +845,11 @@ function CustomerKiosk() {
           toppings: "Toppings",
         };
 
-        const normalizedCategories = ["All", ...cats.filter((c) => c !== "Toppings")];
+        const normalizedCategories = [
+          "All",
+          ...cats.filter((c) => c !== "Toppings"),
+        ];
+
         setMenuItems(items);
         setCategories(
           normalizedCategories.map((cat) => {
@@ -857,6 +863,7 @@ function CustomerKiosk() {
         setLoading(false);
       }
     }
+
     loadMenu();
   }, []);
 
@@ -890,7 +897,6 @@ function CustomerKiosk() {
       const touch = e.touches[0];
       startX = touch.clientX;
       startY = touch.clientY;
-
       holdTimer = setTimeout(() => {
         const item = filteredItems[focusIndex];
         if (item) {
@@ -908,7 +914,6 @@ function CustomerKiosk() {
 
       const absX = Math.abs(dx);
       const absY = Math.abs(dy);
-
       if (absX < 30 && absY < 30) return;
 
       if (absX > absY) {
@@ -969,7 +974,6 @@ function CustomerKiosk() {
   const openCustomization = (item, index = null) => {
     setCurrentDrink(item);
     setEditingIndex(index);
-
     if (index !== null) {
       const existing = cart[index];
       setSelectedSize(existing.size);
@@ -984,7 +988,6 @@ function CustomerKiosk() {
       setSelectedSugar(null);
       setSelectedToppings([]);
     }
-
     setCustomModalOpen(true);
   };
 
@@ -995,7 +998,8 @@ function CustomerKiosk() {
 
   const computeToppingsCostPerDrink = (toppings) =>
     (toppings || []).reduce((sum, topping) => {
-      const toppingName = typeof topping === "string" ? topping : topping?.name;
+      const toppingName =
+        typeof topping === "string" ? topping : topping?.name;
       const rawPrice =
         typeof topping === "object" && topping !== null
           ? topping.price ?? getToppingPriceByName(toppingName)
@@ -1005,7 +1009,8 @@ function CustomerKiosk() {
     }, 0);
 
   const saveDrink = () => {
-    const rawBasePrice = currentDrink?.base_cost ?? currentDrink?.item_cost;
+    const rawBasePrice =
+      currentDrink?.base_cost ?? currentDrink?.item_cost ?? 0;
     const basePrice = Number.isFinite(Number(rawBasePrice))
       ? Number(rawBasePrice)
       : 0;
@@ -1088,7 +1093,6 @@ function CustomerKiosk() {
   const submitOrder = async () => {
     if (cart.length === 0) return;
     speak(t("Order submitted successfully"));
-
     try {
       const response = await fetch(`${API_BASE}/orders`, {
         method: "POST",
@@ -1102,7 +1106,6 @@ function CustomerKiosk() {
           total: totalPrice,
         }),
       });
-
       if (response.ok) {
         alert(t("Order submitted successfully"));
         setCart([]);
@@ -1167,6 +1170,7 @@ function CustomerKiosk() {
           speak(`${t("Category")}: ${t(cat)}`);
           return;
         }
+
         if (activeItem > 0) {
           const prev = activeItem - 1;
           setFocusIndex(prev);
@@ -1177,10 +1181,7 @@ function CustomerKiosk() {
 
       if (e.key === "ArrowRight") {
         e.preventDefault();
-        if (
-          activeCategory !== -1 &&
-          activeCategory < totalCategories - 1
-        ) {
+        if (activeCategory !== -1 && activeCategory < totalCategories - 1) {
           const nextCat = activeCategory + 1;
           categoryRefs.current[nextCat]?.focus();
           const cat = categories[nextCat];
@@ -1282,66 +1283,71 @@ function CustomerKiosk() {
 
   const getWeatherRecommendation = () => {
     if (!weather) return null;
-
     if (weather.temp >= 85) {
       return "It's hot today! Try a refreshing fruit tea like Mango Green Tea or Lychee Oolong.";
     }
-
     if (weather.temp <= 50) {
       return "It's chilly outside. A warm drink like Thai Milk Tea or Roasted Oolong Milk Tea would be perfect.";
     }
-
     if (weather.condition === "Rain") {
-      return "Rainy weather calls for something cozy — maybe a Classic Milk Tea.";
+      return "Rainy weather calls for something cozy - maybe a Classic Milk Tea.";
     }
-
     return "Weather looks nice today! Pick anything you like.";
   };
 
   const getWeatherIcon = (condition = "") => {
     const normalized = String(condition).toLowerCase();
-    if (normalized.includes("rain") || normalized.includes("drizzle")) return "🌧️";
-    if (normalized.includes("snow")) return "❄️";
-    if (normalized.includes("storm") || normalized.includes("thunder")) return "⛈️";
-    if (normalized.includes("cloud")) return "☁️";
-    if (normalized.includes("clear") || normalized.includes("sun")) return "☀️";
+    if (normalized.includes("rain") || normalized.includes("drizzle")) {
+      return "🌧️";
+    }
+    if (normalized.includes("snow")) {
+      return "❄️";
+    }
+    if (normalized.includes("storm") || normalized.includes("thunder")) {
+      return "⛈️";
+    }
+    if (normalized.includes("cloud")) {
+      return "☁️";
+    }
+    if (normalized.includes("clear") || normalized.includes("sun")) {
+      return "☀️";
+    }
     return "🌤️";
   };
 
   const weatherCondition = weather?.condition || "Unknown";
   const weatherTemp = Number.isFinite(Number(weather?.temp))
-    ? `${Math.round(Number(weather.temp))}F`
-    : "--F";
-  const weatherFeelsLike = Number.isFinite(Number(weather?.raw?.main?.feels_like))
-    ? `${Math.round(Number(weather.raw.main.feels_like))}F`
+    ? `${Math.round(Number(weather.temp))} F`
+    : "-- F";
+  const weatherFeelsLike = Number.isFinite(
+    Number(weather?.raw?.main?.feels_like)
+  )
+    ? `${Math.round(Number(weather.raw.main.feels_like))} F`
     : "--";
-  const weatherHumidity = Number.isFinite(Number(weather?.raw?.main?.humidity))
+  const weatherHumidity = Number.isFinite(
+    Number(weather?.raw?.main?.humidity)
+  )
     ? `${Math.round(Number(weather.raw.main.humidity))}%`
     : "--";
   const weatherWind = Number.isFinite(Number(weather?.raw?.wind?.speed))
     ? `${Number(weather.raw.wind.speed).toFixed(1)} mph`
     : "--";
-  const weatherDescription =
-    weather?.raw?.weather?.[0]?.description || weatherCondition;
   const weatherLocation = [weather?.raw?.name, weather?.raw?.sys?.country]
     .filter(Boolean)
     .join(", ");
-  const weatherMessage =
-    t(getWeatherRecommendation() || "Checking today's weather...");
+  const weatherMessage = t(
+    getWeatherRecommendation() || "Checking today's weather..."
+  );
 
   const sendChatMessage = async () => {
     const trimmed = chatInput.trim();
     if (!trimmed) return;
-
-    const newMessages = [
-      ...chatMessages,
-      { role: "user", content: trimmed },
-    ];
+    const newMessages = [...chatMessages, { role: "user", content: trimmed }];
     setChatMessages(newMessages);
     setChatInput("");
     setChatLoading(true);
 
-    // If user mentions weather, answer immediately with weather-based suggestion
+    // quick weather-based suggestion
     if (trimmed.toLowerCase().includes("weather")) {
       const rec = getWeatherRecommendation();
       if (rec) {
@@ -1361,9 +1367,7 @@ function CustomerKiosk() {
           menu: menuItems,
         }),
       });
-
       const data = await res.json();
-
       if (data && data.reply) {
         setChatMessages((prev) => [...prev, data.reply]);
       }
@@ -1387,7 +1391,11 @@ function CustomerKiosk() {
   }
 
   return (
-    <div className="kiosk-container" style={{ "--scale": fontScale }}>
+    <div
+      className="kiosk-container"
+      style={{ "--scale": fontScale }}
+      aria-live="polite"
+    >
       <header className="kiosk-top-header">
         <div className="kiosk-header-small">
           <img
@@ -1396,9 +1404,14 @@ function CustomerKiosk() {
             className="kiosk-logo ml-5 h-20 w-auto max-w-45 rounded-2xl border border-[#ecddd0] bg-white/90 p-1 shadow-md object-contain"
           />
           <div className="kiosk-header-actions">
-            <div className="category-bar">
+            <div
+              className="category-bar"
+              role="tablist"
+              aria-label={t("Drink categories")}
+            >
               {categories.map((cat, index) => {
                 const label = t(cat);
+                const isActive = selectedCategory === cat;
                 return (
                   <button
                     key={cat ?? index}
@@ -1409,8 +1422,10 @@ function CustomerKiosk() {
                       speak(`${t("Category")}: ${label}`);
                     }}
                     className={`category-btn ${
-                      selectedCategory === cat ? "active" : ""
+                      isActive ? "active" : ""
                     }`}
+                    role="tab"
+                    aria-selected={isActive}
                     aria-label={`${t("Select category")} ${label}`}
                   >
                     {label}
@@ -1419,7 +1434,7 @@ function CustomerKiosk() {
               })}
             </div>
 
-            <div className="accessibility-bar">
+            <div className="accessibility-bar" aria-label={t("Accessibility controls")}>
               <label>{t("Text Size")}:</label>
 
               <button
@@ -1443,17 +1458,18 @@ function CustomerKiosk() {
               </button>
 
               <button
-                className={`access-btn ${
-                  speakMode ? "active" : ""
-                }`}
+                className={`access-btn ${speakMode ? "active" : ""}`}
                 onClick={() => {
                   const nextSpeakMode = !speakMode;
                   setSpeakMode(nextSpeakMode);
                   speak(
-                    nextSpeakMode ? t("Speaker On") : t("Speaker Off"),
-                    true
+                    nextSpeakMode ? t("Speaker On") : t("Speaker Off")
                   );
                 }}
+                aria-pressed={speakMode}
+                aria-label={
+                  speakMode ? t("Speaker On") : t("Speaker Off")
+                }
               >
                 {speakMode ? t("Speaker On") : t("Speaker Off")}
               </button>
@@ -1463,11 +1479,16 @@ function CustomerKiosk() {
                   keyboardMode ? "active" : ""
                 }`}
                 onClick={() => {
-                  setKeyboardMode(!keyboardMode);
+                  const next = !keyboardMode;
+                  setKeyboardMode(next);
                   speak(
-                    !keyboardMode ? t("Keyboard On") : t("Keyboard Off")
+                    next ? t("Keyboard On") : t("Keyboard Off")
                   );
                 }}
+                aria-pressed={keyboardMode}
+                aria-label={
+                  keyboardMode ? t("Keyboard On") : t("Keyboard Off")
+                }
               >
                 {keyboardMode ? t("Keyboard On") : t("Keyboard Off")}
               </button>
@@ -1491,8 +1512,9 @@ function CustomerKiosk() {
                 >
                   {(() => {
                     const current =
-                      LANGUAGES.find((l) => l.code === language) ||
-                      LANGUAGES[0];
+                      LANGUAGES.find(
+                        (l) => l.code === language
+                      ) || LANGUAGES[0];
                     return (
                       <>
                         <img
@@ -1517,8 +1539,13 @@ function CustomerKiosk() {
                     );
                   })()}
                 </button>
+
                 {languageMenuOpen && (
-                  <ul className="language-menu" role="listbox">
+                  <ul
+                    className="language-menu"
+                    role="listbox"
+                    aria-label={t("Select language")}
+                  >
                     {LANGUAGES.map((lang) => (
                       <li
                         key={lang.code}
@@ -1533,7 +1560,10 @@ function CustomerKiosk() {
                           setLanguageMenuOpen(false);
                         }}
                         onKeyDown={(e) => {
-                          if (e.key === "Enter" || e.key === " ") {
+                          if (
+                            e.key === "Enter" ||
+                            e.key === " "
+                          ) {
                             e.preventDefault();
                             setLanguage(lang.code);
                             setLanguageMenuOpen(false);
@@ -1560,29 +1590,40 @@ function CustomerKiosk() {
 
       <div className="mx-5 mt-3 rounded-2xl border border-[#ecddd0] bg-[#fff4b8]/95 px-4 py-3 shadow-md">
         <div className="flex flex-col gap-4 xl:flex-row xl:items-center">
-          <p className="flex-1 text-sm font-semibold leading-snug text-[#5c3d2e] md:text-xl lg:text-2xl">
+          <p
+            className="flex-1 text-sm font-semibold leading-snug text-[#5c3d2e] md:text-xl lg:text-2xl"
+            aria-label="Weather recommendation"
+          >
             {weatherMessage}
           </p>
 
           <div className="flex items-center justify-end gap-8 self-end xl:self-auto xl:gap-20">
-            <div className="flex h-24 w-md shrink-0 items-center gap-4 rounded-2xl border border-[#ecddd0] bg-white/90 px-4 py-3 text-[#5c3d2e] shadow-sm">
+            <div
+              className="flex h-24 w-md shrink-0 items-center gap-4 rounded-2xl border border-[#ecddd0] bg-white/90 px-4 py-3 text-[#5c3d2e] shadow-sm"
+              role="group"
+              aria-label="Weather summary"
+            >
               <div className="flex h-16 w-16 items-center justify-center rounded-xl bg-blue-200 text-3xl shadow-inner">
                 {getWeatherIcon(weatherCondition)}
               </div>
-
               <div className="min-w-0 flex-1">
                 <div className="text-xs font-semibold uppercase tracking-wide text-[#8a5e4b]">
-                  {t(weatherLocation)}
+                  {t(weatherLocation || "Unknown")}
                 </div>
                 <div className="text-2xl font-extrabold leading-none text-[#5c3d2e] lg:text-3xl">
                   {weatherTemp}
                 </div>
               </div>
-
               <div className="flex flex-col items-end gap-1 text-right text-[0.65rem] font-semibold text-[#6f4a3a] lg:text-xs">
-                <div>{t("Feels")} {weatherFeelsLike}</div>
-                <div>{t("Humidity")} {weatherHumidity}</div>
-                <div>{t("Wind")} {weatherWind}</div>
+                <div>
+                  {t("Feels")} {weatherFeelsLike}
+                </div>
+                <div>
+                  {t("Humidity")} {weatherHumidity}
+                </div>
+                <div>
+                  {t("Wind")} {weatherWind}
+                </div>
               </div>
             </div>
 
@@ -1592,14 +1633,23 @@ function CustomerKiosk() {
               className="ml-2 h-16 w-16 shrink-0 overflow-hidden rounded-full border border-[#ecddd0] bg-white/90 p-0 shadow-md transition-transform duration-200 hover:scale-105"
               aria-label="Open chatbot"
             >
-              <img src="/images/chatbot.png" alt="Chatbot" className="h-full w-full rounded-full object-cover" />
+              <img
+                src="/images/chatbot.png"
+                alt="Chatbot"
+                className="h-full w-full rounded-full object-cover"
+              />
             </button>
           </div>
         </div>
       </div>
 
       <div className="main-content">
-        <div className="menu-grid" ref={menuGridRef}>
+        <div
+          className="menu-grid"
+          ref={menuGridRef}
+          role="list"
+          aria-label={t("Drink menu")}
+        >
           {filteredItems.map((item, index) => (
             <div
               key={item.menu_item_id}
@@ -1637,8 +1687,11 @@ function CustomerKiosk() {
         </div>
 
         <div
-          className={`cart-sidebar ${cart.length === 0 ? "is-empty" : ""}`}
+          className={`cart-sidebar ${
+            cart.length === 0 ? "is-empty" : ""
+          }`}
           aria-live="polite"
+          aria-label={t("Your Cart")}
         >
           <h2>
             {t("Your Cart")} ({cart.length})
@@ -1662,17 +1715,15 @@ function CustomerKiosk() {
                   <div style={{ flex: 1 }}>
                     <div>
                       <span>{getTranslatedDrinkName(item)}</span>
-                      <span className="qty">
-                        {" "}
-                        x {item.quantity}
-                      </span>
+                      <span className="qty"> x {item.quantity}</span>
                     </div>
                     <div className="topping-items">
                       <div>
                         {t("Size")}: {item.size}
                       </div>
                       <div>
-                        {t("Temperature")}: {t(item.hotness || "Cold")}
+                        {t("Temperature")}:{" "}
+                        {t(item.hotness || "Cold")}
                       </div>
                       {(item.hotness || "Cold") !== "Hot" && (
                         <div>
@@ -1683,7 +1734,7 @@ function CustomerKiosk() {
                         {t("Sugar")}: {item.sugar}
                       </div>
                       {item.toppings &&
-                        item.toppings.length >  0 &&
+                        item.toppings.length > 0 &&
                         item.toppings.map((top, idx) => (
                           <div key={idx}>
                             +{translateItemName(top.name)}
@@ -1699,10 +1750,16 @@ function CustomerKiosk() {
                       <button
                         onClick={() => {
                           openCustomization(item, index);
-                          speak(`${t("Edit")} ${getTranslatedDrinkName(item)}`);
+                          speak(
+                            `${t("Edit")} ${getTranslatedDrinkName(
+                              item
+                            )}`
+                          );
                         }}
                         className="edit-btn"
-                        aria-label={`${t("Edit")} ${getTranslatedDrinkName(item)}`}
+                        aria-label={`${t("Edit")} ${getTranslatedDrinkName(
+                          item
+                        )}`}
                       >
                         {t("Edit")}
                       </button>
@@ -1716,9 +1773,9 @@ function CustomerKiosk() {
                           );
                         }}
                         className="remove-btn"
-                        aria-label={`${t("Duplicate")} ${getTranslatedDrinkName(
-                          item
-                        )}`}
+                        aria-label={`${t(
+                          "Duplicate"
+                        )} ${getTranslatedDrinkName(item)}`}
                       >
                         +
                       </button>
@@ -1732,9 +1789,9 @@ function CustomerKiosk() {
                           );
                         }}
                         className="remove-btn"
-                        aria-label={`${t("Remove")} ${getTranslatedDrinkName(
-                          item
-                        )}`}
+                        aria-label={`${t(
+                          "Remove"
+                        )} ${getTranslatedDrinkName(item)}`}
                       >
                         ×
                       </button>
@@ -1752,6 +1809,7 @@ function CustomerKiosk() {
             onClick={submitOrder}
             className="submit-order-btn"
             disabled={cart.length === 0}
+            aria-disabled={cart.length === 0}
           >
             {t("Place Order")}
           </button>
@@ -1759,7 +1817,12 @@ function CustomerKiosk() {
       </div>
 
       {customModalOpen && currentDrink && (
-        <div className="topping-modal-overlay">
+        <div
+          className="topping-modal-overlay"
+          role="dialog"
+          aria-modal="true"
+          aria-label={t("Customize")}
+        >
           <div
             className={`topping-modal-content ${
               editingIndex !== null ? "editing-mode" : ""
@@ -1771,7 +1834,7 @@ function CustomerKiosk() {
 
             <div className="custom-section">
               <label>{t("Size")}</label>
-              <div className="option-group">
+              <div className="option-group" role="radiogroup">
                 {["Small", "Medium", "Large"].map((s) => (
                   <button
                     key={s}
@@ -1782,6 +1845,7 @@ function CustomerKiosk() {
                       setSelectedSize(s);
                       speak(`${t("Size")}: ${s}`);
                     }}
+                    aria-pressed={selectedSize === s}
                     aria-label={`${t("Size")}: ${s}`}
                   >
                     {s}
@@ -1792,7 +1856,7 @@ function CustomerKiosk() {
 
             <div className="custom-section">
               <label>{t("Temperature")}</label>
-              <div className="option-group">
+              <div className="option-group" role="radiogroup">
                 {["Cold", "Hot"].map((temp) => (
                   <button
                     key={temp}
@@ -1802,8 +1866,11 @@ function CustomerKiosk() {
                     onClick={() => {
                       setSelectedHotness(temp);
                       if (temp === "Hot") setSelectedIce("No Ice");
-                      speak(`${t("Temperature")}: ${t(temp)}`);
+                      speak(
+                        `${t("Temperature")}: ${t(temp)}`
+                      );
                     }}
+                    aria-pressed={selectedHotness === temp}
                     aria-label={`${t("Temperature")}: ${t(temp)}`}
                   >
                     {t(temp)}
@@ -1815,7 +1882,7 @@ function CustomerKiosk() {
             {selectedHotness !== "Hot" && (
               <div className="custom-section">
                 <label>{t("Ice")}</label>
-                <div className="option-group">
+                <div className="option-group" role="radiogroup">
                   {[
                     "No Ice",
                     "Less Ice",
@@ -1831,6 +1898,7 @@ function CustomerKiosk() {
                         setSelectedIce(i);
                         speak(`${t("Ice")}: ${i}`);
                       }}
+                      aria-pressed={selectedIce === i}
                       aria-label={`${t("Ice")}: ${i}`}
                     >
                       {i}
@@ -1842,8 +1910,16 @@ function CustomerKiosk() {
 
             <div className="custom-section">
               <label>{t("Sugar")}</label>
-              <div className="option-group">
-                {["0%", "25%", "50%", "75%", "100%", "125%", "150%"].map((s) => (
+              <div className="option-group" role="radiogroup">
+                {[
+                  "0%",
+                  "25%",
+                  "50%",
+                  "75%",
+                  "100%",
+                  "125%",
+                  "150%",
+                ].map((s) => (
                   <button
                     key={s}
                     className={`option-btn ${
@@ -1853,6 +1929,7 @@ function CustomerKiosk() {
                       setSelectedSugar(s);
                       speak(`${t("Sugar")}: ${s}`);
                     }}
+                    aria-pressed={selectedSugar === s}
                     aria-label={`${t("Sugar")}: ${s}`}
                   >
                     {s}
@@ -1877,10 +1954,15 @@ function CustomerKiosk() {
                       onClick={() => {
                         toggleTopping(top.name);
                         speak(
-                          `${selected ? t("Remove") : t("Add")} ${translated}`
+                          `${
+                            selected ? t("Remove") : t("Add")
+                          } ${translated}`
                         );
                       }}
-                      aria-label={`${selected ? t("Remove") : t("Add")} ${translated}`}
+                      aria-pressed={selected}
+                      aria-label={`${
+                        selected ? t("Remove") : t("Add")
+                      } ${translated}`}
                     >
                       <span>{translated}</span>
                       <span className="topping-checkbox-price">
@@ -1897,7 +1979,6 @@ function CustomerKiosk() {
                 ? t("Save Changes")
                 : t("Add to Cart")}
             </button>
-
             <button
               className="cancel-btn"
               onClick={() => {
@@ -1912,9 +1993,13 @@ function CustomerKiosk() {
       )}
 
       {chatOpen && (
-        <div className="chatbot-overlay">
+        <div
+          className="chatbot-overlay"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Chatbot"
+        >
           <div className="chatbot-window">
-
             {/* CLOSE BUTTON */}
             <button
               className="chatbot-close-btn"
@@ -1925,17 +2010,25 @@ function CustomerKiosk() {
             </button>
 
             {/* MESSAGES */}
-            <div className="chatbot-messages">
+            <div
+              className="chatbot-messages"
+              aria-live="polite"
+              aria-label="Chat messages"
+            >
               {chatMessages.map((m, idx) => (
                 <div
                   key={idx}
                   className={`flex w-full ${
-                    m.role === "user" ? "justify-end" : "justify-start"
+                    m.role === "user"
+                      ? "justify-end"
+                      : "justify-start"
                   }`}
                 >
                   <div
                     className={`flex max-w-[92%] items-end gap-2 ${
-                      m.role === "user" ? "flex-row-reverse" : "flex-row"
+                      m.role === "user"
+                        ? "flex-row-reverse"
+                        : "flex-row"
                     }`}
                   >
                     <div
@@ -1944,24 +2037,27 @@ function CustomerKiosk() {
                           ? "bg-[#f9d98a] text-[#5c3d2e]"
                           : "bg-[#f2e2d3] text-[#5c3d2e]"
                       }`}
+                      aria-hidden="true"
                     >
                       {m.role === "user" ? "U" : "BB"}
                     </div>
-
                     <div
                       className={`flex flex-col ${
-                        m.role === "user" ? "items-end" : "items-start"
+                        m.role === "user"
+                          ? "items-end"
+                          : "items-start"
                       }`}
                     >
                       <span className="mb-1 text-xs font-semibold uppercase tracking-wide text-[#7b6b62]">
-                        {m.role === "user" ? "You" : "Boba Buddy"}
+                        {m.role === "user"
+                          ? t("You")
+                          : t("Boba Buddy")}
                       </span>
-
                       <div
                         className={`max-w-[82%] rounded-2xl px-3 py-2 text-sm leading-relaxed shadow-sm ${
                           m.role === "user"
-                            ? "rounded-br-md bg-[#fff0ae] text-[#5c3d2e]"
-                            : "rounded-bl-md border border-[#f0dfcf] bg-white text-[#4e3a2f]"
+                            ? "rounded-br-md bg-[#fff0ae] text-[#5c3d2e] border border-[#f0dfcf]"
+                            : "rounded-bl-md bg-white text-[#4e3a2f] border border-[#f0dfcf]"
                         }`}
                       >
                         {m.content}
@@ -1977,10 +2073,9 @@ function CustomerKiosk() {
                     <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#f2e2d3] text-xs font-bold text-[#5c3d2e]">
                       BB
                     </div>
-
                     <div className="flex flex-col items-start">
                       <span className="mb-1 text-xs font-semibold uppercase tracking-wide text-[#7b6b62]">
-                        Boba Buddy
+                        {t("Boba Buddy")}
                       </span>
                       <div className="max-w-[82%] rounded-2xl rounded-bl-md border border-[#f0dfcf] bg-white px-3 py-2 text-sm leading-relaxed text-[#4e3a2f] shadow-sm">
                         {t("Thinking of a drink for you...")}
@@ -1997,20 +2092,33 @@ function CustomerKiosk() {
                 type="text"
                 value={chatInput}
                 onChange={(e) => setChatInput(e.target.value)}
-                placeholder={t("Tell me the weather, allergies, diet ...")}
+                placeholder={t(
+                  "Tell me the weather, allergies, diet..."
+                )}
+                aria-label={t(
+                  "Tell me the weather, allergies, diet..."
+                )}
                 onKeyDown={(e) => {
-                  if (e.key === "Enter") sendChatMessage();
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    sendChatMessage();
+                  }
                 }}
               />
-              <button onClick={sendChatMessage}>{t("Send")}</button>
+              <button
+                onClick={sendChatMessage}
+                aria-label={t("Send")}
+              >
+                {t("Send")}
+              </button>
             </div>
-
           </div>
         </div>
       )}
-
     </div>
   );
 }
+
 export default CustomerKiosk;
+
 
