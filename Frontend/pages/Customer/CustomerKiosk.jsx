@@ -21,12 +21,12 @@ const TRANSLATIONS = {
     es: "Café", fr: "Café", zh: "咖啡",
     ja: "コーヒー", ko: "커피", vi: "Cà phê"
   },
-  "Seasonal":{
-    es:"Estacional",fr: "Saisonnier", zh: "季节性的",
+  "Seasonal": {
+    es: "Estacional", fr: "Saisonnier", zh: "季节性的",
     ja: "季節の", ko: "계절의", vi: "Theo mùa"
   },
-  "Special Tea":{
-    es:"Té especial",fr: "Thé spécial", zh: "特制茶",
+  "Special Tea": {
+    es: "Té especial", fr: "Thé spécial", zh: "特制茶",
     ja: "特選茶", ko: "특별 차", vi: "Trà đặc biệt"
   },
   "Milk Tea": {
@@ -399,6 +399,121 @@ const TRANSLATIONS = {
     es: "Té verde de jazmín", fr: "Thé vert au jasmin", zh: "茉莉绿茶",
     ja: "ジャスミングリーンティー", ko: "재스민 녹차", vi: "Trà xanh hoa nhài"
   },
+  "Hot Drinks": {
+    es: "Bebidas Calientes", fr: "Boissons Chaudes", zh: "热饮",
+    ja: "ホットドリンク", ko: "핫 드링크", vi: "Đồ uống nóng"
+  },
+  // Hot Drinks & Slushies — drink names
+  "hot caramel latte": {
+    es: "Latte de Caramelo Caliente", fr: "Latte Caramel Chaud", zh: "热焦糖拿铁",
+    ja: "ホットキャラメルラテ", ko: "핫 카라멜 라떼", vi: "Latte caramel nóng"
+  },
+  "hot mocha": {
+    es: "Moca Caliente", fr: "Moka Chaud", zh: "热摩卡",
+    ja: "ホットモカ", ko: "핫 모카", vi: "Mocha nóng"
+  },
+  "espresso": {
+    es: "Espresso", fr: "Espresso", zh: "浓缩咖啡",
+    ja: "エスプレッソ", ko: "에스프레소", vi: "Espresso"
+  },
+  "vanilla chai latte": {
+    es: "Chai Latte de Vainilla", fr: "Chai Latte Vanille", zh: "香草茶拿铁",
+    ja: "バニラチャイラテ", ko: "바닐라 차이 라떼", vi: "Latte chai vani"
+  },
+  "masala chai": {
+    es: "Chai Masala", fr: "Chai Masala", zh: "马萨拉奶茶",
+    ja: "マサラチャイ", ko: "마살라 차이", vi: "Trà masala"
+  },
+  "london fog": {
+    es: "London Fog", fr: "London Fog", zh: "伦敦雾",
+    ja: "ロンドンフォグ", ko: "런던 포그", vi: "London Fog"
+  },
+  "mango slushie": {
+    es: "Granizado de Mango", fr: "Granité Mangue", zh: "芒果冰沙",
+    ja: "マンゴースラッシー", ko: "망고 슬러시", vi: "Đá xay xoài"
+  },
+  "strawberry slushie": {
+    es: "Granizado de Fresa", fr: "Granité Fraise", zh: "草莓冰沙",
+    ja: "ストロベリースラッシー", ko: "딸기 슬러시", vi: "Đá xay dâu"
+  },
+  "blue raspberry slushie": {
+    es: "Granizado de Frambuesa Azul", fr: "Granité Framboise Bleue", zh: "蓝莓冰沙",
+    ja: "ブルーラズベリースラッシー", ko: "블루 라즈베리 슬러시", vi: "Đá xay mâm xôi xanh"
+  },
+  // Hot Drinks & Slushies — descriptions
+  "Velvety steamed milk with rich caramel and a bold espresso shot.": {
+    es: "Leche vaporizada aterciopelada con rico caramelo y un shot de espresso intenso.",
+    fr: "Lait vapeur velouté avec caramel riche et un shot d'espresso corsé.",
+    zh: "丝滑蒸奶搭配浓郁焦糖与浓缩咖啡。",
+    ja: "滑らかなスチームミルクにリッチなキャラメルとエスプレッソ。",
+    ko: "부드러운 스팀 밀크에 진한 캐러멜과 에스프레소 샷.",
+    vi: "Sữa hấp mượt mà với caramel đậm và một shot espresso."
+  },
+  "Rich chocolate and espresso blended with steamed milk and cocoa.": {
+    es: "Chocolate intenso y espresso con leche vaporizada y cacao.",
+    fr: "Chocolat riche et espresso mélangés avec lait vapeur et cacao.",
+    zh: "浓郁巧克力与浓缩咖啡融合蒸奶和可可。",
+    ja: "濃厚なチョコレートとエスプレッソをスチームミルクとココアで。",
+    ko: "진한 초콜릿과 에스프레소를 스팀 밀크와 코코아로.",
+    vi: "Socola đậm và espresso hòa quyện sữa hấp và cacao."
+  },
+  "A clean, intense shot of pure espresso with a golden crema.": {
+    es: "Un shot limpio e intenso de espresso puro con crema dorada.",
+    fr: "Un shot pur et intense d'espresso avec une crema dorée.",
+    zh: "一杯纯净浓烈的浓缩咖啡，顶部金色油脂。",
+    ja: "ゴールデンクレマが美しい純粋で力強いエスプレッソ。",
+    ko: "황금빛 크레마의 깔끔하고 강렬한 순수 에스프레소.",
+    vi: "Một shot espresso thuần khiết, đậm đà với lớp crema vàng."
+  },
+  "Creamy vanilla-infused chai with warming spices and frothy milk.": {
+    es: "Chai cremoso con vainilla, especias cálidas y leche espumosa.",
+    fr: "Chai crémeux à la vanille avec épices chaudes et lait mousseux.",
+    zh: "香草风味茶饮配温暖香料与泡沫牛奶。",
+    ja: "バニラ香るチャイにスパイスとフォームミルク。",
+    ko: "바닐라 향 차이에 따뜻한 향신료와 거품 우유.",
+    vi: "Chai vani béo ngậy với gia vị ấm và sữa bọt."
+  },
+  "Traditional Indian spiced tea with cardamom, cinnamon, and ginger.": {
+    es: "Té indio tradicional con cardamomo, canela y jengibre.",
+    fr: "Thé indien traditionnel aux cardamome, cannelle et gingembre.",
+    zh: "传统印度香料茶，含豆蔻、肉桂和生姜。",
+    ja: "カルダモン、シナモン、ジンジャーの伝統インドチャイ。",
+    ko: "카다몬, 시나몬, 생강의 전통 인도 스파이스 차.",
+    vi: "Trà Ấn Độ truyền thống với thảo quả, quế và gừng."
+  },
+  "Earl Grey tea with vanilla, steamed milk, and a hint of lavender.": {
+    es: "Té Earl Grey con vainilla, leche vaporizada y un toque de lavanda.",
+    fr: "Thé Earl Grey avec vanille, lait vapeur et une pointe de lavande.",
+    zh: "伯爵茶搭配香草、蒸奶与淡淡薰衣草。",
+    ja: "アールグレイにバニラ、スチームミルク、ラベンダーの香り。",
+    ko: "얼 그레이 티에 바닐라, 스팀 밀크, 라벤더 향.",
+    vi: "Trà Earl Grey với vani, sữa hấp và chút oải hương."
+  },
+  "Frozen mango blended into a thick, icy tropical slush.": {
+    es: "Mango congelado en un granizado tropical espeso y helado.",
+    fr: "Mangue glacée mixée en granité tropical épais et givré.",
+    zh: "冷冻芒果搅拌成浓郁热带冰沙。",
+    ja: "凍ったマンゴーを濃厚なトロピカルスラッシュに。",
+    ko: "얼린 망고를 진하고 차가운 열대 슬러시로.",
+    vi: "Xoài đông lạnh xay thành đá xay nhiệt đới đặc sánh."
+  },
+  "Sweet strawberry puree swirled into a frosty, refreshing slush.": {
+    es: "Puré de fresa dulce en un granizado helado y refrescante.",
+    fr: "Purée de fraises sucrée en granité givré et rafraîchissant.",
+    zh: "甜草莓酱融入冰爽清新冰沙。",
+    ja: "甘いストロベリーピューレの爽やかなフロストスラッシュ。",
+    ko: "달콤한 딸기 퓨레가 어우러진 시원한 슬러시.",
+    vi: "Mứt dâu ngọt hòa quyện trong đá xay mát lạnh."
+  },
+  "Tangy blue raspberry blended into a vibrant frozen slushie.": {
+    es: "Frambuesa azul ácida en un granizado helado vibrante.",
+    fr: "Framboise bleue acidulée mixée en granité glacé vibrant.",
+    zh: "酸甜蓝莓搅拌成鲜艳冰沙。",
+    ja: "爽やかなブルーラズベリーの鮮やかなフローズンスラッシー。",
+    ko: "상큼한 블루 라즈베리의 선명한 프로즌 슬러시.",
+    vi: "Mâm xôi xanh chua ngọt xay thành đá xay rực rỡ."
+  },
+
 
   // New descriptions (ticket SCRUM-63)
   "Rich espresso layered with silky vanilla milk and buttery caramel drizzle.": {
@@ -679,6 +794,16 @@ function CustomerKiosk() {
     "kiwi fruit tea": "/images/menu/kiwi_fruit_tea.png",
     "mango milk tea": "/images/menu/mango_milk_tea.png",
     "coffee fruit tea": "/images/menu/coffee_fruit_tea.png",
+    "hot caramel latte": "/images/menu/hot_caramel_latte.png",
+    "hot mocha": "/images/menu/hot_mocha.png",
+    "espresso": "/images/menu/espresso.png",
+    "vanilla chai latte": "/images/menu/vanilla_chai_latte.png",
+    "masala chai": "/images/menu/masala_chai.png",
+    "london fog": "/images/menu/london_fog.png",
+    "mango slushie": "/images/menu/mango_slushie.png",
+    "strawberry slushie": "/images/menu/strawberry_slushie.png",
+    "blue raspberry slushie": "/images/menu/blue_raspberry_slushie.png",
+
   };
 
   const generatedDescriptionByName = {
@@ -712,6 +837,16 @@ function CustomerKiosk() {
     "jasmine green tea": "Fragrant jasmine petals steeped with fresh green tea leaves.",
     "rainbow jelly": "Chewy fruit-flavored jellies that add a burst of color and taste.",
     "red bean": "Sweet simmered azuki red beans with a soft, creamy bite.",
+    "hot caramel latte": "Velvety steamed milk with rich caramel and a bold espresso shot.",
+    "hot mocha": "Rich chocolate and espresso blended with steamed milk and cocoa.",
+    "espresso": "A clean, intense shot of pure espresso with a golden crema.",
+    "vanilla chai latte": "Creamy vanilla-infused chai with warming spices and frothy milk.",
+    "masala chai": "Traditional Indian spiced tea with cardamom, cinnamon, and ginger.",
+    "london fog": "Earl Grey tea with vanilla, steamed milk, and a hint of lavender.",
+    "mango slushie": "Frozen mango blended into a thick, icy tropical slush.",
+    "strawberry slushie": "Sweet strawberry puree swirled into a frosty, refreshing slush.",
+    "blue raspberry slushie": "Tangy blue raspberry blended into a vibrant frozen slushie.",
+
   };
 
   const placeholderSvg =
@@ -803,6 +938,8 @@ function CustomerKiosk() {
           "seasonal tea": "Seasonal Tea",
           "special tea": "Special Tea",
           special: "Special Tea",
+          "hot drinks": "Hot Drinks",
+
           toppings: "Toppings",
         };
 
@@ -1245,11 +1382,11 @@ function CustomerKiosk() {
 
   const weatherCondition = weather?.condition || "Unknown";
   const weatherTemp = Number.isFinite(Number(weather?.temp)) ? `${Math.round(Number(weather.temp))} F` : "-- F";
-  const weatherFeelsLike = Number.isFinite(Number(weather?.raw?.main?.feels_like)) 
+  const weatherFeelsLike = Number.isFinite(Number(weather?.raw?.main?.feels_like))
     ? `${Math.round(Number(weather.raw.main.feels_like))} F` : "--";
-  const weatherHumidity = Number.isFinite(Number(weather?.raw?.main?.humidity)) 
+  const weatherHumidity = Number.isFinite(Number(weather?.raw?.main?.humidity))
     ? `${Math.round(Number(weather.raw.main.humidity))}%` : "--";
-  const weatherWind = Number.isFinite(Number(weather?.raw?.wind?.speed)) 
+  const weatherWind = Number.isFinite(Number(weather?.raw?.wind?.speed))
     ? `${Number(weather.raw.wind.speed).toFixed(1)} mph` : "--";
   const weatherLocation = [weather?.raw?.name, weather?.raw?.sys?.country].filter(Boolean).join(", ");
   const weatherMessage = t(getWeatherRecommendation() || "Checking today's weather...");
