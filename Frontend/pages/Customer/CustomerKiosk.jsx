@@ -37,6 +37,11 @@ const TRANSLATIONS = {
     es: "Té de fruta", fr: "Thé aux fruits", zh: "水果茶",
     ja: "フルーツティー", ko: "과일차", vi: "Trà trái cây"
   },
+  "Slushies": {
+    es: "Granizados", fr: "Granités", zh: "冰沙",
+    ja: "スラッシー", ko: "슬러시", vi: "Đá xay"
+  },
+
   "Boba Bytes": {
     es: "Boba Bytes", fr: "Boba Bytes", zh: "Boba Bytes",
     ja: "Boba Bytes", ko: "Boba Bytes", vi: "Boba Bytes"
@@ -939,6 +944,7 @@ function CustomerKiosk() {
           "special tea": "Special Tea",
           special: "Special Tea",
           "hot drinks": "Hot Drinks",
+          "slushies": "Slushies",
 
           toppings: "Toppings",
         };
