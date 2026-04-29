@@ -261,6 +261,14 @@ const TRANSLATIONS = {
     es: "Té de leche de taro", fr: "Thé au lait de taro", zh: "芋头奶茶",
     ja: "タロイモミルクティー", ko: "타로 밀크티", vi: "Trà sữa khoai môn"
   },
+  "taro nutella tea": {
+    es: "Té de taro con Nutella",
+    fr: "Thé au taro et Nutella",
+    zh: "芋头榛子巧克力奶茶",
+    ja: "タロ・ヌテラティー",
+    ko: "타로 누텔라 티",
+    vi: "Trà khoai môn Nutella",
+  },
   "matcha milk tea": {
     es: "Té de leche de matcha", fr: "Thé au lait matcha", zh: "抹茶奶茶",
     ja: "抹茶ミルクティー", ko: "말차 밀크티", vi: "Trà sữa matcha"
@@ -317,7 +325,7 @@ const TRANSLATIONS = {
     es: "Té de fruta con café", fr: "Thé aux fruits et café", zh: "咖啡水果茶",
     ja: "コーヒーフルーツティー", ko: "커피 과일차", vi: "Trà trái cây cà phê"
   },
-  "mango milk tea": {
+  "mango fruit tea": {
     es: "Té de leche de mango", fr: "Thé au lait à la mangue", zh: "芒果奶茶",
     ja: "マンゴーミルクティー", ko: "망고 밀크티", vi: "Trà sữa xoài"
   },
@@ -357,7 +365,6 @@ const TRANSLATIONS = {
     ja: "あずき", ko: "팥", vi: "Đậu đỏ"
   },
 
-  // New drinks (ticket SCRUM-63)
   "caramel macchiato": {
     es: "Caramel Macchiato", fr: "Caramel Macchiato", zh: "焦糖玛奇朵",
     ja: "キャラメルマキアート", ko: "카라멜 마키아토", vi: "Caramel Macchiato"
@@ -441,9 +448,9 @@ const TRANSLATIONS = {
     es: "Granizado de Fresa", fr: "Granité Fraise", zh: "草莓冰沙",
     ja: "ストロベリースラッシー", ko: "딸기 슬러시", vi: "Đá xay dâu"
   },
-  "blue raspberry slushie": {
-    es: "Granizado de Frambuesa Azul", fr: "Granité Framboise Bleue", zh: "蓝莓冰沙",
-    ja: "ブルーラズベリースラッシー", ko: "블루 라즈베리 슬러시", vi: "Đá xay mâm xôi xanh"
+  "peach slushie": {
+    es: "Granizado de durazno vibrante", fr: "Granité pêche vibrante", zh: "鲜活蜜桃冰沙",
+    ja: "ピーチスラッシー", ko: "상큼한 복숭아 슬러시", vi: "Đá xay đào tươi mát"
   },
   // Hot Drinks & Slushies — descriptions
   "Velvety steamed milk with rich caramel and a bold espresso shot.": {
@@ -510,13 +517,13 @@ const TRANSLATIONS = {
     ko: "달콤한 딸기 퓨레가 어우러진 시원한 슬러시.",
     vi: "Mứt dâu ngọt hòa quyện trong đá xay mát lạnh."
   },
-  "Tangy blue raspberry blended into a vibrant frozen slushie.": {
-    es: "Frambuesa azul ácida en un granizado helado vibrante.",
-    fr: "Framboise bleue acidulée mixée en granité glacé vibrant.",
-    zh: "酸甜蓝莓搅拌成鲜艳冰沙。",
-    ja: "爽やかなブルーラズベリーの鮮やかなフローズンスラッシー。",
-    ko: "상큼한 블루 라즈베리의 선명한 프로즌 슬러시.",
-    vi: "Mâm xôi xanh chua ngọt xay thành đá xay rực rỡ."
+  "Tangy peachy blended into a vibrant frozen slushie.": {
+    es: "Durazno ácido mezclado en un granizado helado vibrante.",
+    fr: "Pêche acidulée mixée en un granité glacé vibrant.",
+    zh: "酸甜蜜桃搅拌成鲜艳冰沙。",
+    ja: "爽やかなピーチの鮮やかなフローズンスラッシー。",
+    ko: "상큼한 복숭아의 선명한 프로즌 슬러시.",
+    vi: "Đào chua ngọt xay thành đá xay rực rỡ."
   },
 
 
@@ -560,6 +567,38 @@ const TRANSLATIONS = {
     ja: "クラシックなブラックミルクティーに甘いマダガスカルバニラ。",
     ko: "클래식 블랙 밀크티에 달콤한 마다가스카르 바닐라.",
     vi: "Trà đen sữa cổ điển hòa quyện vani Madagascar ngọt ngào."
+  },
+  "Zesty passionfruit and green tea combine for a bright, tangy tropical sip.": {
+    es: "Maracuyá y té verde combinados para un sorbo tropical brillante y ácido.",
+    fr: "Fruit de la passion et thé vert pour une gorgée tropicale acidulée.",
+    zh: "百香果与绿茶融合，清新酸爽的热带风味。",
+    ja: "パッションフルーツと緑茶が合わさった爽やかなトロピカルな一杯。",
+    ko: "패션프루트와 녹차가 어우러진 상큼하고 밝은 열대 풍미.",
+    vi: "Chanh dây và trà xanh kết hợp tạo nên hương vị nhiệt đới tươi sáng."
+  },
+  "Refreshing kiwi fruit tea with lively sweetness and a clean citrusy finish.": {
+    es: "Té de kiwi refrescante con dulzura viva y un final cítrico limpio.",
+    fr: "Thé au kiwi rafraîchissant avec une douceur vive et une finale citronnée.",
+    zh: "清爽奇异果茶，鲜甜活泼，带有清新柑橘尾韵。",
+    ja: "爽やかなキウイフルーツティー、生き生きとした甘さとさっぱりとした柑橘の後味。",
+    ko: "상쾌한 키위 과일차, 생생한 단맛과 깔끔한 시트러스 여운.",
+    vi: "Trà trái cây kiwi mát lạnh với vị ngọt tươi và hậu vị cam quýt sảng khoái."
+  },
+  "Bold coffee notes meet fruit tea for a smooth, refreshing flavor contrast.": {
+    es: "Notas intensas de café combinadas con té de fruta para un contraste suave y refrescante.",
+    fr: "Des notes de café intenses rencontrent le thé aux fruits pour un contraste doux et rafraîchissant.",
+    zh: "浓郁咖啡与水果茶相遇，带来顺滑清新的风味对比。",
+    ja: "大胆なコーヒーの風味がフルーツティーと出会い、滑らかで爽やかな味わいのコントラスト。",
+    ko: "진한 커피와 과일차가 만나 부드럽고 상쾌한 풍미의 대비.",
+    vi: "Hương cà phê đậm đà gặp trà trái cây tạo nên sự tương phản hương vị mượt mà."
+  },
+  "Creamy milk tea blended with ripe mango for a rich tropical treat.": {
+    es: "Té de leche cremoso mezclado con mango maduro para un rico placer tropical.",
+    fr: "Thé au lait crémeux mélangé à la mangue mûre pour un délice tropical riche.",
+    zh: "奶香奶茶与熟芒果融合，带来浓郁热带享受。",
+    ja: "クリーミーなミルクティーと熟したマンゴーが混ざり合ったリッチなトロピカルトリート。",
+    ko: "크리미한 밀크티와 잘 익은 망고가 어우러진 풍부한 열대 간식.",
+    vi: "Trà sữa béo ngậy hòa quyện xoài chín tạo nên món ngon nhiệt đới đậm đà."
   },
   "Rich cocoa blended with creamy milk tea for a dessert-like sip.": {
     es: "Cacao intenso mezclado con té de leche cremoso, como un postre.",
@@ -631,7 +670,7 @@ const TRANSLATIONS = {
     es: "Té Thai intenso con notas dulces y un final especiado.",
     fr: "Thé thaï intense aux notes crémeuses et épicées.",
     zh: "浓郁泰式茶，香甜奶香与香料尾韵。",
-    ja: "濃厚なタイティーに甘いクリームとスパイシーな余韻。",
+    ja: "濃厚なタイティーに甘いクリームとスパイシーな余韵。",
     ko: "진한 타이티에 달콤한 크림과 향긋한 향신료 여운.",
     vi: "Trà Thái đậm đà với vị kem ngọt và hậu vị thơm gia vị."
   },
@@ -642,6 +681,14 @@ const TRANSLATIONS = {
     ja: "ナッツのようなタロイモとミルクが織りなす甘くてベルベットのような飲み物。",
     ko: "고소한 타로와 우유가 어우러진 달콤하고 부드러운 음료.",
     vi: "Vị khoai môn bùi béo kết hợp với sữa tạo nên thức uống ngọt mượt."
+  },
+  "Creamy taro milk tea with a swirl of rich Nutella hazelnut spread.": {
+    es: "Té de taro cremoso con un remolino de Nutella de avellana.",
+    fr: "Thé au lait crémeux au taro avec un tourbillon de Nutella aux noisettes.",
+    zh: "奶香芋头奶茶，加入浓郁榛果巧克力酱漩涡。",
+    ja: "クリーミーなタロミルクティーに、濃厚なヌテラのヘーゼルナッツスプレッドをひと混ぜ。",
+    ko: "크리미한 타로 밀크티에 진한 누텔라 헤이즐넛 스프레드를 더한 음료.",
+    vi: "Trà sữa khoai môn kem mịn, hòa cùng vòng xoáy Nutella hạt phỉ đậm đà."
   },
   "Earthy matcha and creamy milk balanced into a refreshing green tea latte.": {
     es: "Matcha terroso con leche cremosa en un refrescante latte de té verde.",
@@ -714,6 +761,62 @@ const TRANSLATIONS = {
     ja: "花の香りのウーロン茶と繊細なライチの甘さ。",
     ko: "꽃향기 가득한 우롱차와 섬세한 리치의 달콤함.",
     vi: "Trà ô long hương hoa với vị vải ngọt dịu."
+  },
+  "Small": {
+    "es": "pequeño",
+    "fr": "petit",
+    "zh": "小杯",
+    "ja": "スモール",
+    "ko": "스몰",
+    "vi": "nhỏ"
+  },
+  "Medium": {
+    "es": "mediano",
+    "fr": "moyen",
+    "zh": "中杯",
+    "ja": "ミディアム",
+    "ko": "미디엄",
+    "vi": "vừa"
+  },
+  "Large": {
+    "es": "grande",
+    "fr": "grand",
+    "zh": "大杯",
+    "ja": "ラージ",
+    "ko": "라지",
+    "vi": "lớn"
+  },
+  "No Ice": {
+    "es": "sin hielo",
+    "fr": "sans glace",
+    "zh": "去冰",
+    "ja": "氷なし",
+    "ko": "얼음 없음",
+    "vi": "không đá"
+  },
+  "Less Ice": {
+    "es": "poco hielo",
+    "fr": "peu de glace",
+    "zh": "少冰",
+    "ja": "氷少なめ",
+    "ko": "얼음 적게",
+    "vi": "ít đá"
+  },
+  "Regular Ice": {
+    "es": "hielo normal",
+    "fr": "glace normale",
+    "zh": "正常冰",
+    "ja": "通常の氷",
+    "ko": "기본 얼음",
+    "vi": "đá bình thường"
+  },
+  "Extra Ice": {
+    "es": "extra hielo",
+    "fr": "glace supplémentaire",
+    "zh": "多冰",
+    "ja": "氷多め",
+    "ko": "얼음 많이",
+    "vi": "nhiều đá"
   }
 };
 
@@ -727,9 +830,6 @@ function CustomerKiosk() {
     if (language === "en") return key;
     return (TRANSLATIONS[key] && TRANSLATIONS[key][language]) || key;
   };
-
-  const translateText = (value) =>
-    typeof value === "string" ? t(value) : value;
 
   const [menuItems, setMenuItems] = useState([]);
   const [categories, setCategories] = useState([]);
@@ -770,6 +870,42 @@ function CustomerKiosk() {
   const normalizeName = (value = "") =>
     value.toLowerCase().trim().replace(/\s+/g, " ");
 
+  const DRINK_NAME_ALIASES = {
+    "passion fruit green tea": "passionfruit green tea",
+  };
+
+  const resolveDrinkNameKey = (value = "") => {
+    const normalized = normalizeName(value);
+    return DRINK_NAME_ALIASES[normalized] || normalized;
+  };
+
+  const normalizeItemType = (value = "") =>
+    String(value).toLowerCase().trim().replace(/\s+/g, " ");
+
+  const CATEGORY_ALIASES = {
+    all: "All",
+    coffee: "Coffee",
+    "milk tea": "Milk Tea",
+    milktea: "Milk Tea",
+    "fruit tea": "Fruit Tea",
+    fruit: "Fruit Tea",
+    "special tea": "Special Tea",
+    special: "Special Tea",
+    "special teas": "Special Tea",
+    seasonal: "Seasonal",
+    "seasonal tea": "Seasonal",
+    "seasonal teas": "Seasonal",
+    "hot drinks": "Hot Drinks",
+    slushie: "Slushies",
+    slushies: "Slushies",
+    toppings: "Toppings",
+  };
+
+  const canonicalCategoryForType = (typeValue = "") => {
+    const normalized = normalizeItemType(typeValue);
+    return CATEGORY_ALIASES[normalized] || typeValue;
+  };
+
   const localImageByName = {
     "classic milk tea": "/images/menu/classic_milk_tea.png",
     "thai milk tea": "/images/menu/thai_milk_tea.png",
@@ -797,7 +933,7 @@ function CustomerKiosk() {
     "jasmine green tea": "/images/menu/jasmine_green_tea.png",
     "passionfruit green tea": "/images/menu/passionfruit_green_tea.png",
     "kiwi fruit tea": "/images/menu/kiwi_fruit_tea.png",
-    "mango milk tea": "/images/menu/mango_milk_tea.png",
+    "mango fruit tea": "/images/menu/mango_milk_tea.png",
     "coffee fruit tea": "/images/menu/coffee_fruit_tea.png",
     "hot caramel latte": "/images/menu/hot_caramel_latte.png",
     "hot mocha": "/images/menu/hot_mocha.png",
@@ -807,8 +943,8 @@ function CustomerKiosk() {
     "london fog": "/images/menu/london_fog.png",
     "mango slushie": "/images/menu/mango_slushie.png",
     "strawberry slushie": "/images/menu/strawberry_slushie.png",
-    "blue raspberry slushie": "/images/menu/blue_raspberry_slushie.png",
-
+    "peach slushie": "/images/menu/peach_slushie.png",
+    "taro nutella tea": "/images/menu/taro_nutella_tea.png",
   };
 
   const generatedDescriptionByName = {
@@ -825,7 +961,7 @@ function CustomerKiosk() {
     "passionfruit green tea": "Zesty passionfruit and green tea combine for a bright, tangy tropical sip.",
     "kiwi fruit tea": "Refreshing kiwi fruit tea with lively sweetness and a clean citrusy finish.",
     "coffee fruit tea": "Bold coffee notes meet fruit tea for a smooth, refreshing flavor contrast.",
-    "mango milk tea": "Creamy milk tea blended with ripe mango for a rich tropical treat.",
+    "mango fruit tea": "Creamy milk tea blended with ripe mango for a rich tropical treat.",
     "strawberry fruit tea": "Fruity strawberry tea that is sweet, vibrant, and refreshing.",
     "peach black tea": "Classic black tea infused with ripe peach flavor.",
     "lychee oolong tea": "Floral oolong tea paired with delicate lychee sweetness.",
@@ -850,8 +986,8 @@ function CustomerKiosk() {
     "london fog": "Earl Grey tea with vanilla, steamed milk, and a hint of lavender.",
     "mango slushie": "Frozen mango blended into a thick, icy tropical slush.",
     "strawberry slushie": "Sweet strawberry puree swirled into a frosty, refreshing slush.",
-    "blue raspberry slushie": "Tangy blue raspberry blended into a vibrant frozen slushie.",
-
+    "peach slushie": "Tangy peachy blended into a vibrant frozen slushie.",
+    "taro nutella tea": "Creamy taro milk tea with a swirl of rich Nutella hazelnut spread.",
   };
 
   const placeholderSvg =
@@ -861,7 +997,7 @@ function CustomerKiosk() {
     );
 
   const getItemImageSrc = (item) => {
-    const normalized = normalizeName(item.item_name);
+    const normalized = resolveDrinkNameKey(item.item_name);
     const localImage = localImageByName[normalized];
     if (localImage) return localImage;
     if (item.image) return item.image;
@@ -869,7 +1005,7 @@ function CustomerKiosk() {
   };
 
   const getTranslatedDrinkName = (item) => {
-    const key = normalizeName(item.item_name);
+    const key = resolveDrinkNameKey(item.item_name);
     if (language !== "en" && TRANSLATIONS[key]?.[language]) {
       return TRANSLATIONS[key][language];
     }
@@ -878,7 +1014,7 @@ function CustomerKiosk() {
 
   const translateItemName = (name) => {
     if (!name) return name;
-    const key = normalizeName(name);
+    const key = resolveDrinkNameKey(name);
     if (language !== "en" && TRANSLATIONS[key]?.[language]) {
       return TRANSLATIONS[key][language];
     }
@@ -888,7 +1024,7 @@ function CustomerKiosk() {
   const getItemDescription = (item) => {
     const english = item.item_description?.trim()
       ? item.item_description
-      : generatedDescriptionByName[normalizeName(item.item_name)];
+      : generatedDescriptionByName[resolveDrinkNameKey(item.item_name)];
     if (language !== "en" && TRANSLATIONS[english]?.[language]) {
       return TRANSLATIONS[english][language];
     }
@@ -934,30 +1070,23 @@ function CustomerKiosk() {
           cats = [...new Set(items.map((item) => item.item_type).filter((x) => !!x))];
         }
 
-        const CATEGORY_LABELS = {
-          all: "All",
-          coffee: "Coffee",
-          "milk tea": "Milk Tea",
-          "fruit tea": "Fruit Tea",
-          seasonal: "Seasonal",
-          "seasonal tea": "Seasonal Tea",
-          "special tea": "Special Tea",
-          special: "Special Tea",
-          "hot drinks": "Hot Drinks",
-          "slushies": "Slushies",
+        const discoveredCategories = (cats || []).length > 0
+          ? cats
+          : items.map((item) => item.item_type).filter((x) => !!x);
 
-          toppings: "Toppings",
-        };
+        const canonicalCategories = discoveredCategories
+          .map((cat) => canonicalCategoryForType(cat))
+          .filter((cat) => cat && cat !== "Toppings");
 
-        const normalizedCategories = ["All", ...cats.filter((c) => c !== "Toppings")];
+        const requiredCategories = ["Fruit Tea", "Special Tea", "Seasonal", "Slushies"];
+        const normalizedCategories = [
+          "All",
+          ...requiredCategories,
+          ...canonicalCategories,
+        ].filter((cat, index, arr) => arr.indexOf(cat) === index);
 
         setMenuItems(items);
-        setCategories(
-          normalizedCategories.map((cat) => {
-            const key = String(cat).trim().toLowerCase();
-            return CATEGORY_LABELS[key] || cat;
-          })
-        );
+        setCategories(normalizedCategories);
       } catch (error) {
         alert(t("Network error"));
       } finally {
@@ -967,10 +1096,12 @@ function CustomerKiosk() {
     loadMenu();
   }, []);
 
-  const browseableMenuItems = menuItems.filter((item) => item.item_type !== "Toppings");
+  const browseableMenuItems = menuItems.filter(
+    (item) => canonicalCategoryForType(item.item_type) !== "Toppings"
+  );
 
   const TOPPINGS = menuItems
-    .filter((item) => item.item_type === "Toppings")
+    .filter((item) => canonicalCategoryForType(item.item_type) === "Toppings")
     .map((item) => ({
       name: item.item_name,
       price: Number(item.item_cost),
@@ -979,7 +1110,9 @@ function CustomerKiosk() {
   const filteredItems =
     selectedCategory === "All"
       ? browseableMenuItems
-      : browseableMenuItems.filter((item) => item.item_type === selectedCategory);
+      : browseableMenuItems.filter(
+          (item) => canonicalCategoryForType(item.item_type) === selectedCategory
+        );
 
   // Touch navigation
   useEffect(() => {
@@ -1653,9 +1786,9 @@ function CustomerKiosk() {
                       <span className="qty"> x {item.quantity}</span>
                     </div>
                     <div className="topping-items">
-                      <div>{t("Size")}: {item.size}</div>
+                      <div>{t("Size")}: {t(item.size)}</div>
                       <div>{t("Temperature")}: {t(item.hotness || "Cold")}</div>
-                      {(item.hotness || "Cold") !== "Hot" && <div>{t("Ice")}: {item.ice}</div>}
+                      {(item.hotness || "Cold") !== "Hot" && <div>{t("Ice")}: {t(item.ice)}</div>}
                       <div>{t("Sugar")}: {item.sugar}</div>
                       {item.toppings?.length > 0 && item.toppings.map((top, idx) => (
                         <div key={idx}>+{translateItemName(top.name)}</div>
@@ -1686,15 +1819,35 @@ function CustomerKiosk() {
 
       {/* FULL Customization Modal */}
       {customModalOpen && currentDrink && (
-        <div className="topping-modal-overlay" role="dialog" aria-modal="true" aria-label={`${t("Customize")} ${getTranslatedDrinkName(currentDrink)}`}>
+        <div
+          className="topping-modal-overlay"
+          role="dialog"
+          aria-modal="true"
+          aria-label={`${t("Customize")} ${getTranslatedDrinkName(currentDrink)}`}
+          onMouseDown={(e) => {
+            // if clicked directly on the overlay (outside the modal content), close
+            if (e.target === e.currentTarget) {
+              setCustomModalOpen(false);
+              setEditingIndex(null);
+            }
+          }}
+        >
           <div className={`topping-modal-content ${editingIndex !== null ? "editing-mode" : ""}`}>
             <h2>{t("Customize")} {getTranslatedDrinkName(currentDrink)}</h2>
+            <button
+              type="button"
+              className="custom-close-btn hover:scale-110 active:scale-95 transition-transform duration-150"
+              onClick={() => { setCustomModalOpen(false); setEditingIndex(null); }}
+              aria-label={t("Cancel")}
+            >
+              ✕
+            </button>
 
             <div className="custom-section">
               <label>{t("Size")}</label>
               <div className="option-group" role="radiogroup">
                 {["Small", "Medium", "Large"].map((s) => (
-                  <button key={s} className={`option-btn ${selectedSize === s ? "active" : ""}`} onClick={() => { setSelectedSize(s); speak(`${t("Size")}: ${s}`); }} aria-pressed={selectedSize === s} aria-label={`${t("Size")}: ${s}`}>{s}</button>
+                  <button key={s} className={`option-btn ${selectedSize === s ? "active" : ""}`} onClick={() => { setSelectedSize(s); speak(`${t("Size")}: ${s}`); }} aria-pressed={selectedSize === s} aria-label={`${t("Size")}: ${s}`}>{t(s)}</button>
                 ))}
               </div>
             </div>
@@ -1713,7 +1866,7 @@ function CustomerKiosk() {
                 <label>{t("Ice")}</label>
                 <div className="option-group" role="radiogroup">
                   {["No Ice", "Less Ice", "Regular Ice", "Extra Ice"].map((i) => (
-                    <button key={i} className={`option-btn ${selectedIce === i ? "active" : ""}`} onClick={() => { setSelectedIce(i); speak(`${t("Ice")}: ${i}`); }} aria-pressed={selectedIce === i} aria-label={`${t("Ice")}: ${i}`}>{i}</button>
+                    <button key={i} className={`option-btn ${selectedIce === i ? "active" : ""}`} onClick={() => { setSelectedIce(i); speak(`${t("Ice")}: ${i}`); }} aria-pressed={selectedIce === i} aria-label={`${t("Ice")}: ${i}`}>{t(i)}</button>
                   ))}
                 </div>
               </div>
@@ -1753,9 +1906,6 @@ function CustomerKiosk() {
 
             <button className="confirm-btn" onClick={saveDrink}>
               {editingIndex !== null ? t("Save Changes") : t("Add to Cart")}
-            </button>
-            <button className="cancel-btn" onClick={() => { setCustomModalOpen(false); setEditingIndex(null); }}>
-              {t("Cancel")}
             </button>
           </div>
         </div>

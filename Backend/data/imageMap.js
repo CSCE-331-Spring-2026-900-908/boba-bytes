@@ -24,7 +24,9 @@ export const imageMap = {
   "Brown Sugar Oolong Tea": "/images/menu/brown_sugar_oolong_tea.png",
   "Jasmine Green Tea": "/images/menu/jasmine_green_tea.png",
   "Passionfruit Green Tea": "/images/menu/passionfruit_green_tea.png",
-  "Kiwi Fruit Tea": "/images/menu/kiwi_fruit_tea.png",
-  "Mango Milk Tea": "/images/menu/mango_milk_tea.png",
-  "Coffee Fruit Tea": "/images/menu/coffee_fruit_tea.png",
+  "Passion Fruit Green Tea": "/images/menu/passionfruit_green_tea.png",
+   "Kiwi Fruit Tea": "/images/menu/kiwi_fruit_tea.png",
+   "Mango Milk Tea": "/images/menu/mango_milk_tea.png",
+   "Coffee Fruit Tea": "/images/menu/coffee_fruit_tea.png",
+   "Taro Nutella Tea": "/images/menu/taro_nutella_tea.png",
 };

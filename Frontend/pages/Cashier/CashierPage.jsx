@@ -38,7 +38,7 @@ export default function CashierPage() {
     ])
         .then(([itemData, catData]) => {
           setItems(itemData);
-          setCategories(["All", "Favorites", ...catData.filter(cat => cat !== "Toppings")]);
+          setCategories(["All", ...catData.filter(cat => cat !== "Toppings")]);
         })
         .catch(err => console.error(err));
   }, []);

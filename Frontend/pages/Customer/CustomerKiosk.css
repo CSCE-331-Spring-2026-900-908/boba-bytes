@@ -491,6 +491,7 @@
 
 .topping-modal-content,
 .drink-customization-content {
+  position: relative;
   background: var(--white);
   padding: calc(30px * var(--scale));
   border-radius: calc(24px * var(--scale));
@@ -773,6 +774,41 @@
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+/* Small close button for customization modal (top-right) */
+.custom-close-btn {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  background: #fff;
+  border: 2px solid var(--border);
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  font-size: 16px;
+  cursor: pointer;
+  color: var(--brown);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  z-index: 20;
+  box-shadow: 0 2px 6px rgba(92,61,46,0.08);
+  transition: transform 150ms ease, box-shadow 150ms ease;
+}
+
+.custom-close-btn:hover {
+  box-shadow: 0 6px 18px rgba(92,61,46,0.12);
+}
+
+.custom-close-btn:active {
+  transform: translateY(1px) scale(0.98);
+}
+
+.custom-close-btn:focus {
+  outline: 3px solid rgba(37,99,235,0.25);
+  outline-offset: 2px;
 }
 
 /* Scrollable messages */
