@@ -106,6 +106,26 @@ const TRANSLATIONS = {
     es: "Personalizar", fr: "Personnaliser", zh: "定制",
     ja: "カスタマイズ", ko: "맞춤 설정", vi: "Tùy chỉnh"
   },
+  "Special Requests": {
+    es: "Solicitudes Especiales",
+    fr: "Demandes spéciales",
+    zh: "特殊要求",
+    ja: "特別リクエスト",
+    ko: "특별 요청",
+    vi: "Yêu cầu đặc biệt"
+  },
+  "Any special requests? (optional)": {
+    es: "¿Alguna solicitud especial? (opcional)",
+    fr: "Des demandes spéciales ? (facultatif)",
+    zh: "有特别要求吗？（可选）",
+    ja: "特別なリクエストはありますか？（任意）",
+    ko: "특별 요청이 있나요? (선택 사항)",
+    vi: "Có yêu cầu đặc biệt nào không? (tùy chọn)"
+  },
+  "Note": {
+    es: "Nota", fr: "Note", zh: "备注",
+    ja: "メモ", ko: "메모", vi: "Ghi chú"
+  },
   "Size": {
     es: "Tamaño", fr: "Taille", zh: "尺寸",
     ja: "サイズ", ko: "크기", vi: "Cỡ"
@@ -873,6 +893,7 @@ function CustomerKiosk() {
   const [selectedIce, setSelectedIce] = useState(null);
   const [selectedSugar, setSelectedSugar] = useState(null);
   const [selectedToppings, setSelectedToppings] = useState([]);
+  const [specialRequest, setSpecialRequest] = useState("");
 
   const [chatOpen, setChatOpen] = useState(false);
   const [chatMessages, setChatMessages] = useState([
@@ -1218,7 +1239,8 @@ function CustomerKiosk() {
       a.hotness === b.hotness &&
       a.ice === b.ice &&
       a.sugar === b.sugar &&
-      JSON.stringify(aT) === JSON.stringify(bT)
+      JSON.stringify(aT) === JSON.stringify(bT) &&
+      (a.special_request || "") === (b.special_request || "")
     );
   };
 
@@ -1234,12 +1256,14 @@ function CustomerKiosk() {
       setSelectedIce(existing.ice);
       setSelectedSugar(existing.sugar);
       setSelectedToppings(existing.toppings || []);
+      setSpecialRequest(existing.special_request || "");
     } else {
       setSelectedSize(null);
       setSelectedHotness("Cold");
       setSelectedIce(null);
       setSelectedSugar(null);
       setSelectedToppings([]);
+      setSpecialRequest("");
     }
     setCustomModalOpen(true);
   };
@@ -1295,6 +1319,7 @@ function CustomerKiosk() {
       ice: (selectedHotness || "Cold") === "Hot" ? "No Ice" : selectedIce || "Regular Ice",
       sugar: selectedSugar || "100%",
       toppings: selectedToppings,
+      special_request: (specialRequest || "").trim(),
       quantity: editingIndex !== null ? cart[editingIndex].quantity : 1,
       base_cost: basePrice,
       toppings_cost_per_drink: toppingsCost,
@@ -1899,6 +1924,11 @@ function CustomerKiosk() {
                       {item.toppings?.length > 0 && item.toppings.map((top, idx) => (
                         <div key={idx}>+{translateItemName(top.name)}</div>
                       ))}
+                      {item.special_request && (
+                        <div className="cart-item-note">
+                          {t("Note")}: {item.special_request}
+                        </div>
+                      )}
                     </div>
                   </div>
                   <div className="cart-item-right">
@@ -2013,6 +2043,22 @@ function CustomerKiosk() {
                   );
                 })}
               </div>
+            </div>
+
+            <div className="custom-section">
+              <label htmlFor="special-request-input">
+                {t("Special Requests")}
+              </label>
+              <textarea
+                id="special-request-input"
+                className="special-request-input"
+                value={specialRequest}
+                onChange={(e) => setSpecialRequest(e.target.value)}
+                placeholder={t("Any special requests? (optional)")}
+                aria-label={t("Special Requests")}
+                maxLength={200}
+                rows={3}
+              />
             </div>
 
             <button className="confirm-btn" onClick={saveDrink}>
