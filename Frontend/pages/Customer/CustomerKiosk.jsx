@@ -690,6 +690,30 @@ const TRANSLATIONS = {
     ko: "크리미한 타로 밀크티에 진한 누텔라 헤이즐넛 스프레드를 더한 음료.",
     vi: "Trà sữa khoai môn kem mịn, hòa cùng vòng xoáy Nutella hạt phỉ đậm đà."
   },
+  "Order submitted successfully": {
+    es: "Pedido enviado con éxito",
+    fr: "Commande soumise avec succès",
+    zh: "订单提交成功",
+    ja: "注文が正常に送信されました",
+    ko: "주문이 성공적으로 제출되었습니다",
+    vi: "Đặt hàng thành công"
+  },
+  "Failed to submit order": {
+    es: "Error al enviar el pedido",
+    fr: "Échec de la soumission de la commande",
+    zh: "提交订单失败",
+    ja: "注文の送信に失敗しました",
+    ko: "주문 제출 실패",
+    vi: "Gửi đơn hàng thất bại"
+  },
+  "Network error": {
+    es: "Error de red",
+    fr: "Erreur réseau",
+    zh: "网络错误",
+    ja: "ネットワークエラー",
+    ko: "네트워크 오류",
+    vi: "Lỗi mạng"
+  },
   "Earthy matcha and creamy milk balanced into a refreshing green tea latte.": {
     es: "Matcha terroso con leche cremosa en un refrescante latte de té verde.",
     fr: "Matcha terreux et lait crémeux dans un latte de thé vert rafraîchissant.",
@@ -865,6 +889,9 @@ function CustomerKiosk() {
   const itemRefs = useRef([]);
   const menuGridRef = useRef(null);
   const categoryRefs = useRef([]);
+  const customModalRef = useRef(null);
+  const customCloseBtnRef = useRef(null);
+  const lastFocusedElementRef = useRef(null);
   const synth = window.speechSynthesis;
 
   const normalizeName = (value = "") =>
@@ -1196,6 +1223,8 @@ function CustomerKiosk() {
   };
 
   const openCustomization = (item, index = null) => {
+    lastFocusedElementRef.current =
+      document.activeElement instanceof HTMLElement ? document.activeElement : null;
     setCurrentDrink(item);
     setEditingIndex(index);
     if (index !== null) {
@@ -1213,6 +1242,24 @@ function CustomerKiosk() {
       setSelectedToppings([]);
     }
     setCustomModalOpen(true);
+  };
+
+  const closeCustomizationModal = () => {
+    setCustomModalOpen(false);
+    setEditingIndex(null);
+    window.requestAnimationFrame(() => {
+      lastFocusedElementRef.current?.focus?.();
+    });
+  };
+
+  const getCustomizationFocusableElements = () => {
+    const root = customModalRef.current;
+    if (!root) return [];
+    return Array.from(
+      root.querySelectorAll(
+        'button:not([disabled]), [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+      )
+    ).filter((el) => el instanceof HTMLElement && !el.hasAttribute("disabled"));
   };
 
   const handleItemClick = (item) => {
@@ -1272,8 +1319,7 @@ function CustomerKiosk() {
       });
     }
 
-    setCustomModalOpen(false);
-    setEditingIndex(null);
+    closeCustomizationModal();
   };
 
   const removeFromCart = (cartItemId) => {
@@ -1332,7 +1378,7 @@ function CustomerKiosk() {
 
   // Keyboard navigation
   useEffect(() => {
-    if (!keyboardMode) return;
+    if (!keyboardMode || customModalOpen) return;
 
     const handleKey = (e) => {
       const totalCategories = categories.length;
@@ -1418,7 +1464,6 @@ function CustomerKiosk() {
         }
         const item = filteredItems[focusIndex];
         if (item) {
-          speakDrinkName(item);
           handleItemClick(item);
         }
       }
@@ -1426,7 +1471,66 @@ function CustomerKiosk() {
 
     window.addEventListener("keydown", handleKey);
     return () => window.removeEventListener("keydown", handleKey);
-  }, [keyboardMode, filteredItems, focusIndex, categories, language]);
+  }, [keyboardMode, customModalOpen, filteredItems, focusIndex, categories, language]);
+
+  // Customization modal keyboard support
+  useEffect(() => {
+    if (!customModalOpen || !currentDrink) return;
+
+    const focusInitialControl = () => {
+      const root = customModalRef.current;
+      if (!root) return;
+      const firstOption = root.querySelector(".option-btn, .topping-checkbox-row, .confirm-btn");
+      (firstOption || customCloseBtnRef.current || root).focus?.();
+    };
+
+    const handleCustomizationKey = (e) => {
+      if (!customModalOpen) return;
+
+      if (e.key === "Escape") {
+        e.preventDefault();
+        closeCustomizationModal();
+        return;
+      }
+
+      if (!["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Tab"].includes(e.key)) {
+        return;
+      }
+
+      const focusables = getCustomizationFocusableElements();
+      if (focusables.length === 0) return;
+
+      const activeEl = document.activeElement;
+      let currentIndex = focusables.indexOf(activeEl);
+
+      if (e.key === "Tab") {
+        e.preventDefault();
+        const direction = e.shiftKey ? -1 : 1;
+        const nextIndex = currentIndex === -1
+          ? 0
+          : (currentIndex + direction + focusables.length) % focusables.length;
+        focusables[nextIndex]?.focus?.();
+        const label = focusables[nextIndex]?.getAttribute("aria-label") || focusables[nextIndex]?.textContent?.trim();
+        if (label) speak(label);
+        return;
+      }
+
+      e.preventDefault();
+      if (currentIndex === -1) currentIndex = 0;
+      const direction = (e.key === "ArrowLeft" || e.key === "ArrowUp") ? -1 : 1;
+      const nextIndex = (currentIndex + direction + focusables.length) % focusables.length;
+      focusables[nextIndex]?.focus?.();
+      const label = focusables[nextIndex]?.getAttribute("aria-label") || focusables[nextIndex]?.textContent?.trim();
+      if (label) speak(label);
+    };
+
+    document.addEventListener("keydown", handleCustomizationKey);
+    const frame = window.requestAnimationFrame(focusInitialControl);
+    return () => {
+      document.removeEventListener("keydown", handleCustomizationKey);
+      window.cancelAnimationFrame(frame);
+    };
+  }, [customModalOpen, currentDrink, speakMode, language]);
 
   // Language menu close
   useEffect(() => {
@@ -1463,14 +1567,14 @@ function CustomerKiosk() {
 
   // Focus scroll
   useEffect(() => {
-    if (keyboardMode && itemRefs.current[focusIndex]) {
+    if (keyboardMode && !customModalOpen && itemRefs.current[focusIndex]) {
       itemRefs.current[focusIndex].focus();
       itemRefs.current[focusIndex].scrollIntoView({
         behavior: "smooth",
         block: "center",
       });
     }
-  }, [focusIndex, keyboardMode]);
+  }, [focusIndex, keyboardMode, customModalOpen]);
 
   const isToppingSelected = (name) =>
     selectedToppings.some((t) => t.name === name);
@@ -1613,6 +1717,7 @@ function CustomerKiosk() {
               <button className="size-btn" onClick={() => setFontScale((prev) => Math.min(1.6, prev + 0.1))} aria-label={t("Increase text size")}>+</button>
 
               <button
+                type="button"
                 className={`access-btn ${speakMode ? "active" : ""}`}
                 onClick={() => {
                   const next = !speakMode;
@@ -1625,6 +1730,7 @@ function CustomerKiosk() {
               </button>
 
               <button
+                type="button"
                 className={`access-btn ${keyboardMode ? "active" : ""}`}
                 onClick={() => {
                   const next = !keyboardMode;
@@ -1827,17 +1933,22 @@ function CustomerKiosk() {
           onMouseDown={(e) => {
             // if clicked directly on the overlay (outside the modal content), close
             if (e.target === e.currentTarget) {
-              setCustomModalOpen(false);
-              setEditingIndex(null);
+              closeCustomizationModal();
             }
           }}
         >
-          <div className={`topping-modal-content ${editingIndex !== null ? "editing-mode" : ""}`}>
-            <h2>{t("Customize")} {getTranslatedDrinkName(currentDrink)}</h2>
+          <div
+            ref={customModalRef}
+            className={`topping-modal-content ${editingIndex !== null ? "editing-mode" : ""}`}
+            tabIndex={-1}
+            aria-labelledby="customization-modal-title"
+          >
+            <h2 id="customization-modal-title">{t("Customize")} {getTranslatedDrinkName(currentDrink)}</h2>
             <button
               type="button"
+              ref={customCloseBtnRef}
               className="custom-close-btn hover:scale-110 active:scale-95 transition-transform duration-150"
-              onClick={() => { setCustomModalOpen(false); setEditingIndex(null); }}
+              onClick={closeCustomizationModal}
               aria-label={t("Cancel")}
             >
               ✕
@@ -1847,7 +1958,7 @@ function CustomerKiosk() {
               <label>{t("Size")}</label>
               <div className="option-group" role="radiogroup">
                 {["Small", "Medium", "Large"].map((s) => (
-                  <button key={s} className={`option-btn ${selectedSize === s ? "active" : ""}`} onClick={() => { setSelectedSize(s); speak(`${t("Size")}: ${s}`); }} aria-pressed={selectedSize === s} aria-label={`${t("Size")}: ${s}`}>{t(s)}</button>
+                  <button key={s} className={`option-btn ${selectedSize === s ? "active" : ""}`} onClick={() => { setSelectedSize(s); speak(`${t("Size")}: ${t(s)}`); }} aria-pressed={selectedSize === s} aria-label={`${t("Size")}: ${s}`}>{t(s)}</button>
                 ))}
               </div>
             </div>
@@ -1866,7 +1977,7 @@ function CustomerKiosk() {
                 <label>{t("Ice")}</label>
                 <div className="option-group" role="radiogroup">
                   {["No Ice", "Less Ice", "Regular Ice", "Extra Ice"].map((i) => (
-                    <button key={i} className={`option-btn ${selectedIce === i ? "active" : ""}`} onClick={() => { setSelectedIce(i); speak(`${t("Ice")}: ${i}`); }} aria-pressed={selectedIce === i} aria-label={`${t("Ice")}: ${i}`}>{t(i)}</button>
+                    <button key={i} className={`option-btn ${selectedIce === i ? "active" : ""}`} onClick={() => { setSelectedIce(i); speak(`${t("Ice")}: ${t(i)}`); }} aria-pressed={selectedIce === i} aria-label={`${t("Ice")}: ${i}`}>{t(i)}</button>
                   ))}
                 </div>
               </div>
