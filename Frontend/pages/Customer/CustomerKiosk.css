@@ -527,6 +527,40 @@
   gap: calc(10px * var(--scale));
 }
 
+.special-request-input {
+  width: 100%;
+  box-sizing: border-box;
+  background: var(--white);
+  border: calc(2px * var(--scale)) solid var(--border);
+  border-radius: calc(12px * var(--scale));
+  padding: calc(10px * var(--scale)) calc(14px * var(--scale));
+  font-size: calc(1rem * var(--scale));
+  font-family: inherit;
+  color: var(--brown);
+  resize: vertical;
+  min-height: calc(70px * var(--scale));
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.special-request-input::placeholder {
+  color: var(--brown);
+  opacity: 0.5;
+}
+
+.special-request-input:focus {
+  outline: none;
+  border-color: var(--yellow-pastel);
+  box-shadow: 0 0 0 calc(3px * var(--scale)) var(--yellow-pastel);
+}
+
+.cart-item-note {
+  margin-top: calc(4px * var(--scale));
+  font-style: italic;
+  font-size: calc(0.9em * var(--scale));
+  color: var(--brown);
+  word-break: break-word;
+}
+
 .option-btn {
   background: var(--white);
   border: calc(2px * var(--scale)) solid var(--border);
