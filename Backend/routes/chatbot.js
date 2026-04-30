@@ -101,6 +101,7 @@ Never invent drinks that are not on the menu.
     );
 
     const completion = await tamuResponse.json();
+    console.log(completion)
     const replyText = completion.choices[0].message.content;
     res.json({
       reply: {
